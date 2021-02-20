@@ -1,37 +1,47 @@
 ﻿using Unity.Entities;
+using Unity.NetCode;
+using UnityEngine;
 
+namespace FPSdemo{
 
-namespace FPSdemo{ 
-
-
+[DisableAutoCreation]
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(UserInput.UserInputUpdateSystem))]
-    public class UpdateInputSystem : SystemBase
+    public class UpdateCharacterControllerInternalDataSystem : SystemBase
 {
-        private EntityQuery m_UserInputQuery;
+        private GhostPredictionSystemGroup m_GhostPredictionSystemGroup;
+        private EntityQuery m_CommandTargetComponentQuery;
 
         protected override void OnCreate()
         {
-            m_UserInputQuery = GetEntityQuery(typeof(UserInput.UserInputdate));
+            m_GhostPredictionSystemGroup = World.GetExistingSystem<GhostPredictionSystemGroup>();
+            m_CommandTargetComponentQuery = GetEntityQuery(typeof(CommandTargetComponent));
+            RequireForUpdate(m_CommandTargetComponentQuery);
         }
         protected override void OnUpdate()
     {
-        if (m_UserInputQuery.CalculateEntityCount() == 0)
-            return;
-        var input = m_UserInputQuery.GetSingleton<UserInput.UserInputdate>();
-        
-        Entities
-            .WithName("UpdateInputSystemJob")
-            .WithAll<CharacterControllerInternalData,UserControlDate>()
-            .WithBurst()
-            .ForEach((ref CharacterControllerInternalData ccData) =>
+            var inputFromEntity = GetBufferFromEntity<UserCommand>(true);
+            var pretick = m_GhostPredictionSystemGroup.PredictingTick;
+            Entities
+            .WithName("UpdateCharacterControllerInternalDataSystemJob")
+            .WithReadOnly(inputFromEntity)
+            .WithAll<CharacterControllerInternalData>()
+            .WithoutBurst()
+            .ForEach((Entity ent,ref CharacterControllerInternalData ccData, in PredictedGhostComponent prediction) =>
             {
-                ccData.Input.Movement = input.userinput.Movement;
-                ccData.Input.Looking = input.userinput.Looking;
-                if (input.userinput.buttons.IsSet(UserCommand.Button.Jump))
+                if (!GhostPredictionSystemGroup.ShouldPredict(pretick, prediction))
+                {
+                    return;
+                }
+                var input = inputFromEntity[ent];
+                UserCommand inputData=default;
+                input.GetDataAtTick(pretick, out inputData);
+                if(inputData.buttons.IsSet(UserCommand.Button.Jump))
                     ccData.Input.Jumped = 1;
+                ccData.Input.Movement = inputData.Movement;
+                ccData.Input.Looking = inputData.Looking;
             }
-            ).ScheduleParallel();
+            ).Run();
     }
 }
 }

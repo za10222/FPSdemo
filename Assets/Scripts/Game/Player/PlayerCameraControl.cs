@@ -4,11 +4,14 @@ using Unity.Jobs;
 using Unity.Transforms;
 using Unity.DebugDisplay;
 using Unity.Mathematics;
+using Unity.NetCode;
 
 namespace FPSdemo
 {
     public static class PlayerCameraControl
     {
+
+        [GhostComponent(PrefabType = GhostPrefabType.Client)]
         public struct State : IComponentData
         {
             public int isEnabled;
@@ -22,23 +25,15 @@ namespace FPSdemo
         }
 
 
-        //[DisableAutoCreation]
+        [DisableAutoCreation]
+        [UpdateInGroup(typeof(ClientSimulationSystemGroup))]
         public class HandlePlayerCameraControlSpawn : SystemBase
         {
-            public HandlePlayerCameraControlSpawn()
-            {
-                 _BlobAssetStore = new BlobAssetStore();
-                m_cameraPrefab = (GameObject)Resources.Load("Prefabs/PlayerCamera");
-                Debug.Log(m_cameraPrefab);
-            }
-
-            protected override void OnStopRunning()
-            {
-                _BlobAssetStore.Dispose();
-            }
 
             protected override void OnCreate()
             {
+                _BlobAssetStore = new BlobAssetStore();
+                m_cameraPrefab = (GameObject)Resources.Load("Prefabs/PlayerCamera");
                 var settings = GameObjectConversionSettings.FromWorld(World, _BlobAssetStore);
                 m_cameraPrefabEntity = GameObjectConversionUtility.ConvertGameObjectHierarchy(m_cameraPrefab, settings);
                 var camera = EntityManager.GetComponentObject<Camera>(m_cameraPrefabEntity);
@@ -46,13 +41,18 @@ namespace FPSdemo
                 var audioListener = EntityManager.GetComponentObject<AudioListener>(m_cameraPrefabEntity);
                 audioListener.enabled = false;
             }
+            protected override void OnDestroy()
+            {
+                _BlobAssetStore.Dispose();
+                base.OnDestroy();
+            }
 
             protected override void OnUpdate()
             {
                 Entities
                   .WithStructuralChanges()
                   .WithoutBurst().WithAll<State>()
-                  .WithNone<CameraEntity>()
+                  .WithNone<CameraEntity,Prefab>()
                   .ForEach((Entity entity) =>
                   {
                       var w=World.EntityManager.Instantiate(m_cameraPrefabEntity);
@@ -71,7 +71,8 @@ namespace FPSdemo
             Entity m_cameraPrefabEntity;
         }
 
-        //[DisableAutoCreation]
+
+        [DisableAutoCreation]
         public class UpdatePlayerCameras : SystemBase
         {
 
@@ -103,7 +104,7 @@ namespace FPSdemo
                         {
                             camera.enabled = true;
 
-                            var audioListener = World.DefaultGameObjectInjectionWorld.EntityManager.GetComponentObject<AudioListener>(cameraEntity.Value);
+                            var audioListener = EntityManager.GetComponentObject<AudioListener>(cameraEntity.Value);
                             audioListener.enabled = true;
 
                         }
@@ -111,8 +112,8 @@ namespace FPSdemo
                         camera.fieldOfView = state.fieldOfView;
                         //camera.transform.position = state.position;
                         //camera.transform.rotation = state.rotation;
-                        Debug.Log(lw.Position);
-                        Debug.Log(camera.transform.position);
+                        //Debug.Log(lw.Position);
+                        //Debug.Log(camera.transform.position);
 
                         EntityManager.SetComponentData<Translation>(cameraEntity.Value,new Translation {Value= lw.Position });
                         EntityManager.SetComponentData<Rotation>(cameraEntity.Value, new Rotation { Value = lw.Rotation });
@@ -124,7 +125,7 @@ namespace FPSdemo
             }
         }
 
-        //[DisableAutoCreation]
+        [DisableAutoCreation]
         public class CleanPlayerCameras : SystemBase
         {
             protected override void OnCreate()

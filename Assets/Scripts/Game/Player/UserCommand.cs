@@ -2,11 +2,14 @@
 using System;
 using System.Text;
 using Unity.Mathematics;
+using Unity.NetCode;
 
 namespace FPSdemo
 {
-    public struct UserCommand
+    [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
+    public struct UserCommand:ICommandData
     {
+        public uint Tick { get; set; }
         public enum Button : uint
         {
             None = 0,
@@ -85,7 +88,7 @@ namespace FPSdemo
 
         private UserCommand(int i)
         {
-            //tick = 0;
+            Tick = 0;
             //checkTick = 0;
             //renderTick = 0;
             Movement = default;
@@ -102,6 +105,8 @@ namespace FPSdemo
         public override string ToString()
         {
             System.Text.StringBuilder strBuilder = new System.Text.StringBuilder();
+            strBuilder.AppendLine("Tick:" + Tick);
+
             strBuilder.AppendLine("moveYaw:" + Movement.x);
             strBuilder.AppendLine("moveMagnitude:" + Movement.y);
             strBuilder.AppendLine("lookYaw:" + Looking.x);

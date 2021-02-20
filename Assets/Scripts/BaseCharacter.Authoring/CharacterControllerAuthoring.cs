@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Physics.GraphicsIntegration;
@@ -21,18 +22,32 @@ using Math = Unity.Physics.Math;
 [Serializable]
 public struct CharacterControllerComponentData : IComponentData
 {
+    [GhostField]
     public float3 Gravity;
+    [GhostField]
     public float MovementSpeed;
+
+    [GhostField]
     public float MaxMovementSpeed;
+    [GhostField]
     public float RotationSpeed;
+    [GhostField]
     public float JumpUpwardsSpeed;
+    [GhostField]
     public float MaxSlope; // radians
+    [GhostField]
     public int MaxIterations;
+    [GhostField]
     public float CharacterMass;
+    [GhostField]
     public float SkinWidth;
+    [GhostField]
     public float ContactTolerance;
+    [GhostField]
     public byte AffectsPhysicsBodies;
+    [GhostField]
     public byte RaiseCollisionEvents;
+    [GhostField]
     public byte RaiseTriggerEvents;
 }
 
@@ -47,12 +62,19 @@ public struct CharacterControllerInput : IComponentData
 [WriteGroup(typeof(PhysicsGraphicalSmoothing))]
 public struct CharacterControllerInternalData : IComponentData
 {
+    [GhostField]
     public float CurrentRotationAngle;
+    [GhostField]
     public CharacterSupportState SupportedState;
+    [GhostField]
     public float3 UnsupportedVelocity;
+    [GhostField]
     public PhysicsVelocity Velocity;
+    [GhostField]
     public Entity Entity;
+    [GhostField]
     public bool IsJumping;
+
     public CharacterControllerInput Input;
 }
 
@@ -143,6 +165,8 @@ public class CharacterControllerAuthoring : MonoBehaviour, IConvertGameObjectToE
     }
 }
 
+
+[DisableAutoCreation]
 // override the behavior of BufferInterpolatedRigidBodiesMotion
 [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
 [UpdateAfter(typeof(BuildPhysicsWorld)), UpdateBefore(typeof(ExportPhysicsWorld))]
@@ -176,6 +200,7 @@ public class BufferInterpolatedCharacterControllerMotion : SystemBase
     }
 }
 
+[DisableAutoCreation]
 [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
 [UpdateAfter(typeof(ExportPhysicsWorld)), UpdateBefore(typeof(EndFramePhysicsSystem))]
 public class CharacterControllerSystem : SystemBase
@@ -516,6 +541,7 @@ public class CharacterControllerSystem : SystemBase
             }
         }
     }
+
 
     [BurstCompile]
     struct ApplyDefferedPhysicsUpdatesJob : IJob

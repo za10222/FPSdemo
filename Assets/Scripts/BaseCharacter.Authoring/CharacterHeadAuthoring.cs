@@ -8,6 +8,7 @@ using UnityEngine;
 namespace FPSdemo
 {
 
+
     public struct CharacterHead : IComponentData
     {
         public float VerticalRotationSpeed;
@@ -37,14 +38,23 @@ namespace FPSdemo
 
     // Update before physics gets going so that we don't have hazard warnings.
     // This assumes that all gun are being controlled from the same single input system
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     [UpdateAfter(typeof(CharacterControllerSystem))]
     public class CharacterControllerHeadSystem : SystemBase
     {
 
+        protected override void OnCreate()
+        {
+            //EntityQuery m_UserInputdateQuery = GetEntityQuery(typeof(UserInput.UserInputdate));
+            //RequireForUpdate(eq);
+        }
         protected override void OnUpdate()
         {
-            var input = GetSingleton<UserInput.UserInputdate>().userinput;
+            EntityQuery m_UserInputdateQuery = GetEntityQuery(typeof(UserInput.UserInputdate));
+            if (m_UserInputdateQuery.CalculateEntityCount() == 0)
+                return;
+            var input = m_UserInputdateQuery.GetSingleton<UserInput.UserInputdate>().userinput;
             float dt = Time.DeltaTime;
 
             Entities

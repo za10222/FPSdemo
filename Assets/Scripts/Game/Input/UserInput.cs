@@ -12,6 +12,7 @@ namespace FPSdemo
             public UserCommand userinput;
         }
 
+        [DisableAutoCreation]
         [AlwaysUpdateSystem]
         [UpdateInGroup(typeof(InitializationSystemGroup))]
         public class  UserInputUpdateSystem : SystemBase, InputActions.IPlayerActions
@@ -68,7 +69,7 @@ namespace FPSdemo
             {
                 command.Looking = m_CharacterLooking;
                 command.Movement = m_CharacterMovement;
-                command.buttons.Or(UserCommand.Button.Jump, m_CharacterJump);
+                command.buttons.Set(UserCommand.Button.Jump, m_CharacterJump);
             }
             protected override void OnUpdate()
             {
