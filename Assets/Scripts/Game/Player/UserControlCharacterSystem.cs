@@ -31,6 +31,7 @@ namespace FPSdemo{
             {
                 if (!GhostPredictionSystemGroup.ShouldPredict(pretick, prediction))
                 {
+                    ccData.Input = default;
                     return;
                 }
                 var input = inputFromEntity[ent];

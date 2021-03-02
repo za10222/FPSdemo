@@ -63,12 +63,11 @@ namespace FPSdemo
                 .ForEach((ref Rotation headRotation, ref CharacterHead head) =>
                 {
                 // Handle input
-                float a = -input.Looking.y * head.VerticalRotationSpeed * dt;
+                    float a = -input.Looking.y * head.VerticalRotationSpeed * dt;
                     head.Vertical += a;
                     head.Vertical = math.clamp(head.Vertical, head.MaxminAngle.y, head.MaxminAngle.x);
-
+                    Debug.Log("head="+head.Vertical);
                     headRotation.Value = quaternion.Euler(math.radians(head.Vertical), 0, 0);
-
                 }).Run();
         }
     }

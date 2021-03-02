@@ -416,6 +416,8 @@ public class CharacterControllerSystem : SystemBase
                     var userRotationSpeed = horizontal * ccComponentData.RotationSpeed;
                     ccInternalData.Velocity.Angular = -userRotationSpeed * up;
                     ccInternalData.CurrentRotationAngle += userRotationSpeed * DeltaTime;
+                    ccInternalData.CurrentRotationAngle %= (math.PI * 2);
+                    Debug.Log("CurrentRotationAngle=" + ccInternalData.CurrentRotationAngle);
                 }
                 else
                 {

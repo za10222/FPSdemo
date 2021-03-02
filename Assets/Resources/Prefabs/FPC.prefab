@@ -368,7 +368,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fc2b9e0c1acb7d458731b8fe90fdaeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VerticalRotationSpeed: 20
+  VerticalRotationSpeed: 10
   MaxminAngle: {x: 65, y: -65}
 --- !u!114 &8731831935611036219
 MonoBehaviour:

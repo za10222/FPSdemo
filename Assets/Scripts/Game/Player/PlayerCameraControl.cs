@@ -11,13 +11,14 @@ namespace FPSdemo
     public static class PlayerCameraControl
     {
 
-        [GhostComponent(PrefabType = GhostPrefabType.Client)]
+        [GhostComponent(PrefabType = GhostPrefabType.PredictedClient)]
         public struct State : IComponentData
         {
             public int isEnabled;
             public Vector3 position;
             public Quaternion rotation;
             public float fieldOfView;
+            public float VerticalRotationSpeed;
         }
         public struct CameraEntity : ISystemStateComponentData
         {
@@ -73,6 +74,8 @@ namespace FPSdemo
 
 
         [DisableAutoCreation]
+        [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+        [UpdateBefore(typeof(UpdatePlayerCameras))]
         public class UpdatePlayerCameras : SystemBase
         {
 
@@ -103,7 +106,6 @@ namespace FPSdemo
                         if (!isEnabled)
                         {
                             camera.enabled = true;
-
                             var audioListener = EntityManager.GetComponentObject<AudioListener>(cameraEntity.Value);
                             audioListener.enabled = true;
 
@@ -116,7 +118,12 @@ namespace FPSdemo
                         //Debug.Log(camera.transform.position);
 
                         EntityManager.SetComponentData<Translation>(cameraEntity.Value,new Translation {Value= lw.Position });
-                        EntityManager.SetComponentData<Rotation>(cameraEntity.Value, new Rotation { Value = lw.Rotation });
+
+                        //为了不让预测失败 旋转影响摄像头太过严重
+                        //EntityManager.SetComponentData<Rotation>(cameraEntity.Value, new Rotation { Value = lw.Rotation });
+                        EntityManager.SetComponentData<Rotation>(cameraEntity.Value, new Rotation { Value = state.rotation });
+
+
 
                         //elc.Position = lw.Position;
                         //camera.transform.rotation = lw.Rotation;
@@ -168,7 +175,67 @@ namespace FPSdemo
             private EntityQuery m_CamerasEntityQuery;
 
         }
+
+        [DisableAutoCreation]
+        [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+        [UpdateAfter(typeof(CharacterControllerSystem))]
+        [UpdateBefore(typeof(UpdatePlayerCameras))]
+        public class PlayCameraUserInputUpdateSystem : SystemBase
+        {
+
+            protected override void OnCreate()
+            {
        
+            }
+            protected override void OnUpdate()
+            {
+                float dt = Time.DeltaTime;
+ 
+                Entities
+                    .WithName("PlayCameraUserInputUpdateJob")
+                    .WithoutBurst()
+                    .ForEach((ref State camerastate, ref CameraEntity cameraEntity, ref CharacterHead head,ref Parent pa) =>
+                    {
+                     var cccd= GetComponent<CharacterControllerComponentData>(pa.Value) ;
+                     var input = GetComponent<CharacterControllerInternalData>(pa.Value).Input;
+
+                        float horizontal = input.Looking.x;
+                        float y = input.Looking.y;
+
+                        bool haveInput = (math.abs(horizontal) > float.Epsilon)|| (math.abs(y) > float.Epsilon);
+                        if (haveInput)
+                        {
+                            var euler = camerastate.rotation.eulerAngles;
+
+                            var userRotationChange = horizontal * cccd.RotationSpeed;
+
+
+                            euler.y = math.radians(euler.y) + userRotationChange * dt;
+                            euler.y %= math.PI * 2;
+                            Debug.Log("new euler.y=" + euler.y);
+
+
+
+                            //// 处理垂直方向
+                            float a = -y * head.VerticalRotationSpeed * dt;
+                            var w = euler.x;
+
+                            w += a;
+                            if (w > 180)
+                            {
+                                w = w - 360;
+                            }
+                            w = math.clamp(w, head.MaxminAngle.y, head.MaxminAngle.x);
+                            w = math.radians(w);
+
+                            camerastate.rotation = quaternion.Euler(w, euler.y, 0);
+
+                        }
+                    }).Run();
+            }
+        }
 
     }
+
+    
 }

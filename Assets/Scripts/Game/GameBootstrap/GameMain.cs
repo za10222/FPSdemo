@@ -25,9 +25,10 @@ public class GameMain: MonoBehaviour
                 c.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<PlayerInputCommandSystem>());
                 c.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<GoInGameClientSystem>());
                 var F = GameBootstrap.clientworld.GetExistingSystem<FixedStepSimulationSystemGroup>();
-                ////F.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<CharacterControllerHeadSystem>());
+                //F.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<CharacterControllerHeadSystem>());
                 F.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<BufferInterpolatedCharacterControllerMotion>());
                 F.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<CharacterControllerSystem>());
+                F.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<PlayerCameraControl.PlayCameraUserInputUpdateSystem>());
 
                 var p= GameBootstrap.clientworld.GetExistingSystem<GhostPredictionSystemGroup>();
                 p.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<UpdateCharacterControllerInternalDataSystem>());
