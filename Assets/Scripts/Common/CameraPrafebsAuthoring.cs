@@ -19,9 +19,10 @@ namespace FPSdemo
         public AudioListener listener;
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            //dstManager.AddComponentObject(entity, cam);
-            //dstManager.AddComponentObject(entity, listener);
+            //dstManager.AddComponentObject(entity, GameObject.Instantiate(gameObject.GetComponent<Camera>()));
+            //dstManager.AddComponentObject(entity, GameObject.Instantiate(gameObject.GetComponent<AudioListener>()));
 
+            //dstManager.AddComponentObject(entity, gameObject.GetComponent<AudioListener>());
             conversionSystem.AddHybridComponent(cam);
             conversionSystem.AddHybridComponent(listener);
         }

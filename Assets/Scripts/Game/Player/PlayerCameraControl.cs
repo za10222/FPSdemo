@@ -29,7 +29,7 @@ namespace FPSdemo
             {
                  _BlobAssetStore = new BlobAssetStore();
                 m_cameraPrefab = (GameObject)Resources.Load("Prefabs/PlayerCamera");
-                Debug.Log(m_cameraPrefab);
+                //Debug.Log(m_cameraPrefab);
             }
 
             protected override void OnStopRunning()
@@ -111,10 +111,11 @@ namespace FPSdemo
                         camera.fieldOfView = state.fieldOfView;
                         //camera.transform.position = state.position;
                         //camera.transform.rotation = state.rotation;
-                        Debug.Log(lw.Position);
-                        Debug.Log(camera.transform.position);
-
-                        EntityManager.SetComponentData<Translation>(cameraEntity.Value,new Translation {Value= lw.Position });
+                        //Debug.Log(lw.Position);
+                        //Debug.Log(camera.transform.position);
+                        //camera.transform.position = lw.Position;
+                        //camera.transform.rotation = lw.Rotation;
+                        EntityManager.SetComponentData<Translation>(cameraEntity.Value, new Translation { Value = lw.Position });
                         EntityManager.SetComponentData<Rotation>(cameraEntity.Value, new Rotation { Value = lw.Rotation });
 
                         //elc.Position = lw.Position;
