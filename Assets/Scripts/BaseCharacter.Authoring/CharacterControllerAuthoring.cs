@@ -53,9 +53,11 @@ public struct CharacterControllerComponentData : IComponentData
 
 public struct CharacterControllerInput : IComponentData
 {
-    public float2 Movement;
-    public float2 Looking;
-    public int Jumped;
+    public bool hasinput;
+    public FPSdemo.UserCommand Commond;
+    //public float2 Movement;
+    //public float2 Looking;
+    //public int Jumped;
 }
 
 [WriteGroup(typeof(PhysicsGraphicalInterpolationBuffer))]
@@ -379,6 +381,7 @@ public class CharacterControllerSystem : SystemBase
         private void HandleUserInput(CharacterControllerComponentData ccComponentData, float3 up, float3 surfaceVelocity,
             ref CharacterControllerInternalData ccInternalData, ref float3 linearVelocity)
         {
+
             // Reset jumping state and unsupported velocity
             if (ccInternalData.SupportedState == CharacterSupportState.Supported)
             {
@@ -393,12 +396,12 @@ public class CharacterControllerSystem : SystemBase
                 float3 forward = math.forward(quaternion.identity);
                 float3 right = math.cross(up, forward);
 
-                float horizontal = ccInternalData.Input.Movement.x;
-                float vertical = ccInternalData.Input.Movement.y;
-                bool jumpRequested = ccInternalData.Input.Jumped != 0;
-                ccInternalData.Input.Jumped = 0; // "consume" the event
+                float horizontal = ccInternalData.Input.Commond.Movement.x;
+                float vertical = ccInternalData.Input.Commond.Movement.y;
+                bool jumpRequested = ccInternalData.Input.Commond.buttons.IsSet(FPSdemo.UserCommand.Button.Jump);
+                ccInternalData.Input.Commond.buttons.Set (FPSdemo.UserCommand.Button.Jump,false); // "consume" the event
                 bool haveInput = (math.abs(horizontal) > float.Epsilon) || (math.abs(vertical) > float.Epsilon);
-                if (haveInput)
+                if (haveInput&& ccInternalData.Input.hasinput)
                 {
                     float3 localSpaceMovement = forward * vertical + right * horizontal;
                     float3 worldSpaceMovement = math.rotate(quaternion.AxisAngle(up, ccInternalData.CurrentRotationAngle), localSpaceMovement);
@@ -409,15 +412,15 @@ public class CharacterControllerSystem : SystemBase
 
             // Turning
             {
-                float horizontal = ccInternalData.Input.Looking.x;
+                float horizontal = ccInternalData.Input.Commond.Looking.x;
                 bool haveInput = (math.abs(horizontal) > float.Epsilon);
-                if (haveInput)
+                if (haveInput&& ccInternalData.Input.hasinput)
                 {
-                    var userRotationSpeed = horizontal * ccComponentData.RotationSpeed;
-                    ccInternalData.Velocity.Angular = -userRotationSpeed * up;
-                    ccInternalData.CurrentRotationAngle += userRotationSpeed * DeltaTime;
-                    ccInternalData.CurrentRotationAngle %= (math.PI * 2);
-                    Debug.Log("CurrentRotationAngle=" + ccInternalData.CurrentRotationAngle);
+                    //ccInternalData.Velocity.Angular = -userRotationSpeed * up;
+                    ccInternalData.Velocity.Angular = 0f;
+                    ccInternalData.CurrentRotationAngle = math.radians(ccInternalData.Input.Commond.Looking.x);
+                    //ccInternalData.CurrentRotationAngle %= (math.PI * 2);
+                    //Debug.Log("CurrentRotationAngle=" + ccInternalData.CurrentRotationAngle);
                 }
                 else
                 {
@@ -444,6 +447,7 @@ public class CharacterControllerSystem : SystemBase
                 linearVelocity = requestedMovementDirection * ccComponentData.MovementSpeed +
                     (ccInternalData.SupportedState != CharacterSupportState.Supported ? ccInternalData.UnsupportedVelocity : float3.zero);
             }
+            ccInternalData.Input.hasinput = false;
         }
 
         private void CalculateMovement(float currentRotationAngle, float3 up, bool isJumping,

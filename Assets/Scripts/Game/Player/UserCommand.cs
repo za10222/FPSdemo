@@ -14,6 +14,8 @@ namespace FPSdemo
         {
             None = 0,
             Jump = 1 << 0,
+            ChangeGun = 2 << 0,
+
             //Boost = 1 << 1,
             //PrimaryFire = 1 << 2,
             //SecondaryFire = 1 << 3,
@@ -95,6 +97,12 @@ namespace FPSdemo
             Looking = default;
             buttons.flags = 0;
         }
+
+        public quaternion LookRotation
+        {
+            get { return quaternion.Euler(new float3(math.radians(90 - Looking.y), math.radians(Looking.x), 0)); }
+        }
+
 
         public void ClearCommand()
         {

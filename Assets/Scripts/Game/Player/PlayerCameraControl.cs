@@ -5,6 +5,7 @@ using Unity.Transforms;
 using Unity.DebugDisplay;
 using Unity.Mathematics;
 using Unity.NetCode;
+using UnityEngine.Rendering.Universal;
 
 namespace FPSdemo
 {
@@ -33,10 +34,10 @@ namespace FPSdemo
 
             protected override void OnCreate()
             {
-                _BlobAssetStore = new BlobAssetStore();
+                
+                //_BlobAssetStore = new BlobAssetStore();
                 m_cameraPrefab = (GameObject)Resources.Load("Prefabs/PlayerCamera");
-                var settings = GameObjectConversionSettings.FromWorld(World, _BlobAssetStore);
-                m_cameraPrefabEntity = GameObjectConversionUtility.ConvertGameObjectHierarchy(m_cameraPrefab, settings);
+                m_cameraPrefabEntity=PrefabAssetManager.GetOrCreateEntityPrefab(World, m_cameraPrefab);
                 var camera = EntityManager.GetComponentObject<Camera>(m_cameraPrefabEntity);
                 camera.enabled = false;
                 var audioListener = EntityManager.GetComponentObject<AudioListener>(m_cameraPrefabEntity);
@@ -44,7 +45,7 @@ namespace FPSdemo
             }
             protected override void OnDestroy()
             {
-                _BlobAssetStore.Dispose();
+                //_BlobAssetStore.Dispose();
                 base.OnDestroy();
             }
 
@@ -61,13 +62,25 @@ namespace FPSdemo
                       camera.enabled = false;
                       var audioListener = EntityManager.GetComponentObject<AudioListener>(w);
                       audioListener.enabled = false;
+
+                      var childs = EntityManager.GetBuffer<LinkedEntityGroup>(w);
+  
+
+                      var guncam = EntityManager.GetComponentObject<Camera>(childs[1].Value);
+                      var cameraData = camera.GetUniversalAdditionalCameraData();
+                      var guncameraData = guncam.GetUniversalAdditionalCameraData();
+
+                      guncameraData.renderType = CameraRenderType.Overlay;
+                      cameraData.cameraStack.Add(guncam);
+
+
                       World.EntityManager.AddComponentData(entity, new CameraEntity
                       {
                           Value = w,
                       });
                   }).Run();
             }
-            BlobAssetStore _BlobAssetStore;
+            //BlobAssetStore _BlobAssetStore;
             GameObject m_cameraPrefab;
             Entity m_cameraPrefabEntity;
         }
@@ -98,7 +111,7 @@ namespace FPSdemo
                                 camera.enabled = false;
                                 var audioListener = EntityManager.GetComponentObject<AudioListener>(cameraEntity.Value);
                                 audioListener.enabled = false;
-
+                                
                             }
                             return;
                         }
@@ -108,7 +121,7 @@ namespace FPSdemo
                             camera.enabled = true;
                             var audioListener = EntityManager.GetComponentObject<AudioListener>(cameraEntity.Value);
                             audioListener.enabled = true;
-
+                            
                         }
 
                         camera.fieldOfView = state.fieldOfView;
@@ -182,55 +195,23 @@ namespace FPSdemo
         [UpdateBefore(typeof(UpdatePlayerCameras))]
         public class PlayCameraUserInputUpdateSystem : SystemBase
         {
-
+            private GhostPredictionSystemGroup m_GhostPredictionSystemGroup;
+            private EntityQuery m_CommandTargetComponentQuery;
             protected override void OnCreate()
             {
-       
+                m_CommandTargetComponentQuery = GetEntityQuery(typeof(CommandTargetComponent));
+                RequireForUpdate(m_CommandTargetComponentQuery);
             }
             protected override void OnUpdate()
             {
-                float dt = Time.DeltaTime;
- 
                 Entities
                     .WithName("PlayCameraUserInputUpdateJob")
                     .WithoutBurst()
                     .ForEach((ref State camerastate, ref CameraEntity cameraEntity, ref CharacterHead head,ref Parent pa) =>
                     {
-                     var cccd= GetComponent<CharacterControllerComponentData>(pa.Value) ;
-                     var input = GetComponent<CharacterControllerInternalData>(pa.Value).Input;
-
-                        float horizontal = input.Looking.x;
-                        float y = input.Looking.y;
-
-                        bool haveInput = (math.abs(horizontal) > float.Epsilon)|| (math.abs(y) > float.Epsilon);
-                        if (haveInput)
-                        {
-                            var euler = camerastate.rotation.eulerAngles;
-
-                            var userRotationChange = horizontal * cccd.RotationSpeed;
-
-
-                            euler.y = math.radians(euler.y) + userRotationChange * dt;
-                            euler.y %= math.PI * 2;
-                            Debug.Log("new euler.y=" + euler.y);
-
-
-
-                            //// ������ֱ����
-                            float a = -y * head.VerticalRotationSpeed * dt;
-                            var w = euler.x;
-
-                            w += a;
-                            if (w > 180)
-                            {
-                                w = w - 360;
-                            }
-                            w = math.clamp(w, head.MaxminAngle.y, head.MaxminAngle.x);
-                            w = math.radians(w);
-
-                            camerastate.rotation = quaternion.Euler(w, euler.y, 0);
-
-                        }
+                        var input = GetComponent<CharacterControllerInternalData>(pa.Value).Input;
+                        camerastate.rotation= input.Commond.LookRotation;
+                        //Debug.Log(input.Commond.Looking);
                     }).Run();
             }
         }

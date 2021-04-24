@@ -24,11 +24,12 @@ public class GameMain: MonoBehaviour
                 var c = GameBootstrap.clientworld.GetExistingSystem<ClientSimulationSystemGroup>();
                 c.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<PlayerInputCommandSystem>());
                 c.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<GoInGameClientSystem>());
+
                 var F = GameBootstrap.clientworld.GetExistingSystem<FixedStepSimulationSystemGroup>();
                 //F.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<CharacterControllerHeadSystem>());
                 F.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<BufferInterpolatedCharacterControllerMotion>());
                 F.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<CharacterControllerSystem>());
-                F.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<PlayerCameraControl.PlayCameraUserInputUpdateSystem>());
+                F.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<PlayerCameraControl.PlayCameraUserInputUpdateSystem>()); 
 
                 var p= GameBootstrap.clientworld.GetExistingSystem<GhostPredictionSystemGroup>();
                 p.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<UpdateCharacterControllerInternalDataSystem>());
@@ -40,6 +41,7 @@ public class GameMain: MonoBehaviour
 
                 var c = GameBootstrap.serverworld.GetExistingSystem<ServerSimulationSystemGroup>();
                 c.AddSystemToUpdateList(GameBootstrap.serverworld.CreateSystem<GoInGameServerSystem>());
+
                 var F = GameBootstrap.serverworld.GetExistingSystem<FixedStepSimulationSystemGroup>();
                 //F.AddSystemToUpdateList(GameBootstrap.serverworld.CreateSystem<CharacterControllerHeadSystem>());
                 F.AddSystemToUpdateList(GameBootstrap.serverworld.CreateSystem<BufferInterpolatedCharacterControllerMotion>());
@@ -77,8 +79,11 @@ public class GameBootstrap : ClientServerBootstrap
     #endif
           serverworld = ClientServerBootstrap.CreateServerWorld(world, "severworld123");
 #endif
-        ScriptBehaviourUpdateOrder.UpdatePlayerLoop(world);
-        return true;
+ 
+        //ScriptBehaviourUpdateOrder.UpdatePlayerLoop(world);
+        ScriptBehaviourUpdateOrder.AddWorldToCurrentPlayerLoop(world);
+
+            return true;
     }
 
 }

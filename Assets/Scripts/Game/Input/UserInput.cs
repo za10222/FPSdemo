@@ -12,6 +12,7 @@ namespace FPSdemo
             public UserCommand userinput;
         }
 
+        public static Vector2 configMouseSensitivity= new Vector2(0.2f,0.2f);
         [DisableAutoCreation]
         [AlwaysUpdateSystem]
         [UpdateInGroup(typeof(InitializationSystemGroup))]
@@ -28,17 +29,27 @@ namespace FPSdemo
             public void OnLook(InputAction.CallbackContext context)
             {
                 m_CharacterLooking = context.ReadValue<Vector2>();
+        
             }
 
             public void OnMove(InputAction.CallbackContext context)
             {
                 m_CharacterMovement = context.ReadValue<Vector2>();
+      
             }
             public void OnJump(InputAction.CallbackContext context)
             {
                 m_CharacterJump = context.ReadValueAsButton();
             }
-
+            public void OnChangeGun(InputAction.CallbackContext context)
+            {
+                switch (context.phase)
+                {
+                    case InputActionPhase.Performed:
+                    m_ChangeGun = true;
+                    break;
+                }
+            }
 
             Vector2 m_CharacterMovement;
             Vector2 m_CharacterLooking;
@@ -46,6 +57,8 @@ namespace FPSdemo
             float m_CharacterFiring;
 
             bool m_CharacterJump;
+            bool m_ChangeGun;
+
             //    bool m_CharacterJumped;
 
 
@@ -58,31 +71,51 @@ namespace FPSdemo
                 m_CharacterLooking = default;
                 m_CharacterFiring = default;
                 m_CharacterJump = default;
+                m_ChangeGun = default;
                 m_UserInputdateQuery = GetEntityQuery(typeof(UserInputdate));
             }
 
             protected override void OnStartRunning() => m_InputActions.Enable();
 
             protected override void OnStopRunning() => m_InputActions.Disable();
-
-            public void AccumulateInput(ref UserCommand command)
+            
+            public void AccumulateInput(ref UserCommand command, float deltaTime)
             {
-                command.Looking = m_CharacterLooking;
+                Vector2 deltaMousePos = new Vector2(0, 0);
+                if (deltaTime > 0.0f)
+                    deltaMousePos += m_CharacterLooking;
+                command.Looking.x += deltaMousePos.x * configMouseSensitivity.x;
+                command.Looking.x = command.Looking.x % 360;
+                while (command.Looking.x < 0.0f) command.Looking.x += 360.0f;
+
+                command.Looking.y += deltaMousePos.y * configMouseSensitivity.y;
+                command.Looking.y = Mathf.Clamp(command.Looking.y, 0, 180);
+
                 command.Movement = m_CharacterMovement;
                 command.buttons.Set(UserCommand.Button.Jump, m_CharacterJump);
+                command.buttons.Set(UserCommand.Button.ChangeGun, m_ChangeGun);
+
             }
             protected override void OnUpdate()
             {
+                float dt = Time.DeltaTime;
                 // character controller
                 if (m_UserInputdateQuery.CalculateEntityCount() == 0)
                     EntityManager.CreateEntity(typeof(UserInputdate));
+                var userinput = m_UserInputdateQuery.GetSingleton<UserInputdate>().userinput;
+                AccumulateInput(ref userinput, dt);
+                m_ChangeGun = false;
 
-                UserCommand userinput = new UserCommand();
-                AccumulateInput(ref userinput);
                 m_UserInputdateQuery.SetSingleton(new UserInputdate
                 {
                     userinput = userinput
                 });
+
+                //m_CharacterMovement = default;
+                //m_CharacterLooking = default;
+                //m_CharacterFiring = default;
+                //m_CharacterJump = default;
+                //m_ChangeGun = default;
 
                 //if (m_CharacterGunInputQuery.CalculateEntityCount() == 0)
                 //    EntityManager.CreateEntity(typeof(CharacterGunInput));
@@ -109,6 +142,8 @@ namespace FPSdemo
 
                 //m_VehicleChanged = 0;
             }
+
+           
         }
 
     }

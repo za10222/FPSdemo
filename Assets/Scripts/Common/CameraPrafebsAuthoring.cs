@@ -5,7 +5,7 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
-
+using UnityEngine.Rendering.Universal;
 
 namespace FPSdemo
 {
@@ -17,6 +17,7 @@ namespace FPSdemo
     {
         public Camera cam;
         public AudioListener listener;
+
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             //dstManager.AddComponentObject(entity, GameObject.Instantiate(gameObject.GetComponent<Camera>()));

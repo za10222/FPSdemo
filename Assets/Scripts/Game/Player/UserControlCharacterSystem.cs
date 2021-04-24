@@ -26,21 +26,17 @@ namespace FPSdemo{
             .WithName("UpdateCharacterControllerInternalDataSystemJob")
             .WithReadOnly(inputFromEntity)
             .WithAll<CharacterControllerInternalData>()
-            .WithoutBurst()
             .ForEach((Entity ent,ref CharacterControllerInternalData ccData, in PredictedGhostComponent prediction) =>
             {
                 if (!GhostPredictionSystemGroup.ShouldPredict(pretick, prediction))
                 {
-                    ccData.Input = default;
                     return;
                 }
                 var input = inputFromEntity[ent];
                 UserCommand inputData=default;
                 input.GetDataAtTick(pretick, out inputData);
-                if(inputData.buttons.IsSet(UserCommand.Button.Jump))
-                    ccData.Input.Jumped = 1;
-                ccData.Input.Movement = inputData.Movement;
-                ccData.Input.Looking = inputData.Looking;
+                ccData.Input.Commond = inputData;
+                ccData.Input.hasinput = true;
             }
             ).Run();
     }

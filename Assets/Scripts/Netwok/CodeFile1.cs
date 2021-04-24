@@ -57,7 +57,7 @@ namespace FPSdemo
             }
             if(prefab== Entity.Null)
             {
-                UnityEngine.Debug.Log("can not find prehab" );
+                UnityEngine.Debug.Log("can not find prefab" );
                 return;
             }
             var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
@@ -69,7 +69,7 @@ namespace FPSdemo
                 UnityEngine.Debug.Log(String.Format("Server setting connection {0} to in game", networkIdFromEntity[reqSrc.SourceConnection].Value));
 
                 var player = commandBuffer.Instantiate(prefab);
-                commandBuffer.SetComponent<Translation>(player, new Translation { Value = new float3() { x=2,y=2,z=0.23f} });
+                commandBuffer.SetComponent<Translation>(player, new Translation { Value = new float3() { x=4,y=4,z=0.23f} });
                 commandBuffer.SetComponent(player, new GhostOwnerComponent { NetworkId = networkIdFromEntity[reqSrc.SourceConnection].Value });
                 commandBuffer.SetComponent(reqSrc.SourceConnection, new CommandTargetComponent { targetEntity = player });
                 commandBuffer.DestroyEntity(reqEnt);

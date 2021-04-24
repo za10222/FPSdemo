@@ -51,6 +51,14 @@ namespace FPSdemo
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""ChangeGun"",
+                    ""type"": ""Button"",
+                    ""id"": ""afd35e92-0642-455f-90fb-a7b64b607ba0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -249,6 +257,17 @@ namespace FPSdemo
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f40b70b4-7bd4-49dc-8f10-e407c6c33ba4"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""ChangeGun"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -830,6 +849,7 @@ namespace FPSdemo
             m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
             m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
             m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+            m_Player_ChangeGun = m_Player.FindAction("ChangeGun", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -895,6 +915,7 @@ namespace FPSdemo
         private readonly InputAction m_Player_Look;
         private readonly InputAction m_Player_Fire;
         private readonly InputAction m_Player_Jump;
+        private readonly InputAction m_Player_ChangeGun;
         public struct PlayerActions
         {
             private @InputActions m_Wrapper;
@@ -903,6 +924,7 @@ namespace FPSdemo
             public InputAction @Look => m_Wrapper.m_Player_Look;
             public InputAction @Fire => m_Wrapper.m_Player_Fire;
             public InputAction @Jump => m_Wrapper.m_Player_Jump;
+            public InputAction @ChangeGun => m_Wrapper.m_Player_ChangeGun;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -924,6 +946,9 @@ namespace FPSdemo
                     @Jump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
                     @Jump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
                     @Jump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                    @ChangeGun.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeGun;
+                    @ChangeGun.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeGun;
+                    @ChangeGun.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeGun;
                 }
                 m_Wrapper.m_PlayerActionsCallbackInterface = instance;
                 if (instance != null)
@@ -940,6 +965,9 @@ namespace FPSdemo
                     @Jump.started += instance.OnJump;
                     @Jump.performed += instance.OnJump;
                     @Jump.canceled += instance.OnJump;
+                    @ChangeGun.started += instance.OnChangeGun;
+                    @ChangeGun.performed += instance.OnChangeGun;
+                    @ChangeGun.canceled += instance.OnChangeGun;
                 }
             }
         }
@@ -1100,6 +1128,7 @@ namespace FPSdemo
             void OnLook(InputAction.CallbackContext context);
             void OnFire(InputAction.CallbackContext context);
             void OnJump(InputAction.CallbackContext context);
+            void OnChangeGun(InputAction.CallbackContext context);
         }
         public interface IUIActions
         {
