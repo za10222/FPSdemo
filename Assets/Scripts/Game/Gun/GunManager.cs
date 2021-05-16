@@ -3,222 +3,284 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Windows;
 
 namespace FPSdemo
 {
-
+    public enum Gunstate
+    {
+        normal,
+        shoot,
+        changegun
+    }
     public static class GunManager
     {
+
         [InternalBufferCapacity(8)]
-        public struct GunPrefabEntityBufferElement : IBufferElementData
+        public struct GunDataBufferElement : IBufferElementData
         {
-            public GunPrefabData Value;
-
-            public static implicit operator GunPrefabData(GunPrefabEntityBufferElement e)
-            {
-                return e.Value;
-            }
-
-            public static implicit operator GunPrefabEntityBufferElement(GunPrefabData e)
-            {
-                return new GunPrefabEntityBufferElement { Value = e };
-            }
+            public GunData gunData;
         }
-        public struct GunPrefabData
+
+  
+
+        public struct GunData
         {
-            public Entity GunPrefabEntity;
-            public int gunTypeIndex;
+            public GunBaseData gunBaseData;
+            public GunRenderData gunRenderData;
         }
 
         public struct GunBaseData : IComponentData
         {
             public float shootgap;
+            public int gunTypeIndex;
+        }
+
+        [GhostComponent(PrefabType = GhostPrefabType.Client)]
+        public struct GunRenderData : IComponentData
+        {
+            //model有关的数据 
+            public Entity GunModelEntity;
+            public Entity MuzzleEntity;
+            public Entity ProjectileEntity;
         }
 
         //角色拥有的武器数据 当前存储武器类型 基础武器参数 参数增强
         public struct PlayerGunData : IComponentData
         {
-            public GunBaseData gunBaseData;
+            [GhostField]
             public int gunTypeIndex;
-            public bool changeGun;
 
-            public double changeGunGap;
+            [GhostField]
+            public float changeGunGap;
+
+            [GhostField]
+            public Gunstate gunstate;
         }
 
+        //和枪支状态有关的数据
+        [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
         public struct PlayerGunInternalData : IComponentData
         {
-            public double lastChangeDeltaTime;
-            public double lastShootDeltaTime;
-        }
-        public struct PlayerGunSpawn : IComponentData
-        {
-        }
-        public struct GunEntity : ISystemStateComponentData
-        {
-            public Entity Value;
+            [GhostField]
+            public bool changeGun;
+            [GhostField]
+            public bool shoot;
+            [GhostField]
+            public float lastChangeDeltaTime;
+            [GhostField]
+            public float lastShootDeltaTime;
+
+            public bool hasinput;
         }
 
-        //public class HandlePlayerGunSpawnSystem : SystemBase
-        //{ 
+        public struct ShootEventData : IComponentData
+        {
+            //哪个枪支实体射击的
+            [GhostField]
+            public GunBaseData gunBaseData;
 
+            [GhostField]
+            public int owner;
+
+            [GhostField]
+            public Translation translation;
+
+   
+            [GhostField]
+            public Rotation rotation;
+        }
+
+        //这个被客户端实例化，但没有初始化 
+        [GhostComponent(PrefabType = GhostPrefabType.Client)]
+        public struct ShootRenderData : IComponentData
+        {
+            public bool isRender;
+            //用来存储和判断特效是否生成
+            public Entity ProjectilePrefab;
+            public float ProjectilePrefabLifetime;
+        }
+
+        //[UpdateInWorld(UpdateInWorld.TargetWorld.Client)]
+        //[UpdateInGroup(typeof(GhostPredictionSystemGroup))]
+        //public class test : SystemBase
+        //{
+        //    protected override void OnCreate()
+        //    {
+
+        //        var m_GunManagerEntity = EntityManager.CreateEntity(typeof(GunDataBufferElement));
+        //        var m_gunPrefabs = Resources.LoadAll("Prefabs/GunData/");
+        //        Debug.Log("读取武器数据" + m_gunPrefabs.Length);
+        //        for (int i = 0; i < m_gunPrefabs.Length; i++)
+        //        {
+        //            var gunPrefab = m_gunPrefabs[i];
+        //            var m_gunDataEntity = PrefabAssetManager.GetOrCreateEntityPrefab(World, (GameObject)gunPrefab);
+        //            DynamicBuffer<GunDataBufferElement> dynamicBuffer
+        //           = EntityManager.GetBuffer<GunDataBufferElement>(m_GunManagerEntity);
+        //            GunData gunData = default;
+        //            gunData.gunBaseData = GetComponent<GunBaseData>(m_gunDataEntity);
+        //            gunData.gunRenderData = GetComponent<GunRenderData>(m_gunDataEntity);
+
+        //            dynamicBuffer.Add(new GunDataBufferElement
+        //            {
+        //                gunData = gunData
+        //            });
+        //        }
+        //    }
+        //    protected override void OnUpdate()
+        //    {
+        //    }
         //}
 
 
-        public class GunManagerSystem : SystemBase
-        {
 
+        //[UpdateInWorld(UpdateInWorld.TargetWorld.Server)]
+        [UpdateInGroup(typeof(GhostPredictionSystemGroup))]
+        [UpdateAfter(typeof(PlayGunUserInputUpdateSystem))]
+        public class HandlePlayerGunSystem : SystemBase
+        {
             protected override void OnCreate()
             {
-                m_GunManagerEntity = EntityManager.CreateEntity(typeof(GunPrefabEntityBufferElement));
-                var m_gunPrefabs = Resources.LoadAll("Prefabs/Gun/");
-                Debug.Log("读取武器预制体" + m_gunPrefabs.Length);
+                m_Barrier = World.GetOrCreateSystem<BeginSimulationEntityCommandBufferSystem>();
+
+
+                m_GunManagerEntity = EntityManager.CreateEntity(typeof(GunDataBufferElement));
+                var m_gunPrefabs = Resources.LoadAll("Prefabs/GunData/");
+                Debug.Log("读取武器数据" + m_gunPrefabs.Length);
                 for (int i = 0; i < m_gunPrefabs.Length; i++)
                 {
                     var gunPrefab = m_gunPrefabs[i];
-                    var m_gunPrefabEntity = PrefabAssetManager.GetOrCreateEntityPrefab(World, (GameObject)gunPrefab);
-                    DynamicBuffer<GunPrefabEntityBufferElement> dynamicBuffer
-                 = EntityManager.GetBuffer<GunPrefabEntityBufferElement>(m_GunManagerEntity);
-                    dynamicBuffer.Add(new GunPrefabData { GunPrefabEntity = m_gunPrefabEntity, gunTypeIndex = i });
-                }
-                RequireSingletonForUpdate<GunPrefabEntityBufferElement>();
+                    var m_gunDataEntity = PrefabAssetManager.GetOrCreateEntityPrefab(World, (GameObject)gunPrefab);
+                    DynamicBuffer<GunDataBufferElement> dynamicBuffer
+                   = EntityManager.GetBuffer<GunDataBufferElement>(m_GunManagerEntity);
+                    GunData gunData = default;
+                    gunData.gunBaseData = GetComponent<GunBaseData>(m_gunDataEntity);
+                    gunData.gunRenderData = GetComponent<GunRenderData>(m_gunDataEntity);
 
-            }
-
-            protected override void OnUpdate()
-            {
-                //查看是否换了武器 换了就把prefan的GunBaseData复制过去
-                Entities
-                .WithName("SwitchPlayerGunJob")
-                .WithStructuralChanges()
-                .WithoutBurst()
-                .ForEach((Entity ent, ref PlayerGunData playgundata) =>
-                {
-                    if (playgundata.changeGun)
+                    dynamicBuffer.Add(new GunDataBufferElement
                     {
-                        if(HasComponent<GunEntity>(ent))
-                        {
-                            var gun=GetComponent<GunEntity>(ent);
-                            EntityManager.DestroyEntity(gun.Value);
-                            EntityManager.RemoveComponent<GunEntity>(ent);
-                        }
-                        var temp = playgundata.gunTypeIndex;
-                        DynamicBuffer<GunPrefabEntityBufferElement> dynamicBuffer
-                        = EntityManager.GetBuffer<GunPrefabEntityBufferElement>(m_GunManagerEntity);
-                        var e = dynamicBuffer[playgundata.gunTypeIndex];
-                        var gunbasedate = GetComponent<GunBaseData>(e.Value.GunPrefabEntity);
-                        playgundata.gunBaseData = gunbasedate;
-                        playgundata.changeGun = false;
-                        playgundata.gunTypeIndex = temp;
-
-                    }
-                }).Run();
-            }
-            //protected override void OnUpdate()
-            //{
-            //    var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
-            //    //查看是否换了武器 换了就把prefan的GunBaseData复制过去
-            //    Entities
-            //    .WithName("UpdatePlayerGunJob")
-            //    .WithoutBurst()
-            //    .ForEach((Entity ent,in LocalToWorld ltw, in PlayerGunData playgundata) =>
-            //    {
-            //        //如果不存在，就实例化gun
-            //        if (!EntityManager.Exists(playgundata.currentGun.GunEntity)
-            //        || playgundata.currentGun.GunTypeIndex!= playgundata.GunTypeIndex)
-            //        {
-            //            DynamicBuffer<GunPrefabEntityBufferElement> dynamicBuffer
-            //            = EntityManager.GetBuffer<GunPrefabEntityBufferElement>(m_GunManagerEntity);
-            //            foreach (var i in dynamicBuffer)
-            //            {
-            //                if(i.Value.GunTypeIndex == playgundata.GunTypeIndex)
-            //                {
-            //                    var e= commandBuffer.Instantiate( i.Value.GunPrefab);
-            //                    GunData gundata= default;
-            //                    gundata.GunEntity = e;
-            //                    gundata.GunTypeIndex = playgundata.GunTypeIndex;
-            //                    commandBuffer.SetComponent<PlayerGunData>( ent,new PlayerGunData { currentGun = gundata, GunTypeIndex= playgundata.GunTypeIndex });
-            //                    commandBuffer.SetComponent<Translation>(e, new Translation { Value = ltw.Position });
-            //                    commandBuffer.SetComponent<Rotation>(e, new Rotation { Value = ltw.Rotation });
-
-            //                    break;
-            //                }
-            //            }
-            //        }
-            //        else
-            //        {
-            //            EntityManager.SetComponentData<Translation>(playgundata.currentGun.GunEntity,new Translation { Value= ltw.Position });
-            //            EntityManager.SetComponentData<Rotation>(playgundata.currentGun.GunEntity, new Rotation { Value = ltw.Rotation });
-            //        }
-            //    }).Run();
-            //    commandBuffer.Playback(EntityManager); 
-            //}
-            Entity m_GunManagerEntity;
-        }
-        public class HandlePlayerGunSpawn : SystemBase
-        {
-
-            EndSimulationEntityCommandBufferSystem m_EndSimulationEcbSystem;
-
-
-            protected override void OnCreate()
-            {
-
-
-                RequireSingletonForUpdate<GunPrefabEntityBufferElement>();
-                m_EndSimulationEcbSystem = World
-                 .GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
-            }
-
-            protected override void OnUpdate()
-            {
-                var ecb = m_EndSimulationEcbSystem.CreateCommandBuffer().AsParallelWriter();
-                var m_GunManagerEntity=GetSingletonEntity<GunPrefabEntityBufferElement>();
-
-                DynamicBuffer<GunPrefabEntityBufferElement> dynamicBuffer
-                    = EntityManager.GetBuffer<GunPrefabEntityBufferElement>(m_GunManagerEntity);
-                //如果需要生成gunentity 但没有 就生成，不一样也生成
-                Entities
-                .WithName("HandlePlayerGunSpawnJob")
-                .WithReadOnly(dynamicBuffer)
-                .WithAll<PlayerGunSpawn, PlayerGunData>()
-                .WithNone<GunEntity, Prefab>()
-                .ForEach((Entity ent, int entityInQueryIndex, in PlayerGunData playgundata) =>
-                {
-                    var e= ecb.Instantiate(entityInQueryIndex, dynamicBuffer[playgundata.gunTypeIndex].Value.GunPrefabEntity);
-                    ecb.AddComponent(entityInQueryIndex, ent, new GunEntity
-                    {
-                        Value = e,
+                        gunData = gunData
                     });
-                }).ScheduleParallel();
-                m_EndSimulationEcbSystem.AddJobHandleForProducer(this.Dependency);
-            }
-        }
-        public class UpdatePlayerGun : SystemBase
-        {
-            protected override void OnCreate()
-            {
+                }
 
-                RequireSingletonForUpdate<GunPrefabEntityBufferElement>();
 
+                RequireSingletonForUpdate<GunDataBufferElement>();
             }
+
             protected override void OnUpdate()
             {
-
-                var m_GunManagerEntity = GetSingletonEntity<GunPrefabEntityBufferElement>();
-                //更新位置
-                Entities
-                .WithName("UpdatePlayerGunJob")
-                .WithAll<PlayerGunSpawn, PlayerGunData, GunEntity>()
-                .ForEach((Entity ent,in GunEntity gunEntity,in LocalToWorld ltw) =>
+                if (m_ShootEventPrefab == Entity.Null)
                 {
-                    SetComponent<Translation>(gunEntity.Value, new Translation { Value = ltw.Position });
-                    SetComponent<Rotation>(gunEntity.Value, new Rotation { Value = ltw.Rotation });
-                }).Schedule();
-            }
-        }
+                    var prefabEntity = GetSingletonEntity<GhostPrefabCollectionComponent>();
+                    var prefabs = EntityManager.GetBuffer<GhostPrefabBuffer>(prefabEntity);
+                    var foundPrefab = Entity.Null;
+                    for (int i = 0; i < prefabs.Length; ++i)
+                    {
+                        if (EntityManager.HasComponent<ShootEventData>(prefabs[i].Value))
+                            foundPrefab = prefabs[i].Value;
+                    }
+                    if (foundPrefab != Entity.Null)
+                        m_ShootEventPrefab = GhostCollectionSystem.CreatePredictedSpawnPrefab(EntityManager, foundPrefab);
+                }
 
+                var df = Time.DeltaTime;
+
+
+                DynamicBuffer<GunDataBufferElement> dynamicBuffer
+                 = EntityManager.GetBuffer<GunDataBufferElement>(m_GunManagerEntity);
+
+
+                var m_ShootEventPrefab2 = m_ShootEventPrefab;
+                var commandBuffer = m_Barrier.CreateCommandBuffer().AsParallelWriter();
+
+                //查看是否换了武器 换了就把prefab的GunBaseData复制过去
+                Entities
+               .WithName("SwitchPlayerGunJobClientJob")
+               .WithReadOnly(dynamicBuffer)
+               .ForEach((Entity ent,int nativeThreadIndex, ref PlayerGunData playerGunData, ref PlayerGunInternalData playerGunInternalData, ref GunBaseData gunBase,in LocalToParent ltp,in Parent pa) =>
+               {
+                   if (playerGunInternalData.hasinput == false)
+                       return;
+
+
+                   playerGunInternalData.lastChangeDeltaTime += df;
+                   playerGunInternalData.lastShootDeltaTime += df;
+
+                   switch (playerGunData.gunstate)
+                   {
+                       case Gunstate.normal:
+                           if ((playerGunInternalData.changeGun && playerGunInternalData.lastChangeDeltaTime > playerGunData.changeGunGap) || playerGunInternalData.lastChangeDeltaTime < -1)
+                           {
+                               playerGunData.gunstate = Gunstate.changegun;
+                               playerGunInternalData.lastChangeDeltaTime = 0;
+                               playerGunData.gunTypeIndex = (playerGunData.gunTypeIndex + 1) % dynamicBuffer.Length;
+                               gunBase = dynamicBuffer[playerGunData.gunTypeIndex].gunData.gunBaseData;
+                               if (HasComponent<GunRenderData>(ent))
+                               {
+                                   SetComponent<GunRenderData>(ent, dynamicBuffer[playerGunData.gunTypeIndex].gunData.gunRenderData);
+                               }
+
+                               break;
+                           }
+
+                           if ((playerGunInternalData.lastChangeDeltaTime > 0.5) && playerGunInternalData.shoot && playerGunInternalData.lastShootDeltaTime > gunBase.shootgap)
+                           {
+                               playerGunInternalData.lastShootDeltaTime = 0;
+                               //添加枪支射击事件
+                               if (m_ShootEventPrefab2 != Entity.Null)
+                               {
+
+                                   var e = commandBuffer.Instantiate(nativeThreadIndex, m_ShootEventPrefab2);
+                                   
+                                    var tran = GetComponent<Translation>(pa.Value);
+                                    var rotation = GetComponent<Rotation>(pa.Value);
+    
+                                    var parent_localtoworld = new RigidTransform(rotation.Value, tran.Value);
+      
+
+                                   var ltw2 = math.mul(parent_localtoworld, new RigidTransform(ltp.Value));
+                           
+                                   commandBuffer.SetComponent(nativeThreadIndex, e,
+                                     new ShootEventData { gunBaseData = gunBase, owner = GetComponent<GhostOwnerComponent>(pa.Value).NetworkId,
+                                         translation=new Translation { Value=ltw2.pos}
+                                     ,
+                                         rotation=new Rotation { Value=ltw2.rot} });
+                                    
+                                   commandBuffer.SetComponent(nativeThreadIndex, e,
+                                     new GhostOwnerComponent { NetworkId =  GetComponent<GhostOwnerComponent>(pa.Value).NetworkId });
+                                   
+                               }
+                               playerGunData.gunstate = Gunstate.shoot;
+                           }
+                           break;
+
+                       case Gunstate.changegun:
+                           if (playerGunInternalData.lastChangeDeltaTime > playerGunData.changeGunGap)
+                           {
+                               playerGunData.gunstate = Gunstate.normal;
+                           }
+
+                           break;
+                       case Gunstate.shoot:
+                           if (playerGunInternalData.lastShootDeltaTime > gunBase.shootgap)
+                           {
+                               playerGunData.gunstate = Gunstate.normal;
+                           }
+                           break;
+                   }
+
+
+               }).Schedule();
+                m_Barrier.AddJobHandleForProducer(Dependency);
+            }
+
+
+            public Entity m_GunManagerEntity;
+            private Entity m_ShootEventPrefab;
+            private BeginSimulationEntityCommandBufferSystem m_Barrier;
+        }
     }
 }

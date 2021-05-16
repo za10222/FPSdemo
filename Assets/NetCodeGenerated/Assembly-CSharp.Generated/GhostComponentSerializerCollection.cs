@@ -13,6 +13,9 @@ namespace Assembly_CSharp.Generated
             var ghostCollectionSystem = World.GetOrCreateSystem<GhostCollectionSystem>();
             ghostCollectionSystem.AddSerializer(CharacterControllerComponentDataGhostComponentSerializer.State);
             ghostCollectionSystem.AddSerializer(CharacterControllerInternalDataGhostComponentSerializer.State);
+            ghostCollectionSystem.AddSerializer(FPSdemoGunManager_PlayerGunDataGhostComponentSerializer.State);
+            ghostCollectionSystem.AddSerializer(FPSdemoGunManager_PlayerGunInternalDataGhostComponentSerializer.State);
+            ghostCollectionSystem.AddSerializer(FPSdemoGunManager_ShootEventDataGhostComponentSerializer.State);
         }
 
         protected override void OnUpdate()

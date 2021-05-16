@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace FPSdemo
 {
-
     //[DisableAutoCreation]
-    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    [UpdateInGroup(typeof(GhostPredictionSystemGroup))]
     [UpdateAfter(typeof(UpdateCharacterControllerInternalDataSystem))]
+    [UpdateBefore(typeof(CharacterControllerSystem))]
     public class PlayGunUserInputUpdateSystem : SystemBase
     {
         private GhostPredictionSystemGroup m_GhostPredictionSystemGroup;
@@ -24,24 +24,22 @@ namespace FPSdemo
             Entities
                 .WithName("PlayCameraUserInputUpdateJob")
                 .WithAll<GunManager.PlayerGunData,GunManager.PlayerGunInternalData>()
-                .WithoutBurst()
                 .ForEach((ref GunManager.PlayerGunData playerGunData, ref GunManager.PlayerGunInternalData  internalData, in Parent pa) =>
                 {
-                    internalData.lastChangeDeltaTime+=dt;
-                    internalData.lastShootDeltaTime+=dt;
                     var input = GetComponent<CharacterControllerInternalData>(pa.Value).Input;
-                    if(input.Commond.buttons.IsSet(UserCommand.Button.ChangeGun) && internalData.lastShootDeltaTime > playerGunData.changeGunGap)
+                    internalData.hasinput = input.hasinput;
+                    if (input.hasinput == false)
                     {
-                        Debug.Log("lastShootDeltaTime" + internalData.lastShootDeltaTime);
-                        Debug.Log("time " + playerGunData.changeGunGap);
-                        playerGunData.changeGun = true;
-                        internalData.lastShootDeltaTime  = 0;
-                        playerGunData.gunTypeIndex = (playerGunData.gunTypeIndex + 1) % 2;
-                        Debug.Log("武器变化"+ playerGunData.gunTypeIndex);
-                        Debug.Log("time " + dt);
-
+                        return;
                     }
+                    internalData.changeGun = input.Commond.buttons.IsSet(UserCommand.Button.ChangeGun);
+                    internalData.shoot = input.Commond.buttons.IsSet(UserCommand.Button.Shooting);
+                    //internalData.shoot = input.Commond.Looking;
+
+
                 }).Run();
         }
     }
+
+
 }

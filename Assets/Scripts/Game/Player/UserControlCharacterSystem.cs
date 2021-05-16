@@ -5,8 +5,8 @@ using UnityEngine;
 namespace FPSdemo{
 
 [DisableAutoCreation]
-[UpdateInGroup(typeof(InitializationSystemGroup))]
-[UpdateAfter(typeof(UserInput.UserInputUpdateSystem))]
+[UpdateInGroup(typeof(GhostPredictionSystemGroup))]
+//[UpdateAfter(typeof(UserInput.UserInputUpdateSystem))]
     public class UpdateCharacterControllerInternalDataSystem : SystemBase
 {
         private GhostPredictionSystemGroup m_GhostPredictionSystemGroup;
@@ -25,11 +25,13 @@ namespace FPSdemo{
             Entities
             .WithName("UpdateCharacterControllerInternalDataSystemJob")
             .WithReadOnly(inputFromEntity)
+            .WithoutBurst()
             .WithAll<CharacterControllerInternalData>()
             .ForEach((Entity ent,ref CharacterControllerInternalData ccData, in PredictedGhostComponent prediction) =>
             {
                 if (!GhostPredictionSystemGroup.ShouldPredict(pretick, prediction))
                 {
+                    ccData.Input.hasinput = false;
                     return;
                 }
                 var input = inputFromEntity[ent];

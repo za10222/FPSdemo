@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 // in order to circumvent API breakages that do not affect physics, some packages are removed from the project on CI
 // any code referencing APIs in com.unity.inputsystem must be guarded behind UNITY_INPUT_SYSTEM_EXISTS
@@ -13,9 +14,10 @@ namespace FPSdemo
         }
 
         public static Vector2 configMouseSensitivity= new Vector2(0.2f,0.2f);
+
         [DisableAutoCreation]
         [AlwaysUpdateSystem]
-        [UpdateInGroup(typeof(InitializationSystemGroup))]
+        [UpdateInGroup(typeof(GhostInputSystemGroup))]
         public class  UserInputUpdateSystem : SystemBase, InputActions.IPlayerActions
         {
             InputActions m_InputActions;
@@ -23,7 +25,7 @@ namespace FPSdemo
 
             public void OnFire(InputAction.CallbackContext context)
             {
-                m_CharacterFiring = context.ReadValue<float>();
+                m_CharacterFiring = context.ReadValueAsButton();
             }
 
             public void OnLook(InputAction.CallbackContext context)
@@ -54,8 +56,8 @@ namespace FPSdemo
             Vector2 m_CharacterMovement;
             Vector2 m_CharacterLooking;
 
-            float m_CharacterFiring;
 
+            bool m_CharacterFiring;
             bool m_CharacterJump;
             bool m_ChangeGun;
 
@@ -94,6 +96,7 @@ namespace FPSdemo
                 command.Movement = m_CharacterMovement;
                 command.buttons.Set(UserCommand.Button.Jump, m_CharacterJump);
                 command.buttons.Set(UserCommand.Button.ChangeGun, m_ChangeGun);
+                command.buttons.Set(UserCommand.Button.Shooting, m_CharacterFiring);
 
             }
             protected override void OnUpdate()

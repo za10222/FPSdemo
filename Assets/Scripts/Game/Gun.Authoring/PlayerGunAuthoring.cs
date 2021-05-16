@@ -20,7 +20,7 @@ namespace FPSdemo
         //
         // For example,
         //    public float scale;
-         public double  changegungap=1;
+         public float changegungap =1;
         
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
@@ -29,11 +29,11 @@ namespace FPSdemo
             dstManager.SetComponentData<GunManager.PlayerGunData>(entity, new GunManager.PlayerGunData
             {
                 gunTypeIndex = 0,
-                changeGun = false,
-                changeGunGap= changegungap,
+                changeGunGap= changegungap, 
             });
-            dstManager.AddComponent<GunManager.PlayerGunSpawn>(entity);
-            dstManager.AddComponent<GunManager.PlayerGunInternalData>(entity);
+            dstManager.AddComponentData<GunManager.PlayerGunInternalData>(entity,new GunManager.PlayerGunInternalData{ changeGun = true,lastChangeDeltaTime=-999});
+            dstManager.AddComponent<GunManager.GunBaseData>(entity);
+            dstManager.AddComponent<GunManager.GunRenderData>(entity);
         }
     }
 

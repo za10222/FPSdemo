@@ -210,6 +210,10 @@ namespace FPSdemo
                     .ForEach((ref State camerastate, ref CameraEntity cameraEntity, ref CharacterHead head,ref Parent pa) =>
                     {
                         var input = GetComponent<CharacterControllerInternalData>(pa.Value).Input;
+                        if(input.hasinput==false)
+                        {
+                            return;
+                        }
                         camerastate.rotation= input.Commond.LookRotation;
                         //Debug.Log(input.Commond.Looking);
                     }).Run();

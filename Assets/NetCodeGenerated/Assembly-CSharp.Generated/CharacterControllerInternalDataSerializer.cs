@@ -29,7 +29,7 @@ namespace Assembly_CSharp.Generated
                     ComponentSize = UnsafeUtility.SizeOf<CharacterControllerInternalData>(),
                     SnapshotSize = UnsafeUtility.SizeOf<Snapshot>(),
                     ChangeMaskBits = ChangeMaskBits,
-                    SendMask = GhostComponentSerializer.SendMask.Interpolated | GhostComponentSerializer.SendMask.Predicted,
+                    SendMask = GhostComponentSerializer.SendMask.Predicted,
                     SendToOwner = SendToOwnerType.All,
                     SendForChildEntities = 1,
                     VariantHash = 0,

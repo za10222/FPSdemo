@@ -13,9 +13,9 @@ namespace FPSdemo
         public enum Button : uint
         {
             None = 0,
-            Jump = 1 << 0,
-            ChangeGun = 2 << 0,
-
+            Jump = 1 << 1,
+            ChangeGun = 1 << 2,
+            Shooting =1<< 3
             //Boost = 1 << 1,
             //PrimaryFire = 1 << 2,
             //SecondaryFire = 1 << 3,

@@ -2,14 +2,15 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-
+using static FPSdemo.UserInput;
 
 namespace FPSdemo
 {
 
 [DisableAutoCreation]
-[UpdateInGroup(typeof(ClientSimulationSystemGroup))]
-public class PlayerInputCommandSystem :SystemBase
+[UpdateInGroup(typeof(GhostInputSystemGroup))]
+[UpdateAfter(typeof(UserInputUpdateSystem))]
+    public class PlayerInputCommandSystem :SystemBase
 {
         protected override void OnCreate()
         {

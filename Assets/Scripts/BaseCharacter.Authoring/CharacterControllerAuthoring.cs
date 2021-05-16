@@ -1,3 +1,4 @@
+using FPSdemo;
 using System;
 using Unity.Assertions;
 using Unity.Burst;
@@ -51,6 +52,7 @@ public struct CharacterControllerComponentData : IComponentData
     public byte RaiseTriggerEvents;
 }
 
+[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 public struct CharacterControllerInput : IComponentData
 {
     public bool hasinput;
@@ -60,6 +62,8 @@ public struct CharacterControllerInput : IComponentData
     //public int Jumped;
 }
 
+
+[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 [WriteGroup(typeof(PhysicsGraphicalInterpolationBuffer))]
 [WriteGroup(typeof(PhysicsGraphicalSmoothing))]
 public struct CharacterControllerInternalData : IComponentData
@@ -172,7 +176,7 @@ public class CharacterControllerAuthoring : MonoBehaviour, IConvertGameObjectToE
 // override the behavior of BufferInterpolatedRigidBodiesMotion
 [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
 [UpdateAfter(typeof(BuildPhysicsWorld)), UpdateBefore(typeof(ExportPhysicsWorld))]
-[UpdateAfter(typeof(BufferInterpolatedRigidBodiesMotion)), UpdateBefore(typeof(CharacterControllerSystem))]
+[UpdateAfter(typeof(BufferInterpolatedRigidBodiesMotion))]
 public class BufferInterpolatedCharacterControllerMotion : SystemBase
 {
     CharacterControllerSystem m_CharacterControllerSystem;
@@ -203,8 +207,8 @@ public class BufferInterpolatedCharacterControllerMotion : SystemBase
 }
 
 [DisableAutoCreation]
-[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-[UpdateAfter(typeof(ExportPhysicsWorld)), UpdateBefore(typeof(EndFramePhysicsSystem))]
+[UpdateInGroup(typeof(GhostPredictionSystemGroup))]
+[UpdateAfter(typeof(UpdateCharacterControllerInternalDataSystem))]
 public class CharacterControllerSystem : SystemBase
 {
     const float k_DefaultTau = 0.4f;
@@ -250,6 +254,7 @@ public class CharacterControllerSystem : SystemBase
 
             BufferAccessor<StatefulCollisionEvent> collisionEventBuffers = default;
             BufferAccessor<StatefulTriggerEvent> triggerEventBuffers = default;
+
             if (hasChunkCollisionEventBufferType)
             {
                 collisionEventBuffers = chunk.GetBufferAccessor(CollisionEventBufferType);
@@ -281,6 +286,8 @@ public class CharacterControllerSystem : SystemBase
                     triggerEventBuffer = triggerEventBuffers[i];
                 }
 
+                if (ccInternalData.Input.hasinput == false)
+                    return;
                 // Collision filter must be valid
                 if (!collider.IsValid || collider.Value.Value.Filter.IsEmpty)
                     continue;
@@ -331,6 +338,7 @@ public class CharacterControllerSystem : SystemBase
                 CheckSupport(ref PhysicsWorld, ref collider, stepInput, transform,
                     out ccInternalData.SupportedState, out float3 surfaceNormal, out float3 surfaceVelocity,
                     currentFrameCollisionEvents);
+
 
                 // User input
                 float3 desiredVelocity = ccInternalData.Velocity.Linear;
@@ -447,7 +455,7 @@ public class CharacterControllerSystem : SystemBase
                 linearVelocity = requestedMovementDirection * ccComponentData.MovementSpeed +
                     (ccInternalData.SupportedState != CharacterSupportState.Supported ? ccInternalData.UnsupportedVelocity : float3.zero);
             }
-            ccInternalData.Input.hasinput = false;
+            //ccInternalData.Input.hasinput = false;
         }
 
         private void CalculateMovement(float currentRotationAngle, float3 up, bool isJumping,
@@ -659,7 +667,7 @@ public class CharacterControllerSystem : SystemBase
     {
         if (m_CharacterControllersGroup.CalculateEntityCount() == 0)
             return;
-
+    
         // Combine implicit input dependency with the user one
         Dependency = JobHandle.CombineDependencies(Dependency, m_InputDependency);
 
@@ -692,9 +700,9 @@ public class CharacterControllerSystem : SystemBase
             DeferredImpulseWriter = deferredImpulses.AsWriter()
         };
 
-        Dependency = JobHandle.CombineDependencies(Dependency, m_ExportPhysicsWorldSystem.GetOutputDependency());
+        //Dependency = JobHandle.CombineDependencies(Dependency, m_ExportPhysicsWorldSystem.GetOutputDependency());
         Dependency = ccJob.Schedule(m_CharacterControllersGroup, Dependency);
-
+        Dependency.Complete();
         var copyVelocitiesHandle = new CopyVelocityToGraphicalSmoothingJob
         {
             CharacterControllerInternalType = GetComponentTypeHandle<CharacterControllerInternalData>(true),
@@ -718,7 +726,7 @@ public class CharacterControllerSystem : SystemBase
         var disposeHandle = deferredImpulses.Dispose(Dependency);
 
         // Must finish all jobs before physics step end
-        m_EndFramePhysicsSystem.AddInputDependency(disposeHandle);
+        //m_EndFramePhysicsSystem.AddInputDependency(disposeHandle);
 
         // Invalidate input dependency since it's been used by now
         m_InputDependency = default;
