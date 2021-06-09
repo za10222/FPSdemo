@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Physics;
 using UnityEngine;
+using Unity.NetCode;
 
 namespace FPSdemo
 {
@@ -39,8 +40,8 @@ namespace FPSdemo
     // Update before physics gets going so that we don't have hazard warnings.
     // This assumes that all gun are being controlled from the same single input system
     [DisableAutoCreation]
-    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-    [UpdateAfter(typeof(CharacterControllerSystem))]
+    [UpdateInGroup(typeof(GhostPredictionSystemGroup))]
+    [UpdateAfter(typeof(UpdateCharacterControllerInternalDataSystem))]
     public class CharacterControllerHeadSystem : SystemBase
     {
 

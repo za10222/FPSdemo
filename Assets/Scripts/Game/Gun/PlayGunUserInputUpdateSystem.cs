@@ -34,9 +34,7 @@ namespace FPSdemo
                     }
                     internalData.changeGun = input.Commond.buttons.IsSet(UserCommand.Button.ChangeGun);
                     internalData.shoot = input.Commond.buttons.IsSet(UserCommand.Button.Shooting);
-                    //internalData.shoot = input.Commond.Looking;
-
-
+                    internalData.rotation = input.Commond.LookRotation;
                 }).Run();
         }
     }

@@ -74,6 +74,9 @@ namespace FPSdemo
             [GhostField]
             public float lastShootDeltaTime;
 
+
+            //public bool 
+            public quaternion rotation;
             public bool hasinput;
         }
 
@@ -168,6 +171,8 @@ namespace FPSdemo
 
 
                 RequireSingletonForUpdate<GunDataBufferElement>();
+                RequireSingletonForUpdate<GhostPrefabCollectionComponent>();
+
             }
 
             protected override void OnUpdate()
@@ -209,6 +214,15 @@ namespace FPSdemo
                    playerGunInternalData.lastChangeDeltaTime += df;
                    playerGunInternalData.lastShootDeltaTime += df;
 
+                   
+                    Quaternion qa= playerGunInternalData.rotation;
+                    //Debug.Log(qa.eulerAngles.x);
+                    quaternion q = quaternion.Euler(math.radians(qa.eulerAngles.x), 0, 0);
+                    string v = q.value.ToString();
+                    //Debug.Log(string.Format("{0}", v));
+                    SetComponent<Rotation>(ent,new Rotation { Value=q});
+                   
+
                    switch (playerGunData.gunstate)
                    {
                        case Gunstate.normal:
@@ -236,9 +250,9 @@ namespace FPSdemo
                                    var e = commandBuffer.Instantiate(nativeThreadIndex, m_ShootEventPrefab2);
                                    
                                     var tran = GetComponent<Translation>(pa.Value);
-                                    var rotation = GetComponent<Rotation>(pa.Value);
-    
-                                    var parent_localtoworld = new RigidTransform(rotation.Value, tran.Value);
+                                    var rotation2 = GetComponent<Rotation>(pa.Value);
+
+                                   var parent_localtoworld = new RigidTransform(rotation2.Value, tran.Value);
       
 
                                    var ltw2 = math.mul(parent_localtoworld, new RigidTransform(ltp.Value));
@@ -247,7 +261,7 @@ namespace FPSdemo
                                      new ShootEventData { gunBaseData = gunBase, owner = GetComponent<GhostOwnerComponent>(pa.Value).NetworkId,
                                          translation=new Translation { Value=ltw2.pos}
                                      ,
-                                         rotation=new Rotation { Value=ltw2.rot} });
+                                         rotation=new Rotation { Value= playerGunInternalData .rotation} });
                                     
                                    commandBuffer.SetComponent(nativeThreadIndex, e,
                                      new GhostOwnerComponent { NetworkId =  GetComponent<GhostOwnerComponent>(pa.Value).NetworkId });
