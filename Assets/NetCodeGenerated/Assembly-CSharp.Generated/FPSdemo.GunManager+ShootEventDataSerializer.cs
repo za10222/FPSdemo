@@ -23,7 +23,7 @@ namespace Assembly_CSharp.Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 12729377446025882068,
+                    GhostFieldsHash = 280064394533317418,
                     ExcludeFromComponentCollectionHash = 0,
                     ComponentType = ComponentType.ReadWrite<FPSdemo.GunManager.ShootEventData>(),
                     ComponentSize = UnsafeUtility.SizeOf<FPSdemo.GunManager.ShootEventData>(),
@@ -72,8 +72,10 @@ namespace Assembly_CSharp.Generated
             public int rotation_ValueY;
             public int rotation_ValueZ;
             public int rotation_ValueW;
+            public uint ishandle;
+            public float lifetime;
         }
-        public const int ChangeMaskBits = 6;
+        public const int ChangeMaskBits = 8;
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CopyToFromSnapshotDelegate))]
         private static void CopyToSnapshot(IntPtr stateData, IntPtr snapshotData, int snapshotOffset, int snapshotStride, IntPtr componentData, int componentStride, int count)
@@ -94,6 +96,8 @@ namespace Assembly_CSharp.Generated
                 snapshot.rotation_ValueY = (int)math.round(component.rotation.Value.value.y * 1000);
                 snapshot.rotation_ValueZ = (int)math.round(component.rotation.Value.value.z * 1000);
                 snapshot.rotation_ValueW = (int)math.round(component.rotation.Value.value.w * 1000);
+                snapshot.ishandle = component.ishandle?1u:0;
+                snapshot.lifetime = component.lifetime;
             }
         }
         [BurstCompile]
@@ -132,6 +136,8 @@ namespace Assembly_CSharp.Generated
                 var rotation_Value_After = math.normalize(new quaternion(snapshotAfter.rotation_ValueX * 0.001f, snapshotAfter.rotation_ValueY * 0.001f, snapshotAfter.rotation_ValueZ * 0.001f, snapshotAfter.rotation_ValueW * 0.001f));
                 component.rotation.Value = math.slerp(rotation_Value_Before,
                     rotation_Value_After, snapshotInterpolationFactor);
+                component.ishandle = snapshotBefore.ishandle != 0;
+                component.lifetime = snapshotBefore.lifetime;
 
             }
         }
@@ -151,6 +157,8 @@ namespace Assembly_CSharp.Generated
             component.translation.Value.y = backup.translation.Value.y;
             component.translation.Value.z = backup.translation.Value.z;
             component.rotation.Value = backup.rotation.Value;
+            component.ishandle = backup.ishandle;
+            component.lifetime = backup.lifetime;
         }
 
         [BurstCompile]
@@ -169,6 +177,7 @@ namespace Assembly_CSharp.Generated
             snapshot.rotation_ValueY = predictor.PredictInt(snapshot.rotation_ValueY, baseline1.rotation_ValueY, baseline2.rotation_ValueY);
             snapshot.rotation_ValueZ = predictor.PredictInt(snapshot.rotation_ValueZ, baseline1.rotation_ValueZ, baseline2.rotation_ValueZ);
             snapshot.rotation_ValueW = predictor.PredictInt(snapshot.rotation_ValueW, baseline1.rotation_ValueW, baseline2.rotation_ValueW);
+            snapshot.ishandle = (uint)predictor.PredictInt((int)snapshot.ishandle, (int)baseline1.ishandle, (int)baseline2.ishandle);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CalculateChangeMaskDelegate))]
@@ -188,7 +197,9 @@ namespace Assembly_CSharp.Generated
                         snapshot.rotation_ValueY != baseline.rotation_ValueY ||
                         snapshot.rotation_ValueZ != baseline.rotation_ValueZ ||
                         snapshot.rotation_ValueW != baseline.rotation_ValueW) ? (1u<<5) : 0;
-            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 6);
+            changeMask |= (snapshot.ishandle != baseline.ishandle) ? (1u<<6) : 0;
+            changeMask |= (snapshot.lifetime != baseline.lifetime) ? (1u<<7) : 0;
+            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 8);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.SerializeDelegate))]
@@ -218,6 +229,10 @@ namespace Assembly_CSharp.Generated
                 writer.WritePackedIntDelta(snapshot.rotation_ValueZ, baseline.rotation_ValueZ, compressionModel);
                 writer.WritePackedIntDelta(snapshot.rotation_ValueW, baseline.rotation_ValueW, compressionModel);
             }
+            if ((changeMask & (1 << 6)) != 0)
+                writer.WritePackedUIntDelta(snapshot.ishandle, baseline.ishandle, compressionModel);
+            if ((changeMask & (1 << 7)) != 0)
+                writer.WritePackedFloatDelta(snapshot.lifetime, baseline.lifetime, compressionModel);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.DeserializeDelegate))]
@@ -268,6 +283,14 @@ namespace Assembly_CSharp.Generated
                 snapshot.rotation_ValueZ = baseline.rotation_ValueZ;
                 snapshot.rotation_ValueW = baseline.rotation_ValueW;
             }
+            if ((changeMask & (1 << 6)) != 0)
+                snapshot.ishandle = reader.ReadPackedUIntDelta(baseline.ishandle, compressionModel);
+            else
+                snapshot.ishandle = baseline.ishandle;
+            if ((changeMask & (1 << 7)) != 0)
+                snapshot.lifetime = reader.ReadPackedFloatDelta(baseline.lifetime, compressionModel);
+            else
+                snapshot.lifetime = baseline.lifetime;
         }
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
         [BurstCompile]
@@ -288,6 +311,10 @@ namespace Assembly_CSharp.Generated
             errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.translation.Value, backup.translation.Value));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.rotation.Value.value, backup.rotation.Value.value));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], (component.ishandle != backup.ishandle) ? 1 : 0);
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.lifetime - backup.lifetime));
             ++errorIndex;
         }
         private static int GetPredictionErrorNames(ref FixedString512 names)
@@ -316,6 +343,14 @@ namespace Assembly_CSharp.Generated
             if (nameCount != 0)
                 names.Append(new FixedString32(","));
             names.Append(new FixedString64("rotation.Value"));
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32(","));
+            names.Append(new FixedString64("ishandle"));
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32(","));
+            names.Append(new FixedString64("lifetime"));
             ++nameCount;
             return nameCount;
         }

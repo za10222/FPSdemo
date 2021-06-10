@@ -76,10 +76,14 @@ namespace FPSdemo
                 .WithAll<ShootEventData, ShootRenderData>()
                 .ForEach((Entity entity, int entityInQueryIndex, ref ShootRenderData shootRenderData, in ShootEventData shootEventData) =>
                 {
-                    if (shootRenderData.ProjectilePrefab != Entity.Null&& shootRenderData.isRender==false)
+                    if (shootRenderData.ProjectilePrefab != Entity.Null&& shootRenderData.isRender==false&& shootEventData.ishandle)
                     {
                         var e = ecb.Instantiate(entityInQueryIndex, shootRenderData.ProjectilePrefab);
-                        ecb.AddComponent(entityInQueryIndex, e, new RenderLifetime { lifetime = shootRenderData.ProjectilePrefabLifetime });
+                        if(shootEventData.lifetime<0)
+                            ecb.AddComponent(entityInQueryIndex, e, new RenderLifetime { lifetime = shootRenderData.ProjectilePrefabLifetime });
+                        else
+                            ecb.AddComponent(entityInQueryIndex, e, new RenderLifetime { lifetime = shootEventData.lifetime });
+
                         ecb.AddComponent(entityInQueryIndex, e, new ProjectileData
                         {
                             startTranslation = shootEventData.translation,
@@ -96,8 +100,8 @@ namespace FPSdemo
                         ecb.SetComponent<PhysicsVelocity>(entityInQueryIndex, e, new PhysicsVelocity
                         {
                             //Angular= hootEventData.rotation.Value,
-                            Linear = math.forward(shootEventData.rotation.Value) * 50
-                        });
+                            Linear = math.forward(shootEventData.rotation.Value) * shootEventData.gunBaseData.ballisticVelocity
+                        }) ;
 
                         shootRenderData.isRender = true;
                     }

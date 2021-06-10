@@ -12,9 +12,8 @@ namespace FPSdemo
 {
     public static class CommonUtilities
     {
-        static public Entity Raycast(float3 RayFrom, float3 RayTo, in BuildPhysicsWorld physicsWorldSystem)
+        static public bool Raycast(float3 RayFrom, float3 RayTo, in CollisionWorld collisionWorld, out RaycastHit hit)
         {
-            var collisionWorld = physicsWorldSystem.PhysicsWorld.CollisionWorld;
             RaycastInput input = new RaycastInput()
             {
                 Start = RayFrom,
@@ -27,19 +26,9 @@ namespace FPSdemo
                 }
             };
 
-            RaycastHit hit = new RaycastHit();
-            
             bool haveHit = collisionWorld.CastRay(input, out hit);
 
-            if (haveHit)
-            {
-                // see hit.Position
-                // see hit.SurfaceNormal
-                Entity e = physicsWorldSystem.PhysicsWorld.Bodies[hit.RigidBodyIndex].Entity;
-                return e;
-            }
-
-            return Entity.Null;
+            return haveHit;
         }
 
         //public static bool Newtick

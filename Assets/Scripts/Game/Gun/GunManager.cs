@@ -95,6 +95,12 @@ namespace FPSdemo
 
             [GhostField]
             public Rotation rotation;
+
+            [GhostField]
+            public bool ishandle;
+
+            [GhostField]
+            public float lifetime;
         }
 
         //这个被客户端实例化，但没有初始化 
