@@ -23,7 +23,7 @@ namespace Assembly_CSharp.Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 4379934046830037180,
+                    GhostFieldsHash = 2596386635959590070,
                     ExcludeFromComponentCollectionHash = 0,
                     ComponentType = ComponentType.ReadWrite<FPSdemo.GunManager.PlayerGunInternalData>(),
                     ComponentSize = UnsafeUtility.SizeOf<FPSdemo.GunManager.PlayerGunInternalData>(),
@@ -63,10 +63,8 @@ namespace Assembly_CSharp.Generated
         {
             public uint changeGun;
             public uint shoot;
-            public float lastChangeDeltaTime;
-            public float lastShootDeltaTime;
         }
-        public const int ChangeMaskBits = 4;
+        public const int ChangeMaskBits = 2;
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CopyToFromSnapshotDelegate))]
         private static void CopyToSnapshot(IntPtr stateData, IntPtr snapshotData, int snapshotOffset, int snapshotStride, IntPtr componentData, int componentStride, int count)
@@ -78,8 +76,6 @@ namespace Assembly_CSharp.Generated
                 ref var serializerState = ref GhostComponentSerializer.TypeCast<GhostSerializerState>(stateData, 0);
                 snapshot.changeGun = component.changeGun?1u:0;
                 snapshot.shoot = component.shoot?1u:0;
-                snapshot.lastChangeDeltaTime = component.lastChangeDeltaTime;
-                snapshot.lastShootDeltaTime = component.lastShootDeltaTime;
             }
         }
         [BurstCompile]
@@ -107,8 +103,6 @@ namespace Assembly_CSharp.Generated
                 ref var component = ref GhostComponentSerializer.TypeCast<FPSdemo.GunManager.PlayerGunInternalData>(componentData, componentStride*i);
                 component.changeGun = snapshotBefore.changeGun != 0;
                 component.shoot = snapshotBefore.shoot != 0;
-                component.lastChangeDeltaTime = snapshotBefore.lastChangeDeltaTime;
-                component.lastShootDeltaTime = snapshotBefore.lastShootDeltaTime;
 
             }
         }
@@ -122,8 +116,6 @@ namespace Assembly_CSharp.Generated
             ref var backup = ref GhostComponentSerializer.TypeCast<FPSdemo.GunManager.PlayerGunInternalData>(backupData, 0);
             component.changeGun = backup.changeGun;
             component.shoot = backup.shoot;
-            component.lastChangeDeltaTime = backup.lastChangeDeltaTime;
-            component.lastShootDeltaTime = backup.lastShootDeltaTime;
         }
 
         [BurstCompile]
@@ -145,9 +137,7 @@ namespace Assembly_CSharp.Generated
             uint changeMask;
             changeMask = (snapshot.changeGun != baseline.changeGun) ? 1u : 0;
             changeMask |= (snapshot.shoot != baseline.shoot) ? (1u<<1) : 0;
-            changeMask |= (snapshot.lastChangeDeltaTime != baseline.lastChangeDeltaTime) ? (1u<<2) : 0;
-            changeMask |= (snapshot.lastShootDeltaTime != baseline.lastShootDeltaTime) ? (1u<<3) : 0;
-            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 4);
+            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 2);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.SerializeDelegate))]
@@ -160,10 +150,6 @@ namespace Assembly_CSharp.Generated
                 writer.WritePackedUIntDelta(snapshot.changeGun, baseline.changeGun, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
                 writer.WritePackedUIntDelta(snapshot.shoot, baseline.shoot, compressionModel);
-            if ((changeMask & (1 << 2)) != 0)
-                writer.WritePackedFloatDelta(snapshot.lastChangeDeltaTime, baseline.lastChangeDeltaTime, compressionModel);
-            if ((changeMask & (1 << 3)) != 0)
-                writer.WritePackedFloatDelta(snapshot.lastShootDeltaTime, baseline.lastShootDeltaTime, compressionModel);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.DeserializeDelegate))]
@@ -180,14 +166,6 @@ namespace Assembly_CSharp.Generated
                 snapshot.shoot = reader.ReadPackedUIntDelta(baseline.shoot, compressionModel);
             else
                 snapshot.shoot = baseline.shoot;
-            if ((changeMask & (1 << 2)) != 0)
-                snapshot.lastChangeDeltaTime = reader.ReadPackedFloatDelta(baseline.lastChangeDeltaTime, compressionModel);
-            else
-                snapshot.lastChangeDeltaTime = baseline.lastChangeDeltaTime;
-            if ((changeMask & (1 << 3)) != 0)
-                snapshot.lastShootDeltaTime = reader.ReadPackedFloatDelta(baseline.lastShootDeltaTime, compressionModel);
-            else
-                snapshot.lastShootDeltaTime = baseline.lastShootDeltaTime;
         }
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
         [BurstCompile]
@@ -201,10 +179,6 @@ namespace Assembly_CSharp.Generated
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], (component.shoot != backup.shoot) ? 1 : 0);
             ++errorIndex;
-            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.lastChangeDeltaTime - backup.lastChangeDeltaTime));
-            ++errorIndex;
-            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.lastShootDeltaTime - backup.lastShootDeltaTime));
-            ++errorIndex;
         }
         private static int GetPredictionErrorNames(ref FixedString512 names)
         {
@@ -216,14 +190,6 @@ namespace Assembly_CSharp.Generated
             if (nameCount != 0)
                 names.Append(new FixedString32(","));
             names.Append(new FixedString64("shoot"));
-            ++nameCount;
-            if (nameCount != 0)
-                names.Append(new FixedString32(","));
-            names.Append(new FixedString64("lastChangeDeltaTime"));
-            ++nameCount;
-            if (nameCount != 0)
-                names.Append(new FixedString32(","));
-            names.Append(new FixedString64("lastShootDeltaTime"));
             ++nameCount;
             return nameCount;
         }

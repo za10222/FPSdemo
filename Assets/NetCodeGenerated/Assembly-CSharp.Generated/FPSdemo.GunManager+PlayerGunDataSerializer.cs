@@ -23,7 +23,7 @@ namespace Assembly_CSharp.Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 11266163746584454747,
+                    GhostFieldsHash = 5104797891130893214,
                     ExcludeFromComponentCollectionHash = 0,
                     ComponentType = ComponentType.ReadWrite<FPSdemo.GunManager.PlayerGunData>(),
                     ComponentSize = UnsafeUtility.SizeOf<FPSdemo.GunManager.PlayerGunData>(),
@@ -64,8 +64,12 @@ namespace Assembly_CSharp.Generated
             public int gunTypeIndex;
             public float changeGunGap;
             public int gunstate;
+            public int rotation_ValueX;
+            public int rotation_ValueY;
+            public int rotation_ValueZ;
+            public int rotation_ValueW;
         }
-        public const int ChangeMaskBits = 3;
+        public const int ChangeMaskBits = 4;
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CopyToFromSnapshotDelegate))]
         private static void CopyToSnapshot(IntPtr stateData, IntPtr snapshotData, int snapshotOffset, int snapshotStride, IntPtr componentData, int componentStride, int count)
@@ -78,6 +82,10 @@ namespace Assembly_CSharp.Generated
                 snapshot.gunTypeIndex = (int) component.gunTypeIndex;
                 snapshot.changeGunGap = component.changeGunGap;
                 snapshot.gunstate = (int) component.gunstate;
+                snapshot.rotation_ValueX = (int)math.round(component.rotation.Value.value.x * 1000);
+                snapshot.rotation_ValueY = (int)math.round(component.rotation.Value.value.y * 1000);
+                snapshot.rotation_ValueZ = (int)math.round(component.rotation.Value.value.z * 1000);
+                snapshot.rotation_ValueW = (int)math.round(component.rotation.Value.value.w * 1000);
             }
         }
         [BurstCompile]
@@ -106,6 +114,11 @@ namespace Assembly_CSharp.Generated
                 component.gunTypeIndex = (int) snapshotBefore.gunTypeIndex;
                 component.changeGunGap = snapshotBefore.changeGunGap;
                 component.gunstate = (FPSdemo.Gunstate) snapshotBefore.gunstate;
+                snapshotInterpolationFactor = snapshotInterpolationFactorRaw;
+                var rotation_Value_Before = math.normalize(new quaternion(snapshotBefore.rotation_ValueX * 0.001f, snapshotBefore.rotation_ValueY * 0.001f, snapshotBefore.rotation_ValueZ * 0.001f, snapshotBefore.rotation_ValueW * 0.001f));
+                var rotation_Value_After = math.normalize(new quaternion(snapshotAfter.rotation_ValueX * 0.001f, snapshotAfter.rotation_ValueY * 0.001f, snapshotAfter.rotation_ValueZ * 0.001f, snapshotAfter.rotation_ValueW * 0.001f));
+                component.rotation.Value = math.slerp(rotation_Value_Before,
+                    rotation_Value_After, snapshotInterpolationFactor);
 
             }
         }
@@ -120,6 +133,7 @@ namespace Assembly_CSharp.Generated
             component.gunTypeIndex = backup.gunTypeIndex;
             component.changeGunGap = backup.changeGunGap;
             component.gunstate = backup.gunstate;
+            component.rotation.Value = backup.rotation.Value;
         }
 
         [BurstCompile]
@@ -131,6 +145,10 @@ namespace Assembly_CSharp.Generated
             ref var baseline2 = ref GhostComponentSerializer.TypeCast<Snapshot>(baseline2Data);
             snapshot.gunTypeIndex = predictor.PredictInt(snapshot.gunTypeIndex, baseline1.gunTypeIndex, baseline2.gunTypeIndex);
             snapshot.gunstate = predictor.PredictInt(snapshot.gunstate, baseline1.gunstate, baseline2.gunstate);
+            snapshot.rotation_ValueX = predictor.PredictInt(snapshot.rotation_ValueX, baseline1.rotation_ValueX, baseline2.rotation_ValueX);
+            snapshot.rotation_ValueY = predictor.PredictInt(snapshot.rotation_ValueY, baseline1.rotation_ValueY, baseline2.rotation_ValueY);
+            snapshot.rotation_ValueZ = predictor.PredictInt(snapshot.rotation_ValueZ, baseline1.rotation_ValueZ, baseline2.rotation_ValueZ);
+            snapshot.rotation_ValueW = predictor.PredictInt(snapshot.rotation_ValueW, baseline1.rotation_ValueW, baseline2.rotation_ValueW);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CalculateChangeMaskDelegate))]
@@ -142,7 +160,11 @@ namespace Assembly_CSharp.Generated
             changeMask = (snapshot.gunTypeIndex != baseline.gunTypeIndex) ? 1u : 0;
             changeMask |= (snapshot.changeGunGap != baseline.changeGunGap) ? (1u<<1) : 0;
             changeMask |= (snapshot.gunstate != baseline.gunstate) ? (1u<<2) : 0;
-            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 3);
+            changeMask |= (snapshot.rotation_ValueX != baseline.rotation_ValueX ||
+                        snapshot.rotation_ValueY != baseline.rotation_ValueY ||
+                        snapshot.rotation_ValueZ != baseline.rotation_ValueZ ||
+                        snapshot.rotation_ValueW != baseline.rotation_ValueW) ? (1u<<3) : 0;
+            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 4);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.SerializeDelegate))]
@@ -157,6 +179,13 @@ namespace Assembly_CSharp.Generated
                 writer.WritePackedFloatDelta(snapshot.changeGunGap, baseline.changeGunGap, compressionModel);
             if ((changeMask & (1 << 2)) != 0)
                 writer.WritePackedIntDelta(snapshot.gunstate, baseline.gunstate, compressionModel);
+            if ((changeMask & (1 << 3)) != 0)
+            {
+                writer.WritePackedIntDelta(snapshot.rotation_ValueX, baseline.rotation_ValueX, compressionModel);
+                writer.WritePackedIntDelta(snapshot.rotation_ValueY, baseline.rotation_ValueY, compressionModel);
+                writer.WritePackedIntDelta(snapshot.rotation_ValueZ, baseline.rotation_ValueZ, compressionModel);
+                writer.WritePackedIntDelta(snapshot.rotation_ValueW, baseline.rotation_ValueW, compressionModel);
+            }
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.DeserializeDelegate))]
@@ -177,6 +206,20 @@ namespace Assembly_CSharp.Generated
                 snapshot.gunstate = reader.ReadPackedIntDelta(baseline.gunstate, compressionModel);
             else
                 snapshot.gunstate = baseline.gunstate;
+            if ((changeMask & (1 << 3)) != 0)
+            {
+                snapshot.rotation_ValueX = reader.ReadPackedIntDelta(baseline.rotation_ValueX, compressionModel);
+                snapshot.rotation_ValueY = reader.ReadPackedIntDelta(baseline.rotation_ValueY, compressionModel);
+                snapshot.rotation_ValueZ = reader.ReadPackedIntDelta(baseline.rotation_ValueZ, compressionModel);
+                snapshot.rotation_ValueW = reader.ReadPackedIntDelta(baseline.rotation_ValueW, compressionModel);
+            }
+            else
+            {
+                snapshot.rotation_ValueX = baseline.rotation_ValueX;
+                snapshot.rotation_ValueY = baseline.rotation_ValueY;
+                snapshot.rotation_ValueZ = baseline.rotation_ValueZ;
+                snapshot.rotation_ValueW = baseline.rotation_ValueW;
+            }
         }
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
         [BurstCompile]
@@ -191,6 +234,8 @@ namespace Assembly_CSharp.Generated
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.changeGunGap - backup.changeGunGap));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.gunstate - backup.gunstate));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.rotation.Value.value, backup.rotation.Value.value));
             ++errorIndex;
         }
         private static int GetPredictionErrorNames(ref FixedString512 names)
@@ -207,6 +252,10 @@ namespace Assembly_CSharp.Generated
             if (nameCount != 0)
                 names.Append(new FixedString32(","));
             names.Append(new FixedString64("gunstate"));
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32(","));
+            names.Append(new FixedString64("rotation.Value"));
             ++nameCount;
             return nameCount;
         }

@@ -31,7 +31,7 @@ namespace FPSdemo
                 gunTypeIndex = 0,
                 changeGunGap= changegungap, 
             });
-            dstManager.AddComponentData<GunManager.PlayerGunInternalData>(entity,new GunManager.PlayerGunInternalData{ changeGun = true,lastChangeDeltaTime=-999});
+            dstManager.AddComponentData<GunManager.PlayerGunInternalData>(entity,new GunManager.PlayerGunInternalData{ changeGun = true,lastChangeTick=0});
             dstManager.AddComponent<GunManager.GunBaseData>(entity);
             dstManager.AddComponent<GunManager.GunRenderData>(entity);
         }

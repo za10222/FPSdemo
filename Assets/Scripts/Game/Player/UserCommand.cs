@@ -114,7 +114,6 @@ namespace FPSdemo
         {
             System.Text.StringBuilder strBuilder = new System.Text.StringBuilder();
             strBuilder.AppendLine("Tick:" + Tick);
-
             strBuilder.AppendLine("moveYaw:" + Movement.x);
             strBuilder.AppendLine("moveMagnitude:" + Movement.y);
             strBuilder.AppendLine("lookYaw:" + Looking.x);

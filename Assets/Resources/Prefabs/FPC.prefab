@@ -499,8 +499,12 @@ MonoBehaviour:
   Importance: 1
   prefabId: fd35795020426494da1a2a5f03c89b27
   Name: FPC
-  RefGameObjects: []
-  ComponentNames: []
+  RefGameObjects:
+  - {fileID: 6428355717066247203}
+  - {fileID: 6428355717066247203}
+  ComponentNames:
+  - Unity.Transforms.Translation
+  - Unity.Transforms.Rotation
   PrefabTypeOverrides: []
   SendTypeOverrides: []
   VariantOverrides: []

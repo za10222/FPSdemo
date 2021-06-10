@@ -1,12 +1,9 @@
-using System;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.Rendering;
+using Unity.Networking.Transport.Utilities;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.Windows;
 
 namespace FPSdemo
 {
@@ -25,7 +22,7 @@ namespace FPSdemo
             public GunData gunData;
         }
 
-  
+
 
         public struct GunData
         {
@@ -59,6 +56,9 @@ namespace FPSdemo
 
             [GhostField]
             public Gunstate gunstate;
+
+            [GhostField]
+            public Rotation rotation;
         }
 
         //和枪支状态有关的数据
@@ -69,14 +69,14 @@ namespace FPSdemo
             public bool changeGun;
             [GhostField]
             public bool shoot;
-            [GhostField]
-            public float lastChangeDeltaTime;
-            [GhostField]
-            public float lastShootDeltaTime;
 
+            //[GhostField]
+            public uint lastChangeTick;
+            //[GhostField]
+            public uint lastShootTick;
 
-            //public bool 
             public quaternion rotation;
+            public bool
             public bool hasinput;
         }
 
@@ -92,7 +92,6 @@ namespace FPSdemo
             [GhostField]
             public Translation translation;
 
-   
             [GhostField]
             public Rotation rotation;
         }
@@ -139,16 +138,33 @@ namespace FPSdemo
         //}
 
 
+        [UpdateInGroup(typeof(GhostSimulationSystemGroup))]
+        [UpdateAfter(typeof(GhostPredictionSystemGroup))]
+        public class UpdatePlayerGunSystem : SystemBase
+        {
+            protected override void OnUpdate()
+            {
+                Entities
+            .WithName("UpdatePlayerGunSystemJob")
+            .ForEach((Entity ent, int nativeThreadIndex, ref PlayerGunData playerGunData, ref Rotation rotation) =>
+            {
+                rotation = playerGunData.rotation;
+            }).Schedule();
+            }
+        }
 
         //[UpdateInWorld(UpdateInWorld.TargetWorld.Server)]
         [UpdateInGroup(typeof(GhostPredictionSystemGroup))]
         [UpdateAfter(typeof(PlayGunUserInputUpdateSystem))]
         public class HandlePlayerGunSystem : SystemBase
         {
+
+            private GhostPredictionSystemGroup m_PredictionGroup;
+
             protected override void OnCreate()
             {
                 m_Barrier = World.GetOrCreateSystem<BeginSimulationEntityCommandBufferSystem>();
-
+                m_PredictionGroup = World.GetOrCreateSystem<GhostPredictionSystemGroup>();
 
                 m_GunManagerEntity = EntityManager.CreateEntity(typeof(GunDataBufferElement));
                 var m_gunPrefabs = Resources.LoadAll("Prefabs/GunData/");
@@ -197,89 +213,94 @@ namespace FPSdemo
                 DynamicBuffer<GunDataBufferElement> dynamicBuffer
                  = EntityManager.GetBuffer<GunDataBufferElement>(m_GunManagerEntity);
 
+                var currentTick = m_PredictionGroup.PredictingTick;
 
                 var m_ShootEventPrefab2 = m_ShootEventPrefab;
                 var commandBuffer = m_Barrier.CreateCommandBuffer().AsParallelWriter();
+
 
                 //查看是否换了武器 换了就把prefab的GunBaseData复制过去
                 Entities
                .WithName("SwitchPlayerGunJobClientJob")
                .WithReadOnly(dynamicBuffer)
-               .ForEach((Entity ent,int nativeThreadIndex, ref PlayerGunData playerGunData, ref PlayerGunInternalData playerGunInternalData, ref GunBaseData gunBase,in LocalToParent ltp,in Parent pa) =>
+               .ForEach((Entity ent, int nativeThreadIndex, ref PlayerGunData playerGunData, ref PlayerGunInternalData playerGunInternalData, ref GunBaseData gunBase, in LocalToParent ltp, in Parent pa) =>
                {
                    if (playerGunInternalData.hasinput == false)
                        return;
 
 
-                   playerGunInternalData.lastChangeDeltaTime += df;
-                   playerGunInternalData.lastShootDeltaTime += df;
-
-                   
-                    Quaternion qa= playerGunInternalData.rotation;
-                    //Debug.Log(qa.eulerAngles.x);
-                    quaternion q = quaternion.Euler(math.radians(qa.eulerAngles.x), 0, 0);
-                    string v = q.value.ToString();
-                    //Debug.Log(string.Format("{0}", v));
-                    SetComponent<Rotation>(ent,new Rotation { Value=q});
-                   
+                   //调整枪支y轴方向
+                   Quaternion qa = playerGunInternalData.rotation;
+                   //Debug.Log(qa.eulerAngles.x);
+                   quaternion q = quaternion.Euler(math.radians(qa.eulerAngles.x), 0, 0);
+                   //Debug.Log(string.Format("{0}", v));
+                   //SetComponent<Rotation>(ent, new Rotation { Value = q });
+                   playerGunData.rotation.Value = q;
 
                    switch (playerGunData.gunstate)
                    {
                        case Gunstate.normal:
-                           if ((playerGunInternalData.changeGun && playerGunInternalData.lastChangeDeltaTime > playerGunData.changeGunGap) || playerGunInternalData.lastChangeDeltaTime < -1)
+                           if (playerGunInternalData.lastChangeTick==0
+                           ||(playerGunInternalData.changeGun && (SequenceHelpers.IsNewer(currentTick, playerGunInternalData.lastChangeTick + (uint)(playerGunData.changeGunGap * 60)))
+                           ))
                            {
                                playerGunData.gunstate = Gunstate.changegun;
-                               playerGunInternalData.lastChangeDeltaTime = 0;
                                playerGunData.gunTypeIndex = (playerGunData.gunTypeIndex + 1) % dynamicBuffer.Length;
                                gunBase = dynamicBuffer[playerGunData.gunTypeIndex].gunData.gunBaseData;
-                               if (HasComponent<GunRenderData>(ent))
-                               {
-                                   SetComponent<GunRenderData>(ent, dynamicBuffer[playerGunData.gunTypeIndex].gunData.gunRenderData);
-                               }
-
+                               //if (HasComponent<GunRenderData>(ent))
+                               //{
+                               //    SetComponent<GunRenderData>(ent, dynamicBuffer[playerGunData.gunTypeIndex].gunData.gunRenderData);
+                               //}
+                               playerGunInternalData.lastChangeTick = currentTick;
                                break;
                            }
+                          
 
-                           if ((playerGunInternalData.lastChangeDeltaTime > 0.5) && playerGunInternalData.shoot && playerGunInternalData.lastShootDeltaTime > gunBase.shootgap)
+                           if (playerGunInternalData.shoot && 
+                           (SequenceHelpers.IsNewer(currentTick, playerGunInternalData.lastShootTick + (uint)(gunBase.shootgap * 60)))
+                           )
                            {
-                               playerGunInternalData.lastShootDeltaTime = 0;
                                //添加枪支射击事件
                                if (m_ShootEventPrefab2 != Entity.Null)
                                {
-
                                    var e = commandBuffer.Instantiate(nativeThreadIndex, m_ShootEventPrefab2);
-                                   
-                                    var tran = GetComponent<Translation>(pa.Value);
-                                    var rotation2 = GetComponent<Rotation>(pa.Value);
+
+                                   var tran = GetComponent<Translation>(pa.Value);
+                                   var rotation2 = GetComponent<Rotation>(pa.Value);
 
                                    var parent_localtoworld = new RigidTransform(rotation2.Value, tran.Value);
-      
+
 
                                    var ltw2 = math.mul(parent_localtoworld, new RigidTransform(ltp.Value));
-                           
+
                                    commandBuffer.SetComponent(nativeThreadIndex, e,
-                                     new ShootEventData { gunBaseData = gunBase, owner = GetComponent<GhostOwnerComponent>(pa.Value).NetworkId,
-                                         translation=new Translation { Value=ltw2.pos}
+                                     new ShootEventData
+                                     {
+                                         gunBaseData = gunBase,
+                                         owner = GetComponent<GhostOwnerComponent>(pa.Value).NetworkId,
+                                         translation = new Translation { Value = ltw2.pos }
                                      ,
-                                         rotation=new Rotation { Value= playerGunInternalData .rotation} });
-                                    
+                                         rotation =new Rotation { Value = playerGunInternalData.rotation }
+                                     });
+
                                    commandBuffer.SetComponent(nativeThreadIndex, e,
-                                     new GhostOwnerComponent { NetworkId =  GetComponent<GhostOwnerComponent>(pa.Value).NetworkId });
-                                   
+                                     new GhostOwnerComponent { NetworkId = GetComponent<GhostOwnerComponent>(pa.Value).NetworkId });
+
                                }
                                playerGunData.gunstate = Gunstate.shoot;
+                               playerGunInternalData.lastShootTick = currentTick;
                            }
                            break;
 
                        case Gunstate.changegun:
-                           if (playerGunInternalData.lastChangeDeltaTime > playerGunData.changeGunGap)
+                           if (SequenceHelpers.IsNewer(currentTick, playerGunInternalData.lastChangeTick + (uint)(playerGunData.changeGunGap * 60)))
                            {
                                playerGunData.gunstate = Gunstate.normal;
                            }
 
                            break;
                        case Gunstate.shoot:
-                           if (playerGunInternalData.lastShootDeltaTime > gunBase.shootgap)
+                           if (SequenceHelpers.IsNewer(currentTick, playerGunInternalData.lastShootTick + (uint)(gunBase.shootgap * 60)))
                            {
                                playerGunData.gunstate = Gunstate.normal;
                            }
