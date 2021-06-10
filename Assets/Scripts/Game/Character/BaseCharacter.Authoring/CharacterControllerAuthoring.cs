@@ -243,6 +243,8 @@ public class CharacterControllerSystem : SystemBase
 
         public unsafe void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
         {
+
+            
             var chunkCCData = chunk.GetNativeArray(CharacterControllerComponentType);
             var chunkCCInternalData = chunk.GetNativeArray(CharacterControllerInternalType);
             var chunkPhysicsColliderData = chunk.GetNativeArray(PhysicsColliderType);

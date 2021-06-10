@@ -45,6 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shootgap: 0.2
   guntypeindex: 0
+  ballisticVelocity: 10
   gunmodel: {fileID: 5570103109823262995, guid: b2be5391c87bb9e4083aa4abbb729ae3, type: 3}
   muzzleprefab: {fileID: 6060935667144873308, guid: 633222868c31065429be4f5819739dee, type: 3}
   projectile: {fileID: 4802121431705735547, guid: 40b774e09c9f9af4ea767bcb57eb5532, type: 3}

@@ -34,6 +34,7 @@ namespace FPSdemo
         {
             public float shootgap;
             public int gunTypeIndex;
+            public float ballisticVelocity;
         }
 
         [GhostComponent(PrefabType = GhostPrefabType.Client)]
@@ -70,13 +71,13 @@ namespace FPSdemo
             [GhostField]
             public bool shoot;
 
-            //[GhostField]
+            [GhostField]
             public uint lastChangeTick;
             //[GhostField]
             public uint lastShootTick;
 
             public quaternion rotation;
-            public bool
+            //public bool
             public bool hasinput;
         }
 
@@ -218,7 +219,8 @@ namespace FPSdemo
                 var m_ShootEventPrefab2 = m_ShootEventPrefab;
                 var commandBuffer = m_Barrier.CreateCommandBuffer().AsParallelWriter();
 
-
+                //string server = World.Name;
+                //Debug.Log(server);
                 //查看是否换了武器 换了就把prefab的GunBaseData复制过去
                 Entities
                .WithName("SwitchPlayerGunJobClientJob")
@@ -260,6 +262,7 @@ namespace FPSdemo
                            (SequenceHelpers.IsNewer(currentTick, playerGunInternalData.lastShootTick + (uint)(gunBase.shootgap * 60)))
                            )
                            {
+                               //Debug.Log(string.Format("ct={0},lt={1}", currentTick, playerGunInternalData.lastShootTick));
                                //添加枪支射击事件
                                if (m_ShootEventPrefab2 != Entity.Null)
                                {

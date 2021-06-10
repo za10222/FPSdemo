@@ -23,7 +23,7 @@ namespace Assembly_CSharp.Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 9483470797991052107,
+                    GhostFieldsHash = 12729377446025882068,
                     ExcludeFromComponentCollectionHash = 0,
                     ComponentType = ComponentType.ReadWrite<FPSdemo.GunManager.ShootEventData>(),
                     ComponentSize = UnsafeUtility.SizeOf<FPSdemo.GunManager.ShootEventData>(),
@@ -63,6 +63,7 @@ namespace Assembly_CSharp.Generated
         {
             public float gunBaseData_shootgap;
             public int gunBaseData_gunTypeIndex;
+            public float gunBaseData_ballisticVelocity;
             public int owner;
             public int translation_Value_x;
             public int translation_Value_y;
@@ -72,7 +73,7 @@ namespace Assembly_CSharp.Generated
             public int rotation_ValueZ;
             public int rotation_ValueW;
         }
-        public const int ChangeMaskBits = 5;
+        public const int ChangeMaskBits = 6;
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CopyToFromSnapshotDelegate))]
         private static void CopyToSnapshot(IntPtr stateData, IntPtr snapshotData, int snapshotOffset, int snapshotStride, IntPtr componentData, int componentStride, int count)
@@ -84,6 +85,7 @@ namespace Assembly_CSharp.Generated
                 ref var serializerState = ref GhostComponentSerializer.TypeCast<GhostSerializerState>(stateData, 0);
                 snapshot.gunBaseData_shootgap = component.gunBaseData.shootgap;
                 snapshot.gunBaseData_gunTypeIndex = (int) component.gunBaseData.gunTypeIndex;
+                snapshot.gunBaseData_ballisticVelocity = component.gunBaseData.ballisticVelocity;
                 snapshot.owner = (int) component.owner;
                 snapshot.translation_Value_x = (int) math.round(component.translation.Value.x * 100);
                 snapshot.translation_Value_y = (int) math.round(component.translation.Value.y * 100);
@@ -119,6 +121,7 @@ namespace Assembly_CSharp.Generated
                 ref var component = ref GhostComponentSerializer.TypeCast<FPSdemo.GunManager.ShootEventData>(componentData, componentStride*i);
                 component.gunBaseData.shootgap = snapshotBefore.gunBaseData_shootgap;
                 component.gunBaseData.gunTypeIndex = (int) snapshotBefore.gunBaseData_gunTypeIndex;
+                component.gunBaseData.ballisticVelocity = snapshotBefore.gunBaseData_ballisticVelocity;
                 component.owner = (int) snapshotBefore.owner;
                 snapshotInterpolationFactor = snapshotInterpolationFactorRaw;
                 var translation_Value_Before = new float3(snapshotBefore.translation_Value_x * 0.01f, snapshotBefore.translation_Value_y * 0.01f, snapshotBefore.translation_Value_z * 0.01f);
@@ -142,6 +145,7 @@ namespace Assembly_CSharp.Generated
             ref var backup = ref GhostComponentSerializer.TypeCast<FPSdemo.GunManager.ShootEventData>(backupData, 0);
             component.gunBaseData.shootgap = backup.gunBaseData.shootgap;
             component.gunBaseData.gunTypeIndex = backup.gunBaseData.gunTypeIndex;
+            component.gunBaseData.ballisticVelocity = backup.gunBaseData.ballisticVelocity;
             component.owner = backup.owner;
             component.translation.Value.x = backup.translation.Value.x;
             component.translation.Value.y = backup.translation.Value.y;
@@ -175,15 +179,16 @@ namespace Assembly_CSharp.Generated
             uint changeMask;
             changeMask = (snapshot.gunBaseData_shootgap != baseline.gunBaseData_shootgap) ? 1u : 0;
             changeMask |= (snapshot.gunBaseData_gunTypeIndex != baseline.gunBaseData_gunTypeIndex) ? (1u<<1) : 0;
-            changeMask |= (snapshot.owner != baseline.owner) ? (1u<<2) : 0;
-            changeMask |= (snapshot.translation_Value_x != baseline.translation_Value_x) ? (1u<<3) : 0;
-            changeMask |= (snapshot.translation_Value_y != baseline.translation_Value_y) ? (1u<<3) : 0;
-            changeMask |= (snapshot.translation_Value_z != baseline.translation_Value_z) ? (1u<<3) : 0;
+            changeMask |= (snapshot.gunBaseData_ballisticVelocity != baseline.gunBaseData_ballisticVelocity) ? (1u<<2) : 0;
+            changeMask |= (snapshot.owner != baseline.owner) ? (1u<<3) : 0;
+            changeMask |= (snapshot.translation_Value_x != baseline.translation_Value_x) ? (1u<<4) : 0;
+            changeMask |= (snapshot.translation_Value_y != baseline.translation_Value_y) ? (1u<<4) : 0;
+            changeMask |= (snapshot.translation_Value_z != baseline.translation_Value_z) ? (1u<<4) : 0;
             changeMask |= (snapshot.rotation_ValueX != baseline.rotation_ValueX ||
                         snapshot.rotation_ValueY != baseline.rotation_ValueY ||
                         snapshot.rotation_ValueZ != baseline.rotation_ValueZ ||
-                        snapshot.rotation_ValueW != baseline.rotation_ValueW) ? (1u<<4) : 0;
-            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 5);
+                        snapshot.rotation_ValueW != baseline.rotation_ValueW) ? (1u<<5) : 0;
+            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 6);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.SerializeDelegate))]
@@ -197,14 +202,16 @@ namespace Assembly_CSharp.Generated
             if ((changeMask & (1 << 1)) != 0)
                 writer.WritePackedIntDelta(snapshot.gunBaseData_gunTypeIndex, baseline.gunBaseData_gunTypeIndex, compressionModel);
             if ((changeMask & (1 << 2)) != 0)
+                writer.WritePackedFloatDelta(snapshot.gunBaseData_ballisticVelocity, baseline.gunBaseData_ballisticVelocity, compressionModel);
+            if ((changeMask & (1 << 3)) != 0)
                 writer.WritePackedIntDelta(snapshot.owner, baseline.owner, compressionModel);
-            if ((changeMask & (1 << 3)) != 0)
-                writer.WritePackedIntDelta(snapshot.translation_Value_x, baseline.translation_Value_x, compressionModel);
-            if ((changeMask & (1 << 3)) != 0)
-                writer.WritePackedIntDelta(snapshot.translation_Value_y, baseline.translation_Value_y, compressionModel);
-            if ((changeMask & (1 << 3)) != 0)
-                writer.WritePackedIntDelta(snapshot.translation_Value_z, baseline.translation_Value_z, compressionModel);
             if ((changeMask & (1 << 4)) != 0)
+                writer.WritePackedIntDelta(snapshot.translation_Value_x, baseline.translation_Value_x, compressionModel);
+            if ((changeMask & (1 << 4)) != 0)
+                writer.WritePackedIntDelta(snapshot.translation_Value_y, baseline.translation_Value_y, compressionModel);
+            if ((changeMask & (1 << 4)) != 0)
+                writer.WritePackedIntDelta(snapshot.translation_Value_z, baseline.translation_Value_z, compressionModel);
+            if ((changeMask & (1 << 5)) != 0)
             {
                 writer.WritePackedIntDelta(snapshot.rotation_ValueX, baseline.rotation_ValueX, compressionModel);
                 writer.WritePackedIntDelta(snapshot.rotation_ValueY, baseline.rotation_ValueY, compressionModel);
@@ -228,22 +235,26 @@ namespace Assembly_CSharp.Generated
             else
                 snapshot.gunBaseData_gunTypeIndex = baseline.gunBaseData_gunTypeIndex;
             if ((changeMask & (1 << 2)) != 0)
+                snapshot.gunBaseData_ballisticVelocity = reader.ReadPackedFloatDelta(baseline.gunBaseData_ballisticVelocity, compressionModel);
+            else
+                snapshot.gunBaseData_ballisticVelocity = baseline.gunBaseData_ballisticVelocity;
+            if ((changeMask & (1 << 3)) != 0)
                 snapshot.owner = reader.ReadPackedIntDelta(baseline.owner, compressionModel);
             else
                 snapshot.owner = baseline.owner;
-            if ((changeMask & (1 << 3)) != 0)
+            if ((changeMask & (1 << 4)) != 0)
                 snapshot.translation_Value_x = reader.ReadPackedIntDelta(baseline.translation_Value_x, compressionModel);
             else
                 snapshot.translation_Value_x = baseline.translation_Value_x;
-            if ((changeMask & (1 << 3)) != 0)
+            if ((changeMask & (1 << 4)) != 0)
                 snapshot.translation_Value_y = reader.ReadPackedIntDelta(baseline.translation_Value_y, compressionModel);
             else
                 snapshot.translation_Value_y = baseline.translation_Value_y;
-            if ((changeMask & (1 << 3)) != 0)
+            if ((changeMask & (1 << 4)) != 0)
                 snapshot.translation_Value_z = reader.ReadPackedIntDelta(baseline.translation_Value_z, compressionModel);
             else
                 snapshot.translation_Value_z = baseline.translation_Value_z;
-            if ((changeMask & (1 << 4)) != 0)
+            if ((changeMask & (1 << 5)) != 0)
             {
                 snapshot.rotation_ValueX = reader.ReadPackedIntDelta(baseline.rotation_ValueX, compressionModel);
                 snapshot.rotation_ValueY = reader.ReadPackedIntDelta(baseline.rotation_ValueY, compressionModel);
@@ -270,6 +281,8 @@ namespace Assembly_CSharp.Generated
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.gunBaseData.gunTypeIndex - backup.gunBaseData.gunTypeIndex));
             ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.gunBaseData.ballisticVelocity - backup.gunBaseData.ballisticVelocity));
+            ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.owner - backup.owner));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.translation.Value, backup.translation.Value));
@@ -287,6 +300,10 @@ namespace Assembly_CSharp.Generated
             if (nameCount != 0)
                 names.Append(new FixedString32(","));
             names.Append(new FixedString64("gunBaseData.gunTypeIndex"));
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32(","));
+            names.Append(new FixedString64("gunBaseData.ballisticVelocity"));
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32(","));

@@ -22,6 +22,8 @@ namespace FPSdemo
 
         public int guntypeindex=0;
 
+        public float ballisticVelocity=1;
+
         public GameObject gunmodel;
 
         public GameObject muzzleprefab;
@@ -39,9 +41,10 @@ namespace FPSdemo
         {
             dstManager.AddComponent<GunManager.GunBaseData>(entity);
             dstManager.SetComponentData<GunManager.GunBaseData>(entity, new GunManager.GunBaseData
-            { 
-                shootgap= shootgap,
-                gunTypeIndex= guntypeindex,
+            {
+                shootgap = shootgap,
+                gunTypeIndex = guntypeindex,
+                ballisticVelocity = ballisticVelocity
             });
             GunManager.GunRenderData gunRenderData = default(GunManager.GunRenderData);
             gunRenderData.GunModelEntity = conversionSystem.GetPrimaryEntity(gunmodel);

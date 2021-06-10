@@ -23,7 +23,7 @@ namespace Assembly_CSharp.Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 2596386635959590070,
+                    GhostFieldsHash = 11266163746584454747,
                     ExcludeFromComponentCollectionHash = 0,
                     ComponentType = ComponentType.ReadWrite<FPSdemo.GunManager.PlayerGunInternalData>(),
                     ComponentSize = UnsafeUtility.SizeOf<FPSdemo.GunManager.PlayerGunInternalData>(),
@@ -63,8 +63,9 @@ namespace Assembly_CSharp.Generated
         {
             public uint changeGun;
             public uint shoot;
+            public uint lastChangeTick;
         }
-        public const int ChangeMaskBits = 2;
+        public const int ChangeMaskBits = 3;
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CopyToFromSnapshotDelegate))]
         private static void CopyToSnapshot(IntPtr stateData, IntPtr snapshotData, int snapshotOffset, int snapshotStride, IntPtr componentData, int componentStride, int count)
@@ -76,6 +77,7 @@ namespace Assembly_CSharp.Generated
                 ref var serializerState = ref GhostComponentSerializer.TypeCast<GhostSerializerState>(stateData, 0);
                 snapshot.changeGun = component.changeGun?1u:0;
                 snapshot.shoot = component.shoot?1u:0;
+                snapshot.lastChangeTick = (uint)component.lastChangeTick;
             }
         }
         [BurstCompile]
@@ -103,6 +105,7 @@ namespace Assembly_CSharp.Generated
                 ref var component = ref GhostComponentSerializer.TypeCast<FPSdemo.GunManager.PlayerGunInternalData>(componentData, componentStride*i);
                 component.changeGun = snapshotBefore.changeGun != 0;
                 component.shoot = snapshotBefore.shoot != 0;
+                component.lastChangeTick = (uint) snapshotBefore.lastChangeTick;
 
             }
         }
@@ -116,6 +119,7 @@ namespace Assembly_CSharp.Generated
             ref var backup = ref GhostComponentSerializer.TypeCast<FPSdemo.GunManager.PlayerGunInternalData>(backupData, 0);
             component.changeGun = backup.changeGun;
             component.shoot = backup.shoot;
+            component.lastChangeTick = backup.lastChangeTick;
         }
 
         [BurstCompile]
@@ -127,6 +131,7 @@ namespace Assembly_CSharp.Generated
             ref var baseline2 = ref GhostComponentSerializer.TypeCast<Snapshot>(baseline2Data);
             snapshot.changeGun = (uint)predictor.PredictInt((int)snapshot.changeGun, (int)baseline1.changeGun, (int)baseline2.changeGun);
             snapshot.shoot = (uint)predictor.PredictInt((int)snapshot.shoot, (int)baseline1.shoot, (int)baseline2.shoot);
+            snapshot.lastChangeTick = (uint)predictor.PredictInt((int)snapshot.lastChangeTick, (int)baseline1.lastChangeTick, (int)baseline2.lastChangeTick);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CalculateChangeMaskDelegate))]
@@ -137,7 +142,8 @@ namespace Assembly_CSharp.Generated
             uint changeMask;
             changeMask = (snapshot.changeGun != baseline.changeGun) ? 1u : 0;
             changeMask |= (snapshot.shoot != baseline.shoot) ? (1u<<1) : 0;
-            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 2);
+            changeMask |= (snapshot.lastChangeTick != baseline.lastChangeTick) ? (1u<<2) : 0;
+            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 3);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.SerializeDelegate))]
@@ -150,6 +156,8 @@ namespace Assembly_CSharp.Generated
                 writer.WritePackedUIntDelta(snapshot.changeGun, baseline.changeGun, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
                 writer.WritePackedUIntDelta(snapshot.shoot, baseline.shoot, compressionModel);
+            if ((changeMask & (1 << 2)) != 0)
+                writer.WritePackedUIntDelta(snapshot.lastChangeTick, baseline.lastChangeTick, compressionModel);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.DeserializeDelegate))]
@@ -166,6 +174,10 @@ namespace Assembly_CSharp.Generated
                 snapshot.shoot = reader.ReadPackedUIntDelta(baseline.shoot, compressionModel);
             else
                 snapshot.shoot = baseline.shoot;
+            if ((changeMask & (1 << 2)) != 0)
+                snapshot.lastChangeTick = reader.ReadPackedUIntDelta(baseline.lastChangeTick, compressionModel);
+            else
+                snapshot.lastChangeTick = baseline.lastChangeTick;
         }
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
         [BurstCompile]
@@ -179,6 +191,11 @@ namespace Assembly_CSharp.Generated
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], (component.shoot != backup.shoot) ? 1 : 0);
             ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex],
+                (component.lastChangeTick > backup.lastChangeTick) ?
+                (component.lastChangeTick - backup.lastChangeTick) :
+                (backup.lastChangeTick - component.lastChangeTick));
+            ++errorIndex;
         }
         private static int GetPredictionErrorNames(ref FixedString512 names)
         {
@@ -190,6 +207,10 @@ namespace Assembly_CSharp.Generated
             if (nameCount != 0)
                 names.Append(new FixedString32(","));
             names.Append(new FixedString64("shoot"));
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32(","));
+            names.Append(new FixedString64("lastChangeTick"));
             ++nameCount;
             return nameCount;
         }
