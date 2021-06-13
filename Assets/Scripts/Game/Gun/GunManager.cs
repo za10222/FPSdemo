@@ -44,6 +44,7 @@ namespace FPSdemo
             public Entity GunModelEntity;
             public Entity MuzzleEntity;
             public Entity ProjectileEntity;
+            public Entity VFXEntity;
         }
 
         //角色拥有的武器数据 当前存储武器类型 基础武器参数 参数增强
@@ -101,6 +102,12 @@ namespace FPSdemo
 
             [GhostField]
             public float lifetime;
+
+            [GhostField]
+            public float3 hitPosition;
+
+            [GhostField]
+            public float3 hitSurfaceNormal;
         }
 
         //这个被客户端实例化，但没有初始化 
@@ -110,7 +117,10 @@ namespace FPSdemo
             public bool isRender;
             //用来存储和判断特效是否生成
             public Entity ProjectilePrefab;
-            public float ProjectilePrefabLifetime;
+            public float ProjectileLifetime;
+
+            public Entity VFXPrefab;
+            public float VFXLifetime;
         }
 
         //[UpdateInWorld(UpdateInWorld.TargetWorld.Client)]

@@ -30,7 +30,7 @@ namespace FPSdemo
 
         public GameObject projectile;
 
-
+        public GameObject VFX;
 
         public void Start()
         {
@@ -53,6 +53,10 @@ namespace FPSdemo
             {
                 gunRenderData.ProjectileEntity = conversionSystem.GetPrimaryEntity(projectile);
             }
+            if (VFX != null)
+            {
+                gunRenderData.VFXEntity = conversionSystem.GetPrimaryEntity(VFX);
+            }
 
             dstManager.AddComponentData<GunManager.GunRenderData>(entity, gunRenderData);
 
@@ -63,7 +67,8 @@ namespace FPSdemo
             referencedPrefabs.Add(muzzleprefab);
             if(projectile!=null)
                 referencedPrefabs.Add(projectile);
-
+            if (VFX != null)
+                referencedPrefabs.Add(VFX);
         }
 
     }

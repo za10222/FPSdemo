@@ -23,7 +23,7 @@ namespace Assembly_CSharp.Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 280064394533317418,
+                    GhostFieldsHash = 18232630879375312428,
                     ExcludeFromComponentCollectionHash = 0,
                     ComponentType = ComponentType.ReadWrite<FPSdemo.GunManager.ShootEventData>(),
                     ComponentSize = UnsafeUtility.SizeOf<FPSdemo.GunManager.ShootEventData>(),
@@ -74,8 +74,14 @@ namespace Assembly_CSharp.Generated
             public int rotation_ValueW;
             public uint ishandle;
             public float lifetime;
+            public float hitPosition_x;
+            public float hitPosition_y;
+            public float hitPosition_z;
+            public float hitSurfaceNormal_x;
+            public float hitSurfaceNormal_y;
+            public float hitSurfaceNormal_z;
         }
-        public const int ChangeMaskBits = 8;
+        public const int ChangeMaskBits = 10;
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CopyToFromSnapshotDelegate))]
         private static void CopyToSnapshot(IntPtr stateData, IntPtr snapshotData, int snapshotOffset, int snapshotStride, IntPtr componentData, int componentStride, int count)
@@ -98,6 +104,12 @@ namespace Assembly_CSharp.Generated
                 snapshot.rotation_ValueW = (int)math.round(component.rotation.Value.value.w * 1000);
                 snapshot.ishandle = component.ishandle?1u:0;
                 snapshot.lifetime = component.lifetime;
+                snapshot.hitPosition_x = component.hitPosition.x;
+                snapshot.hitPosition_y = component.hitPosition.y;
+                snapshot.hitPosition_z = component.hitPosition.z;
+                snapshot.hitSurfaceNormal_x = component.hitSurfaceNormal.x;
+                snapshot.hitSurfaceNormal_y = component.hitSurfaceNormal.y;
+                snapshot.hitSurfaceNormal_z = component.hitSurfaceNormal.z;
             }
         }
         [BurstCompile]
@@ -138,6 +150,8 @@ namespace Assembly_CSharp.Generated
                     rotation_Value_After, snapshotInterpolationFactor);
                 component.ishandle = snapshotBefore.ishandle != 0;
                 component.lifetime = snapshotBefore.lifetime;
+                component.hitPosition = new float3(snapshotBefore.hitPosition_x, snapshotBefore.hitPosition_y, snapshotBefore.hitPosition_z);
+                component.hitSurfaceNormal = new float3(snapshotBefore.hitSurfaceNormal_x, snapshotBefore.hitSurfaceNormal_y, snapshotBefore.hitSurfaceNormal_z);
 
             }
         }
@@ -159,6 +173,12 @@ namespace Assembly_CSharp.Generated
             component.rotation.Value = backup.rotation.Value;
             component.ishandle = backup.ishandle;
             component.lifetime = backup.lifetime;
+            component.hitPosition.x = backup.hitPosition.x;
+            component.hitPosition.y = backup.hitPosition.y;
+            component.hitPosition.z = backup.hitPosition.z;
+            component.hitSurfaceNormal.x = backup.hitSurfaceNormal.x;
+            component.hitSurfaceNormal.y = backup.hitSurfaceNormal.y;
+            component.hitSurfaceNormal.z = backup.hitSurfaceNormal.z;
         }
 
         [BurstCompile]
@@ -199,7 +219,13 @@ namespace Assembly_CSharp.Generated
                         snapshot.rotation_ValueW != baseline.rotation_ValueW) ? (1u<<5) : 0;
             changeMask |= (snapshot.ishandle != baseline.ishandle) ? (1u<<6) : 0;
             changeMask |= (snapshot.lifetime != baseline.lifetime) ? (1u<<7) : 0;
-            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 8);
+            changeMask |= (snapshot.hitPosition_x != baseline.hitPosition_x) ? (1u<<8) : 0;
+            changeMask |= (snapshot.hitPosition_y != baseline.hitPosition_y) ? (1u<<8) : 0;
+            changeMask |= (snapshot.hitPosition_z != baseline.hitPosition_z) ? (1u<<8) : 0;
+            changeMask |= (snapshot.hitSurfaceNormal_x != baseline.hitSurfaceNormal_x) ? (1u<<9) : 0;
+            changeMask |= (snapshot.hitSurfaceNormal_y != baseline.hitSurfaceNormal_y) ? (1u<<9) : 0;
+            changeMask |= (snapshot.hitSurfaceNormal_z != baseline.hitSurfaceNormal_z) ? (1u<<9) : 0;
+            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 10);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.SerializeDelegate))]
@@ -233,6 +259,18 @@ namespace Assembly_CSharp.Generated
                 writer.WritePackedUIntDelta(snapshot.ishandle, baseline.ishandle, compressionModel);
             if ((changeMask & (1 << 7)) != 0)
                 writer.WritePackedFloatDelta(snapshot.lifetime, baseline.lifetime, compressionModel);
+            if ((changeMask & (1 << 8)) != 0)
+                writer.WritePackedFloatDelta(snapshot.hitPosition_x, baseline.hitPosition_x, compressionModel);
+            if ((changeMask & (1 << 8)) != 0)
+                writer.WritePackedFloatDelta(snapshot.hitPosition_y, baseline.hitPosition_y, compressionModel);
+            if ((changeMask & (1 << 8)) != 0)
+                writer.WritePackedFloatDelta(snapshot.hitPosition_z, baseline.hitPosition_z, compressionModel);
+            if ((changeMask & (1 << 9)) != 0)
+                writer.WritePackedFloatDelta(snapshot.hitSurfaceNormal_x, baseline.hitSurfaceNormal_x, compressionModel);
+            if ((changeMask & (1 << 9)) != 0)
+                writer.WritePackedFloatDelta(snapshot.hitSurfaceNormal_y, baseline.hitSurfaceNormal_y, compressionModel);
+            if ((changeMask & (1 << 9)) != 0)
+                writer.WritePackedFloatDelta(snapshot.hitSurfaceNormal_z, baseline.hitSurfaceNormal_z, compressionModel);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.DeserializeDelegate))]
@@ -291,6 +329,30 @@ namespace Assembly_CSharp.Generated
                 snapshot.lifetime = reader.ReadPackedFloatDelta(baseline.lifetime, compressionModel);
             else
                 snapshot.lifetime = baseline.lifetime;
+            if ((changeMask & (1 << 8)) != 0)
+                snapshot.hitPosition_x = reader.ReadPackedFloatDelta(baseline.hitPosition_x, compressionModel);
+            else
+                snapshot.hitPosition_x = baseline.hitPosition_x;
+            if ((changeMask & (1 << 8)) != 0)
+                snapshot.hitPosition_y = reader.ReadPackedFloatDelta(baseline.hitPosition_y, compressionModel);
+            else
+                snapshot.hitPosition_y = baseline.hitPosition_y;
+            if ((changeMask & (1 << 8)) != 0)
+                snapshot.hitPosition_z = reader.ReadPackedFloatDelta(baseline.hitPosition_z, compressionModel);
+            else
+                snapshot.hitPosition_z = baseline.hitPosition_z;
+            if ((changeMask & (1 << 9)) != 0)
+                snapshot.hitSurfaceNormal_x = reader.ReadPackedFloatDelta(baseline.hitSurfaceNormal_x, compressionModel);
+            else
+                snapshot.hitSurfaceNormal_x = baseline.hitSurfaceNormal_x;
+            if ((changeMask & (1 << 9)) != 0)
+                snapshot.hitSurfaceNormal_y = reader.ReadPackedFloatDelta(baseline.hitSurfaceNormal_y, compressionModel);
+            else
+                snapshot.hitSurfaceNormal_y = baseline.hitSurfaceNormal_y;
+            if ((changeMask & (1 << 9)) != 0)
+                snapshot.hitSurfaceNormal_z = reader.ReadPackedFloatDelta(baseline.hitSurfaceNormal_z, compressionModel);
+            else
+                snapshot.hitSurfaceNormal_z = baseline.hitSurfaceNormal_z;
         }
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
         [BurstCompile]
@@ -315,6 +377,10 @@ namespace Assembly_CSharp.Generated
             errors[errorIndex] = math.max(errors[errorIndex], (component.ishandle != backup.ishandle) ? 1 : 0);
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.lifetime - backup.lifetime));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.hitPosition, backup.hitPosition));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.hitSurfaceNormal, backup.hitSurfaceNormal));
             ++errorIndex;
         }
         private static int GetPredictionErrorNames(ref FixedString512 names)
@@ -351,6 +417,14 @@ namespace Assembly_CSharp.Generated
             if (nameCount != 0)
                 names.Append(new FixedString32(","));
             names.Append(new FixedString64("lifetime"));
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32(","));
+            names.Append(new FixedString64("hitPosition"));
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32(","));
+            names.Append(new FixedString64("hitSurfaceNormal"));
             ++nameCount;
             return nameCount;
         }

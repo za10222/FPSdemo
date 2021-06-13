@@ -8,9 +8,15 @@ using static FPSdemo.GunManager;
 
 namespace FPSdemo
 {
+    public struct VXFEntityTag : IComponentData
+    {
+    }
     //    //[DisableAutoCreation]
-
-        public struct RenderLifetime : IComponentData
+    public struct RenderLifeTime : IComponentData
+    {
+        public float lifetime;
+    }
+    public struct ProjectileLifetime : IComponentData
     {
         public float lifetime;
     }
@@ -19,6 +25,10 @@ namespace FPSdemo
     {
        public Translation startTranslation;
        public Rotation rotation;
+       public Entity VFXPrefab;
+       public float VFXLifeTime;
+       public float3 hitPosition;
+       public float3 hitSurfaceNormal;
     }
 
     [UpdateInGroup(typeof(ClientPresentationSystemGroup))]
@@ -48,7 +58,13 @@ namespace FPSdemo
                     if(shootRenderData.ProjectilePrefab==Entity.Null)
                     {
                         var gunrenderdata = t[shootEventData.gunBaseData.gunTypeIndex].gunData.gunRenderData;
-                        shootRenderData = new ShootRenderData { ProjectilePrefab = gunrenderdata.ProjectileEntity, ProjectilePrefabLifetime = 3 };
+                        shootRenderData = new ShootRenderData { ProjectilePrefab = gunrenderdata.ProjectileEntity, ProjectileLifetime = 3 };
+                    }
+                    if (shootRenderData.VFXPrefab == Entity.Null)
+                    {
+                        var gunrenderdata = t[shootEventData.gunBaseData.gunTypeIndex].gunData.gunRenderData;
+                        shootRenderData.VFXPrefab = gunrenderdata.VFXEntity;
+                        shootRenderData.VFXLifetime = 0.2f;
                     }
                 }).ScheduleParallel();
         }
@@ -79,16 +95,28 @@ namespace FPSdemo
                     if (shootRenderData.ProjectilePrefab != Entity.Null&& shootRenderData.isRender==false&& shootEventData.ishandle)
                     {
                         var e = ecb.Instantiate(entityInQueryIndex, shootRenderData.ProjectilePrefab);
-                        if(shootEventData.lifetime<0)
-                            ecb.AddComponent(entityInQueryIndex, e, new RenderLifetime { lifetime = shootRenderData.ProjectilePrefabLifetime });
+
+                        if (shootEventData.lifetime < 0)
+                        {
+                           ecb.AddComponent(entityInQueryIndex, e, new ProjectileLifetime { lifetime = shootRenderData.ProjectileLifetime });
+                            //ecb.AddComponent(entityInQueryIndex, e, new Entity {  = shootRenderData.ProjectileLifetime });
+                        }
                         else
-                            ecb.AddComponent(entityInQueryIndex, e, new RenderLifetime { lifetime = shootEventData.lifetime });
+                        {
+                           ecb.AddComponent(entityInQueryIndex, e, new ProjectileLifetime { lifetime = shootEventData.lifetime });
+                           //ecb.AddComponent(entityInQueryIndex, e, new ProjectileLifetime { lifetime = shootRenderData.ProjectileLifetime });
+                        }
+
 
                         ecb.AddComponent(entityInQueryIndex, e, new ProjectileData
                         {
                             startTranslation = shootEventData.translation,
-                            rotation = shootEventData.rotation
-                        });
+                            rotation = shootEventData.rotation,
+                            VFXPrefab = shootRenderData.VFXPrefab,
+                            VFXLifeTime = shootRenderData.VFXLifetime,
+                            hitPosition = shootEventData.hitPosition,
+                            hitSurfaceNormal=shootEventData.hitSurfaceNormal
+                        }) ;
                         ecb.SetComponent<Rotation>(entityInQueryIndex, e, new Rotation
                         {
                             Value = shootEventData.rotation.Value
@@ -138,24 +166,69 @@ namespace FPSdemo
         {
             var df = Time.DeltaTime;
             var ecb = m_Barrier.CreateCommandBuffer().AsParallelWriter();
-            //Entities
-            //.WithName("CleanShootRenderJob")
-            //.WithAll<ShootRenderSpawnState>()
-            //.WithNone<ShootEventData>()
-            //.ForEach((Entity ent, int entityInQueryIndex, in ShootRenderSpawnState shootRenderSpawnState) =>
-            //{
-            //    ecb.DestroyEntity(entityInQueryIndex, shootRenderSpawnState.MuzzleEntity);
-            //    ecb.RemoveComponent<ShootRenderSpawnState>(entityInQueryIndex, ent);
-            //}).ScheduleParallel();
-
 
             Entities
             .WithName("ShootRenderLifetimeJob")
-            .ForEach((Entity ent, int entityInQueryIndex, ref RenderLifetime renderLifetime) =>
+            .ForEach((Entity ent, int entityInQueryIndex, ref ProjectileLifetime projectileLifetime, in ProjectileData projectileData) =>
             {
-                if (renderLifetime.lifetime > 0)
+                if (projectileLifetime.lifetime > 0)
+                {   
+                    projectileLifetime.lifetime -= df;
+                }
+                else
                 {
-                    renderLifetime.lifetime -= df;
+                    ecb.DestroyEntity(entityInQueryIndex, ent);
+                    var t=ecb.Instantiate(entityInQueryIndex, projectileData.VFXPrefab);
+                    ecb.AddComponent(entityInQueryIndex, t,new RenderLifeTime { lifetime = projectileData.VFXLifeTime });
+                    ecb.AddComponent(entityInQueryIndex, t, new VXFEntityTag { });
+
+                    ecb.SetComponent<Rotation>(entityInQueryIndex, t, new Rotation
+                    {
+                        Value = quaternion.Euler(projectileData.hitSurfaceNormal)
+                    });
+                    ecb.SetComponent<Translation>(entityInQueryIndex, t, new Translation
+                    {
+                        Value = projectileData.hitPosition
+                    });
+                }
+            }).ScheduleParallel();
+
+            m_Barrier.AddJobHandleForProducer(Dependency);
+
+
+            Entities
+            .WithName("VFXplayJob")
+            .WithoutBurst()
+            .ForEach((Entity ent,in VXFEntityTag vxfEntityTag) =>
+            {
+                var ps = EntityManager.GetComponentObject<ParticleSystem>(ent);
+                if(!ps.isPlaying)
+                    ps.Play();
+            }).Run();
+        }
+    }
+    [UpdateInGroup(typeof(ClientPresentationSystemGroup))]
+    //[UpdateAfter(typeof(UpdateShootRenderSystem))]
+    public class CleanRenderSystem : SystemBase
+    {
+        private BeginPresentationEntityCommandBufferSystem m_Barrier;
+
+        protected override void OnCreate()
+        {
+            m_Barrier = World.GetOrCreateSystem<BeginPresentationEntityCommandBufferSystem>();
+        }
+        protected override void OnUpdate()
+        {
+            var df = Time.DeltaTime;
+            var ecb = m_Barrier.CreateCommandBuffer().AsParallelWriter();
+
+            Entities
+            .WithName("RenderLifetimeJob")
+            .ForEach((Entity ent, int entityInQueryIndex,ref RenderLifeTime renderLifeTime) =>
+            {
+                if (renderLifeTime.lifetime > 0)
+                {
+                    renderLifeTime.lifetime -= df;
                 }
                 else
                 {

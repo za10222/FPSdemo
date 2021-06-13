@@ -44,17 +44,19 @@ namespace FPSdemo
                 var ishit=CommonUtilities.Raycast(gunPos,target,in collisionWorld, out hit);
                 if(ishit)
                 {
-                    Debug.Log("命中");
+                    //Debug.Log("命中");
                     var hitPointPos=hit.Position;
                     var dis=math.distance(hitPointPos, gunPos);
                     float time = math.mul(dis-1.3f, 1/shootEventData.gunBaseData.ballisticVelocity);
                     if (time < 0)
                         time = 0.1f;
                     shootEventData.lifetime = time;
-               
-                }else
+                    shootEventData.hitPosition = hitPointPos;
+                    shootEventData.hitSurfaceNormal = hit.SurfaceNormal;    //hit.SurfaceNormal
+                }
+                    else
                 {
-                    Debug.Log("没有");
+                    //Debug.Log("没有");
                     shootEventData.lifetime = -1;
                 }
                 shootEventData.ishandle = true;

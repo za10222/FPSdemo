@@ -49,3 +49,4 @@ MonoBehaviour:
   gunmodel: {fileID: 5570103109823262995, guid: b2be5391c87bb9e4083aa4abbb729ae3, type: 3}
   muzzleprefab: {fileID: 6060935667144873308, guid: 633222868c31065429be4f5819739dee, type: 3}
   projectile: {fileID: 4802121431705735547, guid: 40b774e09c9f9af4ea767bcb57eb5532, type: 3}
+  VFX: {fileID: 7655095426451682942, guid: b44155a491834754482508226b37b2d2, type: 3}
