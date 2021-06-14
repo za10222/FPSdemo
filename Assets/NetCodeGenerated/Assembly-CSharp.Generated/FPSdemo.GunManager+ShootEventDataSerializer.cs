@@ -23,7 +23,7 @@ namespace Assembly_CSharp.Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 18232630879375312428,
+                    GhostFieldsHash = 15333542285372593529,
                     ExcludeFromComponentCollectionHash = 0,
                     ComponentType = ComponentType.ReadWrite<FPSdemo.GunManager.ShootEventData>(),
                     ComponentSize = UnsafeUtility.SizeOf<FPSdemo.GunManager.ShootEventData>(),
@@ -80,8 +80,9 @@ namespace Assembly_CSharp.Generated
             public float hitSurfaceNormal_x;
             public float hitSurfaceNormal_y;
             public float hitSurfaceNormal_z;
+            public uint spawntick;
         }
-        public const int ChangeMaskBits = 10;
+        public const int ChangeMaskBits = 11;
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CopyToFromSnapshotDelegate))]
         private static void CopyToSnapshot(IntPtr stateData, IntPtr snapshotData, int snapshotOffset, int snapshotStride, IntPtr componentData, int componentStride, int count)
@@ -110,6 +111,7 @@ namespace Assembly_CSharp.Generated
                 snapshot.hitSurfaceNormal_x = component.hitSurfaceNormal.x;
                 snapshot.hitSurfaceNormal_y = component.hitSurfaceNormal.y;
                 snapshot.hitSurfaceNormal_z = component.hitSurfaceNormal.z;
+                snapshot.spawntick = (uint)component.spawntick;
             }
         }
         [BurstCompile]
@@ -152,6 +154,7 @@ namespace Assembly_CSharp.Generated
                 component.lifetime = snapshotBefore.lifetime;
                 component.hitPosition = new float3(snapshotBefore.hitPosition_x, snapshotBefore.hitPosition_y, snapshotBefore.hitPosition_z);
                 component.hitSurfaceNormal = new float3(snapshotBefore.hitSurfaceNormal_x, snapshotBefore.hitSurfaceNormal_y, snapshotBefore.hitSurfaceNormal_z);
+                component.spawntick = (uint) snapshotBefore.spawntick;
 
             }
         }
@@ -179,6 +182,7 @@ namespace Assembly_CSharp.Generated
             component.hitSurfaceNormal.x = backup.hitSurfaceNormal.x;
             component.hitSurfaceNormal.y = backup.hitSurfaceNormal.y;
             component.hitSurfaceNormal.z = backup.hitSurfaceNormal.z;
+            component.spawntick = backup.spawntick;
         }
 
         [BurstCompile]
@@ -198,6 +202,7 @@ namespace Assembly_CSharp.Generated
             snapshot.rotation_ValueZ = predictor.PredictInt(snapshot.rotation_ValueZ, baseline1.rotation_ValueZ, baseline2.rotation_ValueZ);
             snapshot.rotation_ValueW = predictor.PredictInt(snapshot.rotation_ValueW, baseline1.rotation_ValueW, baseline2.rotation_ValueW);
             snapshot.ishandle = (uint)predictor.PredictInt((int)snapshot.ishandle, (int)baseline1.ishandle, (int)baseline2.ishandle);
+            snapshot.spawntick = (uint)predictor.PredictInt((int)snapshot.spawntick, (int)baseline1.spawntick, (int)baseline2.spawntick);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CalculateChangeMaskDelegate))]
@@ -225,7 +230,8 @@ namespace Assembly_CSharp.Generated
             changeMask |= (snapshot.hitSurfaceNormal_x != baseline.hitSurfaceNormal_x) ? (1u<<9) : 0;
             changeMask |= (snapshot.hitSurfaceNormal_y != baseline.hitSurfaceNormal_y) ? (1u<<9) : 0;
             changeMask |= (snapshot.hitSurfaceNormal_z != baseline.hitSurfaceNormal_z) ? (1u<<9) : 0;
-            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 10);
+            changeMask |= (snapshot.spawntick != baseline.spawntick) ? (1u<<10) : 0;
+            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 11);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.SerializeDelegate))]
@@ -271,6 +277,8 @@ namespace Assembly_CSharp.Generated
                 writer.WritePackedFloatDelta(snapshot.hitSurfaceNormal_y, baseline.hitSurfaceNormal_y, compressionModel);
             if ((changeMask & (1 << 9)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitSurfaceNormal_z, baseline.hitSurfaceNormal_z, compressionModel);
+            if ((changeMask & (1 << 10)) != 0)
+                writer.WritePackedUIntDelta(snapshot.spawntick, baseline.spawntick, compressionModel);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.DeserializeDelegate))]
@@ -353,6 +361,10 @@ namespace Assembly_CSharp.Generated
                 snapshot.hitSurfaceNormal_z = reader.ReadPackedFloatDelta(baseline.hitSurfaceNormal_z, compressionModel);
             else
                 snapshot.hitSurfaceNormal_z = baseline.hitSurfaceNormal_z;
+            if ((changeMask & (1 << 10)) != 0)
+                snapshot.spawntick = reader.ReadPackedUIntDelta(baseline.spawntick, compressionModel);
+            else
+                snapshot.spawntick = baseline.spawntick;
         }
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
         [BurstCompile]
@@ -381,6 +393,11 @@ namespace Assembly_CSharp.Generated
             errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.hitPosition, backup.hitPosition));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.hitSurfaceNormal, backup.hitSurfaceNormal));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex],
+                (component.spawntick > backup.spawntick) ?
+                (component.spawntick - backup.spawntick) :
+                (backup.spawntick - component.spawntick));
             ++errorIndex;
         }
         private static int GetPredictionErrorNames(ref FixedString512 names)
@@ -425,6 +442,10 @@ namespace Assembly_CSharp.Generated
             if (nameCount != 0)
                 names.Append(new FixedString32(","));
             names.Append(new FixedString64("hitSurfaceNormal"));
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32(","));
+            names.Append(new FixedString64("spawntick"));
             ++nameCount;
             return nameCount;
         }

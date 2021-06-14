@@ -108,6 +108,9 @@ namespace FPSdemo
 
             [GhostField]
             public float3 hitSurfaceNormal;
+
+            [GhostField]
+            public uint spawntick;
         }
 
         //这个被客户端实例化，但没有初始化 
@@ -297,10 +300,10 @@ namespace FPSdemo
                                      {
                                          gunBaseData = gunBase,
                                          owner = GetComponent<GhostOwnerComponent>(pa.Value).NetworkId,
-                                         translation = new Translation { Value = ltw2.pos }
-                                     ,
-                                         rotation =new Rotation { Value = playerGunInternalData.rotation }
-                                     });
+                                         translation = new Translation { Value = ltw2.pos },
+                                         rotation = new Rotation { Value = playerGunInternalData.rotation },
+                                         spawntick = currentTick
+                                     }) ;
 
                                    commandBuffer.SetComponent(nativeThreadIndex, e,
                                      new GhostOwnerComponent { NetworkId = GetComponent<GhostOwnerComponent>(pa.Value).NetworkId });

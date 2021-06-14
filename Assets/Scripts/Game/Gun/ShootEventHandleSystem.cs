@@ -1,6 +1,7 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Networking.Transport.Utilities;
 using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
@@ -8,9 +9,10 @@ using static FPSdemo.GunManager;
 
 namespace FPSdemo
 {
- 
+
 
     //[DisableAutoCreation]
+    //[UpdateInWorld(UpdateInWorld.TargetWorld.Server)]
     [UpdateInGroup(typeof(GhostPredictionSystemGroup))]
     [UpdateAfter(typeof(PlayGunUserInputUpdateSystem))]
     public class ShootEventHandleSystem : SystemBase
@@ -70,5 +72,35 @@ namespace FPSdemo
      
     }
 
+    [UpdateInGroup(typeof(ServerSimulationSystemGroup))]
+    public class ShootEventCleanSystem : SystemBase
+    {
+        private EndSimulationEntityCommandBufferSystem m_barrier;
+        private ServerSimulationSystemGroup m_ServerSimulationSystemGroup;
+
+        protected override void OnCreate()
+        {
+            RequireSingletonForUpdate<GunDataBufferElement>();
+            m_barrier = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+            m_ServerSimulationSystemGroup = World.GetExistingSystem<ServerSimulationSystemGroup>();
+        }
+
+        protected override void OnUpdate()
+        {
+            var currentTick = m_ServerSimulationSystemGroup.ServerTick;
+            var commandBuffer = m_barrier.CreateCommandBuffer().AsParallelWriter();
+            Entities
+            .WithName("ShootEventCleanJob")
+            .WithAll<GunManager.ShootEventData>()
+            .ForEach((Entity ent, int entityInQueryIndex, ref GunManager.ShootEventData shootEventData) =>
+            {
+                if (shootEventData.ishandle == true && SequenceHelpers.IsNewer(currentTick, shootEventData.spawntick+30))
+                {
+                    commandBuffer.DestroyEntity(entityInQueryIndex,ent);
+                }
+            }).ScheduleParallel();
+            m_barrier.AddJobHandleForProducer(Dependency);
+        }
+    }
 
 }
