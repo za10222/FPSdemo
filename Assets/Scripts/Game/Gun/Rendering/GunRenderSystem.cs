@@ -155,7 +155,6 @@ namespace FPSdemo
                 RigidTransform localToWorld_parent = new RigidTransform(ltw.Value);
                 RigidTransform localtoparent = new RigidTransform(ltp.Value);
                 RigidTransform newltw = math.mul(localToWorld_parent, localtoparent);
-
                 SetComponent<Translation>(gunEntity.Muzzle, new Translation { Value = newltw.pos });
                 SetComponent<Rotation>(gunEntity.Muzzle, new Rotation { Value = newltw.rot });
 

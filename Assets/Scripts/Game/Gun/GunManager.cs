@@ -111,6 +111,9 @@ namespace FPSdemo
 
             [GhostField]
             public uint spawntick;
+
+            [GhostField]
+            public float3 muzzleTran;
         }
 
         //这个被客户端实例化，但没有初始化 
@@ -118,12 +121,16 @@ namespace FPSdemo
         public struct ShootRenderData : IComponentData
         {
             public bool isRender;
+     
+
             //用来存储和判断特效是否生成
             public Entity ProjectilePrefab;
             public float ProjectileLifetime;
 
             public Entity VFXPrefab;
             public float VFXLifetime;
+
+
         }
 
         //[UpdateInWorld(UpdateInWorld.TargetWorld.Client)]
@@ -176,6 +183,7 @@ namespace FPSdemo
         //[UpdateInWorld(UpdateInWorld.TargetWorld.Server)]
         [UpdateInGroup(typeof(GhostPredictionSystemGroup))]
         [UpdateAfter(typeof(PlayGunUserInputUpdateSystem))]
+        [UpdateAfter(typeof(CharacterControllerSystem))]
         public class HandlePlayerGunSystem : SystemBase
         {
 
@@ -238,6 +246,7 @@ namespace FPSdemo
                 var m_ShootEventPrefab2 = m_ShootEventPrefab;
                 var commandBuffer = m_Barrier.CreateCommandBuffer().AsParallelWriter();
 
+
                 //string server = World.Name;
                 //Debug.Log(server);
                 //查看是否换了武器 换了就把prefab的GunBaseData复制过去
@@ -285,24 +294,86 @@ namespace FPSdemo
                                //添加枪支射击事件
                                if (m_ShootEventPrefab2 != Entity.Null)
                                {
+                               
                                    var e = commandBuffer.Instantiate(nativeThreadIndex, m_ShootEventPrefab2);
 
-                                   var tran = GetComponent<Translation>(pa.Value);
-                                   var rotation2 = GetComponent<Rotation>(pa.Value);
+                                   RigidTransform headltw;
+                                   //获得head所在位置
+                                   {
 
-                                   var parent_localtoworld = new RigidTransform(rotation2.Value, tran.Value);
+                                        var childs = GetBuffer<Child>(pa.Value);
+                                        Entity find = Entity.Null;
+                                        for (int i = 0; i < childs.Length; i++)
+                                        {
+                                            find = childs[i].Value;
+                                            if (HasComponent<CharacterHead>(find))
+                                                break;
+                                        }
+                                        if (find == Entity.Null)
+                                        {
+                                            Debug.Log("head位置读取错误");
+                                            return;
+                                        }
+                                        var headTran = GetComponent<Translation>(find);
+                                        var headRota = GetComponent<Rotation>(find);
+                                        var headltp = new RigidTransform(headRota.Value, headTran.Value);
+
+                                       var tran = GetComponent<Translation>(pa.Value);
+                                       var rotation2 = GetComponent<Rotation>(pa.Value);
+                                       var parent_localtoworld = new RigidTransform(rotation2.Value, tran.Value);
+                                       headltw = math.mul(parent_localtoworld, headltp);
+                                   }
+                                   ////获得gunentity所在位置
+                                   //var tran = GetComponent<Translation>(pa.Value);
+                                   //var rotation2 = GetComponent<Rotation>(pa.Value);
+
+                                   //var parent_localtoworld = new RigidTransform(rotation2.Value, tran.Value);
 
 
-                                   var ltw2 = math.mul(parent_localtoworld, new RigidTransform(ltp.Value));
+                                   //var ltw2 = math.mul(parent_localtoworld, new RigidTransform(ltp.Value));
 
+
+                                   //获得muzzle所在位置，
+                                   RigidTransform muzzleltw;
+                                   {
+
+                                           var gunmodleentity = dynamicBuffer[playerGunData.gunTypeIndex].gunData.gunRenderData.GunModelEntity;
+                                           var childs = GetBuffer<LinkedEntityGroup>(gunmodleentity);
+
+                                           Entity find = Entity.Null;
+                                           for (int i = 0; i < childs.Length; i++)
+                                           {
+                                               find = childs[i].Value;
+                                               if (HasComponent<Muzzle>(find))
+                                                   break;
+                                           }
+                                           if (find == Entity.Null)
+                                           {
+                                               Debug.Log("枪支模型muzzle读取错误");
+                                               return;
+                                           }
+                                           var muzzleTran = GetComponent<Translation>(find);
+                                           var muzzleRota = GetComponent<Rotation>(find);
+                                           var muzzleltp = new RigidTransform(muzzleRota.Value, muzzleTran.Value);
+
+
+                                       var tran = GetComponent<Translation>(pa.Value);
+                                       var rotation2 = GetComponent<Rotation>(pa.Value);
+                                       var fpcltw = new RigidTransform(rotation2.Value, tran.Value);
+
+                                       var temp = math.mul(new RigidTransform(ltp.Value), muzzleltp);
+                                       muzzleltw = math.mul(fpcltw, temp);
+                                   }
                                    commandBuffer.SetComponent(nativeThreadIndex, e,
                                      new ShootEventData
                                      {
                                          gunBaseData = gunBase,
                                          owner = GetComponent<GhostOwnerComponent>(pa.Value).NetworkId,
-                                         translation = new Translation { Value = ltw2.pos },
+                                         //translation = new Translation { Value = ltw2.pos },
+                                         translation = new Translation { Value = headltw.pos },
                                          rotation = new Rotation { Value = playerGunInternalData.rotation },
-                                         spawntick = currentTick
+                                         spawntick = currentTick,
+                                         muzzleTran= muzzleltw.pos
                                      }) ;
 
                                    commandBuffer.SetComponent(nativeThreadIndex, e,

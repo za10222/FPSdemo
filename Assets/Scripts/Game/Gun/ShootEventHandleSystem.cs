@@ -44,6 +44,7 @@ namespace FPSdemo
                 float3 target = math.forward(shootEventData.rotation.Value)*50f+ gunPos;
                 Unity.Physics.RaycastHit hit= new Unity.Physics.RaycastHit();
                 var ishit=CommonUtilities.Raycast(gunPos,target,in collisionWorld, out hit);
+
                 if(ishit)
                 {
                     //Debug.Log("命中");

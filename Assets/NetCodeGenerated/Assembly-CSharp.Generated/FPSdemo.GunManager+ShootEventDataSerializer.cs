@@ -23,7 +23,7 @@ namespace Assembly_CSharp.Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 15333542285372593529,
+                    GhostFieldsHash = 8019295250163615304,
                     ExcludeFromComponentCollectionHash = 0,
                     ComponentType = ComponentType.ReadWrite<FPSdemo.GunManager.ShootEventData>(),
                     ComponentSize = UnsafeUtility.SizeOf<FPSdemo.GunManager.ShootEventData>(),
@@ -81,8 +81,11 @@ namespace Assembly_CSharp.Generated
             public float hitSurfaceNormal_y;
             public float hitSurfaceNormal_z;
             public uint spawntick;
+            public float muzzleTran_x;
+            public float muzzleTran_y;
+            public float muzzleTran_z;
         }
-        public const int ChangeMaskBits = 11;
+        public const int ChangeMaskBits = 12;
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CopyToFromSnapshotDelegate))]
         private static void CopyToSnapshot(IntPtr stateData, IntPtr snapshotData, int snapshotOffset, int snapshotStride, IntPtr componentData, int componentStride, int count)
@@ -112,6 +115,9 @@ namespace Assembly_CSharp.Generated
                 snapshot.hitSurfaceNormal_y = component.hitSurfaceNormal.y;
                 snapshot.hitSurfaceNormal_z = component.hitSurfaceNormal.z;
                 snapshot.spawntick = (uint)component.spawntick;
+                snapshot.muzzleTran_x = component.muzzleTran.x;
+                snapshot.muzzleTran_y = component.muzzleTran.y;
+                snapshot.muzzleTran_z = component.muzzleTran.z;
             }
         }
         [BurstCompile]
@@ -155,6 +161,7 @@ namespace Assembly_CSharp.Generated
                 component.hitPosition = new float3(snapshotBefore.hitPosition_x, snapshotBefore.hitPosition_y, snapshotBefore.hitPosition_z);
                 component.hitSurfaceNormal = new float3(snapshotBefore.hitSurfaceNormal_x, snapshotBefore.hitSurfaceNormal_y, snapshotBefore.hitSurfaceNormal_z);
                 component.spawntick = (uint) snapshotBefore.spawntick;
+                component.muzzleTran = new float3(snapshotBefore.muzzleTran_x, snapshotBefore.muzzleTran_y, snapshotBefore.muzzleTran_z);
 
             }
         }
@@ -183,6 +190,9 @@ namespace Assembly_CSharp.Generated
             component.hitSurfaceNormal.y = backup.hitSurfaceNormal.y;
             component.hitSurfaceNormal.z = backup.hitSurfaceNormal.z;
             component.spawntick = backup.spawntick;
+            component.muzzleTran.x = backup.muzzleTran.x;
+            component.muzzleTran.y = backup.muzzleTran.y;
+            component.muzzleTran.z = backup.muzzleTran.z;
         }
 
         [BurstCompile]
@@ -231,7 +241,10 @@ namespace Assembly_CSharp.Generated
             changeMask |= (snapshot.hitSurfaceNormal_y != baseline.hitSurfaceNormal_y) ? (1u<<9) : 0;
             changeMask |= (snapshot.hitSurfaceNormal_z != baseline.hitSurfaceNormal_z) ? (1u<<9) : 0;
             changeMask |= (snapshot.spawntick != baseline.spawntick) ? (1u<<10) : 0;
-            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 11);
+            changeMask |= (snapshot.muzzleTran_x != baseline.muzzleTran_x) ? (1u<<11) : 0;
+            changeMask |= (snapshot.muzzleTran_y != baseline.muzzleTran_y) ? (1u<<11) : 0;
+            changeMask |= (snapshot.muzzleTran_z != baseline.muzzleTran_z) ? (1u<<11) : 0;
+            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 12);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.SerializeDelegate))]
@@ -279,6 +292,12 @@ namespace Assembly_CSharp.Generated
                 writer.WritePackedFloatDelta(snapshot.hitSurfaceNormal_z, baseline.hitSurfaceNormal_z, compressionModel);
             if ((changeMask & (1 << 10)) != 0)
                 writer.WritePackedUIntDelta(snapshot.spawntick, baseline.spawntick, compressionModel);
+            if ((changeMask & (1 << 11)) != 0)
+                writer.WritePackedFloatDelta(snapshot.muzzleTran_x, baseline.muzzleTran_x, compressionModel);
+            if ((changeMask & (1 << 11)) != 0)
+                writer.WritePackedFloatDelta(snapshot.muzzleTran_y, baseline.muzzleTran_y, compressionModel);
+            if ((changeMask & (1 << 11)) != 0)
+                writer.WritePackedFloatDelta(snapshot.muzzleTran_z, baseline.muzzleTran_z, compressionModel);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.DeserializeDelegate))]
@@ -365,6 +384,18 @@ namespace Assembly_CSharp.Generated
                 snapshot.spawntick = reader.ReadPackedUIntDelta(baseline.spawntick, compressionModel);
             else
                 snapshot.spawntick = baseline.spawntick;
+            if ((changeMask & (1 << 11)) != 0)
+                snapshot.muzzleTran_x = reader.ReadPackedFloatDelta(baseline.muzzleTran_x, compressionModel);
+            else
+                snapshot.muzzleTran_x = baseline.muzzleTran_x;
+            if ((changeMask & (1 << 11)) != 0)
+                snapshot.muzzleTran_y = reader.ReadPackedFloatDelta(baseline.muzzleTran_y, compressionModel);
+            else
+                snapshot.muzzleTran_y = baseline.muzzleTran_y;
+            if ((changeMask & (1 << 11)) != 0)
+                snapshot.muzzleTran_z = reader.ReadPackedFloatDelta(baseline.muzzleTran_z, compressionModel);
+            else
+                snapshot.muzzleTran_z = baseline.muzzleTran_z;
         }
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
         [BurstCompile]
@@ -398,6 +429,8 @@ namespace Assembly_CSharp.Generated
                 (component.spawntick > backup.spawntick) ?
                 (component.spawntick - backup.spawntick) :
                 (backup.spawntick - component.spawntick));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.muzzleTran, backup.muzzleTran));
             ++errorIndex;
         }
         private static int GetPredictionErrorNames(ref FixedString512 names)
@@ -446,6 +479,10 @@ namespace Assembly_CSharp.Generated
             if (nameCount != 0)
                 names.Append(new FixedString32(","));
             names.Append(new FixedString64("spawntick"));
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32(","));
+            names.Append(new FixedString64("muzzleTran"));
             ++nameCount;
             return nameCount;
         }

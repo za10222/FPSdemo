@@ -29,6 +29,7 @@ namespace FPSdemo
        public float VFXLifeTime;
        public float3 hitPosition;
        public float3 hitSurfaceNormal;
+       public bool ishit;
     }
 
     [UpdateInGroup(typeof(ClientPresentationSystemGroup))]
@@ -106,8 +107,7 @@ namespace FPSdemo
                            ecb.AddComponent(entityInQueryIndex, e, new ProjectileLifetime { lifetime = shootEventData.lifetime });
                            //ecb.AddComponent(entityInQueryIndex, e, new ProjectileLifetime { lifetime = shootRenderData.ProjectileLifetime });
                         }
-
-
+                    
                         ecb.AddComponent(entityInQueryIndex, e, new ProjectileData
                         {
                             startTranslation = shootEventData.translation,
@@ -115,21 +115,53 @@ namespace FPSdemo
                             VFXPrefab = shootRenderData.VFXPrefab,
                             VFXLifeTime = shootRenderData.VFXLifetime,
                             hitPosition = shootEventData.hitPosition,
-                            hitSurfaceNormal=shootEventData.hitSurfaceNormal
+                            hitSurfaceNormal=shootEventData.hitSurfaceNormal,
+                            ishit= shootEventData.lifetime >0
                         }) ;
-                        ecb.SetComponent<Rotation>(entityInQueryIndex, e, new Rotation
+
+
+                        if (shootEventData.lifetime < 0)
                         {
-                            Value = shootEventData.rotation.Value
-                        }) ;
-                        ecb.SetComponent<Translation>(entityInQueryIndex, e, new Translation
+                            ecb.SetComponent<Rotation>(entityInQueryIndex, e, new Rotation
+                            {
+                                Value = shootEventData.rotation.Value
+                            });
+                            ecb.SetComponent<Translation>(entityInQueryIndex, e, new Translation
+                            {
+                                Value = shootEventData.muzzleTran
+                            });
+                            ecb.SetComponent<PhysicsVelocity>(entityInQueryIndex, e, new PhysicsVelocity
+                            {
+                                //Angular= hootEventData.rotation.Value,
+                                //Linear = math.forward(shootEventData.rotation.Value) * shootEventData.gunBaseData.ballisticVelocity
+                                Linear = math.forward(shootEventData.rotation.Value) * shootEventData.gunBaseData.ballisticVelocity
+                            });
+                        }
+                        else
                         {
-                            Value = shootEventData.translation.Value
-                        });
-                        ecb.SetComponent<PhysicsVelocity>(entityInQueryIndex, e, new PhysicsVelocity
-                        {
-                            //Angular= hootEventData.rotation.Value,
-                            Linear = math.forward(shootEventData.rotation.Value) * shootEventData.gunBaseData.ballisticVelocity
-                        }) ;
+                            var start = shootEventData.muzzleTran;
+                            var end = shootEventData.hitPosition;
+
+                            var shootnormal = math.normalize(end - start);
+                            ecb.SetComponent<Rotation>(entityInQueryIndex, e, new Rotation
+                            {
+                                Value = quaternion.LookRotation(shootnormal, math.up())
+                            });
+                            ecb.SetComponent<Translation>(entityInQueryIndex, e, new Translation
+                            {
+                                Value = shootEventData.muzzleTran
+                            });
+                            ecb.SetComponent<PhysicsVelocity>(entityInQueryIndex, e, new PhysicsVelocity
+                            {
+                                //Angular= hootEventData.rotation.Value,
+                                //Linear = math.forward(shootEventData.rotation.Value) * shootEventData.gunBaseData.ballisticVelocity
+                                Linear = shootnormal * shootEventData.gunBaseData.ballisticVelocity
+                            });
+                        }
+                        //获得枪口位置
+                        //重新计算方向
+                        //如果没命中就不重新计算
+                     
 
                         shootRenderData.isRender = true;
                     }
@@ -178,6 +210,8 @@ namespace FPSdemo
                 else
                 {
                     ecb.DestroyEntity(entityInQueryIndex, ent);
+                    if (projectileData.ishit == false)
+                        return;
                     var t=ecb.Instantiate(entityInQueryIndex, projectileData.VFXPrefab);
                     ecb.AddComponent(entityInQueryIndex, t,new RenderLifeTime { lifetime = projectileData.VFXLifeTime });
                     ecb.AddComponent(entityInQueryIndex, t, new VXFEntityTag { });
