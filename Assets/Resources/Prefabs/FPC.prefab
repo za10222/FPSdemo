@@ -465,7 +465,7 @@ MonoBehaviour:
   CharacterMass: 5
   SkinWidth: 0.02
   ContactTolerance: 0.1
-  AffectsPhysicsBodies: 1
+  AffectsPhysicsBodies: 0
   RaiseCollisionEvents: 0
   RaiseTriggerEvents: 0
 --- !u!114 &8731831934136375397

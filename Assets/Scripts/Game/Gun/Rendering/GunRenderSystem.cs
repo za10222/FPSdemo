@@ -133,6 +133,7 @@ namespace FPSdemo
             Entities
             .WithName("UpdateGunJob")
             .WithAll<PlayerGunData, GunSpawnState>()
+            .WithReadOnly(bufferFromEntity)
             .ForEach((Entity ent, int entityInQueryIndex, in GunSpawnState gunEntity, in LocalToWorld ltw) =>
             {
                 SetComponent<Translation>(gunEntity.Gun, new Translation { Value = ltw.Position });
@@ -158,8 +159,7 @@ namespace FPSdemo
                 SetComponent<Translation>(gunEntity.Muzzle, new Translation { Value = newltw.pos });
                 SetComponent<Rotation>(gunEntity.Muzzle, new Rotation { Value = newltw.rot });
 
-
-            }).Run();
+            }).Schedule();
 
             Entities
             .WithName("CleanGunJob")
