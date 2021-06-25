@@ -11,7 +11,7 @@ namespace FPSdemo
 {
 
 
-    //[DisableAutoCreation]
+    [DisableAutoCreation]
     //[UpdateInWorld(UpdateInWorld.TargetWorld.Server)]
     [UpdateInGroup(typeof(GhostPredictionSystemGroup))]
     [UpdateAfter(typeof(PlayGunUserInputUpdateSystem))]
@@ -36,7 +36,8 @@ namespace FPSdemo
             .WithAll<GunManager.ShootEventData>()
             .ForEach((ref GunManager.ShootEventData shootEventData) =>
             {
-                if(shootEventData.ishandle==false)
+          
+                if (shootEventData.ishandle==false)
                 {
 
        
@@ -47,6 +48,7 @@ namespace FPSdemo
 
                 if(ishit)
                 {
+
                     //Debug.Log("命中");
                     var hitPointPos=hit.Position;
                     var dis=math.distance(hitPointPos, gunPos);

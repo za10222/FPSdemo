@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7213370995673288654}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Foot_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 792436803798288578}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 690017974660868271}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Mesh Object
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,7 +106,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7038195752850701007}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -139,7 +139,7 @@ GameObject:
   - component: {fileID: 7108780304736495319}
   - component: {fileID: 1683309334025986887}
   - component: {fileID: 4247501364379128311}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,7 +218,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8037425848772973477}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Foot_R_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248,7 +248,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2618826879388950704}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Foot_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -280,7 +280,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8764215717559422260}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Body_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -312,7 +312,7 @@ GameObject:
   - component: {fileID: 854355943285403825}
   - component: {fileID: 1023094101058821993}
   - component: {fileID: 1596654498899495838}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: LeftFoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -391,7 +391,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 634020097445146891}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -422,7 +422,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1368665718090539849}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: EnemyMelee
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -453,7 +453,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4279002860607544462}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Foot_L_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -485,7 +485,7 @@ GameObject:
   - component: {fileID: 3925930825384621892}
   - component: {fileID: 1811782303811326787}
   - component: {fileID: 5238524200997082520}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: RightFoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
