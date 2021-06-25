@@ -54,6 +54,7 @@ namespace Reese.Nav
                         agent.LocalDestination
                     );
 
+                    Debug.Log(string.Format("plan {0},{1}", agentPosition, worldDestination));
                     var jumping = jumpingFromEntity.HasComponent(entity);
 
                     if (jumping)

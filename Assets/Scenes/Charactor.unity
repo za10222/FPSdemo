@@ -1250,11 +1250,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1368665718090539849, guid: c58be71f744577e449f58e5d6af34ff9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 29
+      value: 33.04
       objectReference: {fileID: 0}
     - target: {fileID: 1368665718090539849, guid: c58be71f744577e449f58e5d6af34ff9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.69
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1368665718090539849, guid: c58be71f744577e449f58e5d6af34ff9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -7210,7 +7210,7 @@ MonoBehaviour:
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_UseGeometry: 1
+  m_UseGeometry: 0
   m_DefaultArea: 0
   m_IgnoreNavMeshAgent: 1
   m_IgnoreNavMeshObstacle: 1
@@ -7547,6 +7547,18 @@ MonoBehaviour:
   type: Humanoid
   offset: {x: 0, y: 0, z: 0}
   isTerrainCapable: 0
+--- !u!114 &1925311033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925311029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8481567e4d107e24e884c9891fff96f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1939257112
 PrefabInstance:
   m_ObjectHideFlags: 0

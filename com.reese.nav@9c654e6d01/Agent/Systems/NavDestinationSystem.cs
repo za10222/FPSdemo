@@ -6,6 +6,8 @@ using Unity.Transforms;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 using BuildPhysicsWorld = Unity.Physics.Systems.BuildPhysicsWorld;
+using UnityEngine;
+
 namespace Reese.Nav
 {
 
@@ -39,7 +41,7 @@ namespace Reese.Nav
                         commandBuffer.AddComponent<NavDestination>(entityInQueryIndex, entity, destination); // So that the change filter applies next frame.
                         return;
                     }
-
+                    Debug.Log(string.Format("{0}", destination.WorldPoint));
                     var collider = SphereCollider.Create(
                         new SphereGeometry()
                         {
