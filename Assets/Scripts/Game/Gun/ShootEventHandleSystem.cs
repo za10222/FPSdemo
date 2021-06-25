@@ -11,7 +11,7 @@ namespace FPSdemo
 {
 
 
-    [DisableAutoCreation]
+    //[DisableAutoCreation]
     //[UpdateInWorld(UpdateInWorld.TargetWorld.Server)]
     [UpdateInGroup(typeof(GhostPredictionSystemGroup))]
     [UpdateAfter(typeof(PlayGunUserInputUpdateSystem))]
