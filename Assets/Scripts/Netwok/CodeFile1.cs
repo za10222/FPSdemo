@@ -69,7 +69,7 @@ namespace FPSdemo
                 UnityEngine.Debug.Log(String.Format("Server setting connection {0} to in game", networkIdFromEntity[reqSrc.SourceConnection].Value));
 
                 var player = commandBuffer.Instantiate(prefab);
-                commandBuffer.SetComponent<Translation>(player, new Translation { Value = new float3() { x=3,y=4,z=41} });
+                commandBuffer.SetComponent<Translation>(player, new Translation { Value = new float3() { x=32,y=4,z=45} });
                 commandBuffer.SetComponent(player, new GhostOwnerComponent { NetworkId = networkIdFromEntity[reqSrc.SourceConnection].Value });
                 commandBuffer.SetComponent(reqSrc.SourceConnection, new CommandTargetComponent { targetEntity = player });
                 commandBuffer.DestroyEntity(reqEnt);

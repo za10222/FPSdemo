@@ -14,6 +14,7 @@ namespace FPSdemo
     {
         static public bool Raycast(float3 RayFrom, float3 RayTo, in CollisionWorld collisionWorld, out RaycastHit hit)
         {
+
             RaycastInput input = new RaycastInput()
             {
                 Start = RayFrom,
@@ -30,7 +31,14 @@ namespace FPSdemo
 
             return haveHit;
         }
+        static public bool Raycast(float3 RayFrom, float3 RayTo, in CollisionWorld collisionWorld,ref RaycastInput input, out RaycastHit hit)
+        {
+            input.Start = RayFrom;
+            input.End = RayTo;
+            bool haveHit = collisionWorld.CastRay(input, out hit);
 
+            return haveHit;
+        }
         //public static bool Newtick
     }
 }

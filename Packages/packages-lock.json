@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.reese.nav": {
-      "version": "file:../com.reese.nav@9c654e6d01",
+      "version": "file:../com.reese.nav",
       "depth": 0,
       "source": "local",
       "dependencies": {
