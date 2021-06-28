@@ -81,7 +81,7 @@ public struct Find:IComponentData
                     var lookRotation = quaternion.LookRotationSafe(temp - ltw.Position, math.up());
 
                     var angle = Quaternion.Angle(lookRotation, rotation.Value);
-                    if (angle > 5)
+                    if (angle > 2)
                     {
 
                         rotation.Value = math.slerp(rotation.Value, lookRotation, df / 0.3f);
