@@ -23,7 +23,7 @@ namespace FPSdemo
                 {
                     BelongsTo = ~0u,
                     CollidesWith = ~0u, // all 1s, so all layers, collide with everything
-                    GroupIndex = 0
+                    GroupIndex = -5
                 }
             };
 

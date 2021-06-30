@@ -97,6 +97,13 @@ namespace FPSdemo
             [GhostField]
             public Rotation rotation;
 
+
+            [GhostField]
+            public float3 muzzleTran;
+
+            [GhostField]
+            public uint spawntick;
+
             [GhostField]
             public bool ishandle;
 
@@ -109,11 +116,6 @@ namespace FPSdemo
             [GhostField]
             public float3 hitSurfaceNormal;
 
-            [GhostField]
-            public uint spawntick;
-
-            [GhostField]
-            public float3 muzzleTran;
         }
 
         //这个被客户端实例化，但没有初始化 
@@ -191,6 +193,7 @@ namespace FPSdemo
 
             protected override void OnCreate()
             {
+                
                 m_Barrier = World.GetOrCreateSystem<BeginSimulationEntityCommandBufferSystem>();
                 m_PredictionGroup = World.GetOrCreateSystem<GhostPredictionSystemGroup>();
 

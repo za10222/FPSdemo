@@ -95,6 +95,24 @@ namespace FPSdemo
                 {
                     if (shootRenderData.ProjectilePrefab != Entity.Null&& shootRenderData.isRender==false&& shootEventData.ishandle)
                     {
+                        if (shootEventData.lifetime > 0f && shootEventData.lifetime < 0.015f)
+                        {
+                            var t = ecb.Instantiate(entityInQueryIndex, shootRenderData.VFXPrefab);
+                            ecb.AddComponent(entityInQueryIndex, t, new RenderLifeTime { lifetime = shootRenderData.VFXLifetime });
+                            ecb.AddComponent(entityInQueryIndex, t, new VXFEntityTag { });
+
+                            ecb.SetComponent<Rotation>(entityInQueryIndex, t, new Rotation
+                            {
+                                Value = quaternion.Euler(shootEventData.hitSurfaceNormal)
+                            });
+                            ecb.SetComponent<Translation>(entityInQueryIndex, t, new Translation
+                            {
+                                Value = shootEventData.hitPosition
+                            });
+                            shootRenderData.isRender = true;
+                            return;
+                        }
+
                         var e = ecb.Instantiate(entityInQueryIndex, shootRenderData.ProjectilePrefab);
 
                         if (shootEventData.lifetime < 0)
@@ -104,10 +122,12 @@ namespace FPSdemo
                         }
                         else
                         {
-                           ecb.AddComponent(entityInQueryIndex, e, new ProjectileLifetime { lifetime = shootEventData.lifetime });
-                           //ecb.AddComponent(entityInQueryIndex, e, new ProjectileLifetime { lifetime = shootRenderData.ProjectileLifetime });
+                            ecb.AddComponent(entityInQueryIndex, e, new ProjectileLifetime { lifetime = shootEventData.lifetime });
+                            //ecb.AddComponent(entityInQueryIndex, e, new ProjectileLifetime { lifetime = 10 });
+
+                            //ecb.AddComponent(entityInQueryIndex, e, new ProjectileLifetime { lifetime = shootRenderData.ProjectileLifetime });
                         }
-                    
+
                         ecb.AddComponent(entityInQueryIndex, e, new ProjectileData
                         {
                             startTranslation = shootEventData.translation,
@@ -122,6 +142,8 @@ namespace FPSdemo
 
                         if (shootEventData.lifetime < 0)
                         {
+       
+
                             ecb.SetComponent<Rotation>(entityInQueryIndex, e, new Rotation
                             {
                                 Value = shootEventData.rotation.Value
@@ -143,6 +165,7 @@ namespace FPSdemo
                             var end = shootEventData.hitPosition;
 
                             var shootnormal = math.normalize(end - start);
+
                             ecb.SetComponent<Rotation>(entityInQueryIndex, e, new Rotation
                             {
                                 Value = quaternion.LookRotation(shootnormal, math.up())
