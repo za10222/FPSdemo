@@ -9,6 +9,9 @@ using Unity.Physics.Systems;
 using static FPSdemo.GunManager;
 using UnityEngine;
 using Reese.Nav;
+using Unity.Rendering;
+using System.Collections.Generic;
+
 namespace FPSdemo
 {
 
@@ -56,7 +59,12 @@ namespace FPSdemo
                 }
             }
             var time = Time.ElapsedTime;
-            Entities.ForEach((Entity entity, int entityInQueryIndex, ref EnemyMeleeInternalData enemyMeleeInternalData, ref Enemy enemy, in EnemyMelee enemyMelee) =>
+            Vector4 wet = Color.white;
+            float4 white4 = wet;
+            Vector4 red = Color.red;
+            float4 red4 = red;
+            Entities.
+                ForEach((Entity entity, int entityInQueryIndex, ref EnemyMeleeInternalData enemyMeleeInternalData, ref Enemy enemy, in EnemyMelee enemyMelee) =>
             {
                 if (enemyMeleeInternalData.hasFind)
                 {
@@ -71,7 +79,7 @@ namespace FPSdemo
                             //进行攻击判断 状态变为idle
                             Debug.Log(string.Format("hit player {0}", enemyMeleeInternalData.hitEntity));
                             enemy.state = Enemy.EnemyState.idle;
-
+                            //commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor { Value = white4 });
                         }   //等待 啥都不做
                     }
                     else
@@ -80,6 +88,7 @@ namespace FPSdemo
                         commandBuffer.AddComponent<NavStop>(entityInQueryIndex, entity);
                         enemy.state = Enemy.EnemyState.attack;
                         enemyMeleeInternalData.lastattacktime = time;
+                        commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor { Value = red4 });
                     }
                 }
                 else

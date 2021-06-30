@@ -631,7 +631,6 @@ GameObject:
   - component: {fileID: 1925311031}
   - component: {fileID: 1925311032}
   - component: {fileID: 4913108214090120752}
-  - component: {fileID: 1925311034}
   m_Layer: 0
   m_Name: EnemyMelee
   m_TagString: Untagged
@@ -844,22 +843,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97a11ea9247927d4c9b621c75b5db0d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entitynode: {fileID: 1968442280216942526}
-  attactnode: {fileID: 8899868936533927886}
---- !u!114 &1925311034
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7813101114260932778}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97a11ea9247927d4c9b621c75b5db0d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entitynode: {fileID: 1968442280216942526}
-  attactnode: {fileID: 8899868936533927886}
 --- !u!1 &8288959136455778431
 GameObject:
   m_ObjectHideFlags: 0

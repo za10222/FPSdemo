@@ -65,6 +65,8 @@ public struct Find:IComponentData
             .WithoutBurst()
             .ForEach((Entity entity, ref Enemy enemy,ref Rotation rotation, in LocalToWorld ltw,in NavAgent nav) =>
             {
+
+                
                 if (enemy.state == Enemy.EnemyState.attack)
                     return;
                 for (int i = 0; i < translations.Length; ++i)
