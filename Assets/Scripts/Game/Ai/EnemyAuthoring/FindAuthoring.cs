@@ -60,12 +60,13 @@ public struct Find:IComponentData
         var df = Time.DeltaTime;
 
         Entities
-            .WithName("test")
+            .WithName("FindSystemJob")
             .WithAll<Enemy>()
             .WithoutBurst()
             .ForEach((Entity entity, ref Enemy enemy,ref Rotation rotation, in LocalToWorld ltw,in NavAgent nav) =>
             {
-
+                if (enemy.state == Enemy.EnemyState.attack)
+                    return;
                 for (int i = 0; i < translations.Length; ++i)
                 {
                     if (math.distancesq(ltw.Position, translations[i].Value) > enemy.distance)
@@ -130,8 +131,8 @@ public struct Find:IComponentData
                      
 
 
-                            eb.AddComponent<NavDestination>(entity);
-                            eb.SetComponent<NavDestination>(entity, new NavDestination { WorldPoint = hit.Position });
+                        eb.AddComponent<NavDestination>(entity);
+                        eb.SetComponent<NavDestination>(entity, new NavDestination { WorldPoint = hit.Position });
 
                         return;
                         //Debug.Log(string.Format("hit:{0}", hit.Position));

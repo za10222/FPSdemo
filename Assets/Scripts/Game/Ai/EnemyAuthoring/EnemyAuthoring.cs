@@ -10,7 +10,13 @@ namespace FPSdemo
 public struct Enemy : IComponentData
 {
    public float distance;
-   public float timegap;
+   public EnemyState state;
+   public enum EnemyState
+    {
+            idle=0,
+            walk,
+            attack
+    }
 }
 
 [DisallowMultipleComponent]

@@ -201,7 +201,7 @@ namespace FPSdemo
                     {
                         return;
                     }
-
+         
                     if (playerGunData.gunstate==Gunstate.shoot)
                     {
                        var t=EntityManager.GetBuffer<LinkedEntityGroup>(gunSpawnState.Muzzle);
