@@ -11,6 +11,7 @@ public struct Enemy : IComponentData
 {
    public float distance;
    public EnemyState state;
+   
    public enum EnemyState
     {
             idle=0,

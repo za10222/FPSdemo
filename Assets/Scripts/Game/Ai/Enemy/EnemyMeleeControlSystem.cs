@@ -14,9 +14,7 @@ using System.Collections.Generic;
 
 namespace FPSdemo
 {
-
-
-
+     
     [UpdateBefore(typeof(EnemyAnimationUpdateSystem))]
     public class EnemyMeleeControlSystem : SystemBase
     {
@@ -58,14 +56,48 @@ namespace FPSdemo
                     continue;
                 }
             }
+            var bufferFromEntity= GetBufferFromEntity<HealthEventBufferElement>();
+
+
             var time = Time.ElapsedTime;
             Vector4 wet = Color.white;
             float4 white4 = wet;
             Vector4 red = Color.red;
             float4 red4 = red;
-            Entities.
-                ForEach((Entity entity, int entityInQueryIndex, ref EnemyMeleeInternalData enemyMeleeInternalData, ref Enemy enemy, in EnemyMelee enemyMelee) =>
+
+            Entities
+                .WithReadOnly(bufferFromEntity)
+                .ForEach((Entity entity, int entityInQueryIndex, ref EnemyMeleeInternalData enemyMeleeInternalData, ref Enemy enemy, in EnemyMelee enemyMelee) =>
             {
+                //如果变色期间，无视所有被打
+                if (enemyMeleeInternalData.inhit)
+                {
+                    if (time > enemyMeleeInternalData.lasthittime + enemyMelee.hitDuration)
+                    {  //还原
+                        commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor
+                        {
+                            Value = white4
+                        });
+                        Debug.Log("回复");
+                        enemyMeleeInternalData.inhit = false;
+                    }
+                 
+                }
+                else
+                {
+                    if ((time > enemyMeleeInternalData.lasthittime + enemyMelee.hitDuration+ enemyMelee.recoverDuration)&&
+                    bufferFromEntity.HasComponent(entity) && bufferFromEntity[entity].Length > 0)
+                    {  
+                        commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor
+                        {
+                            Value = red4
+                        });
+                        enemyMeleeInternalData.inhit = true;
+                        enemyMeleeInternalData.lasthittime = time;
+                        Debug.Log("变红");
+                    }
+                }
+
                 if (enemyMeleeInternalData.hasFind)
                 {
                     //如果还在攻击过程中
@@ -88,7 +120,7 @@ namespace FPSdemo
                         commandBuffer.AddComponent<NavStop>(entityInQueryIndex, entity);
                         enemy.state = Enemy.EnemyState.attack;
                         enemyMeleeInternalData.lastattacktime = time;
-                        commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor { Value = red4 });
+                        //commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor { Value = red4 });
                     }
                 }
                 else
@@ -99,7 +131,7 @@ namespace FPSdemo
                         var t = time - enemyMeleeInternalData.lastattacktime;
                         if (t > 5d)
                         {
-                             //还原 大概率还是攻击状态
+                             //还原 
                             enemy.state = Enemy.EnemyState.idle;
                         }
                     }

@@ -23,7 +23,7 @@ namespace Assembly_CSharp.Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 8019295250163615304,
+                    GhostFieldsHash = 16462008424517063831,
                     ExcludeFromComponentCollectionHash = 0,
                     ComponentType = ComponentType.ReadWrite<FPSdemo.GunManager.ShootEventData>(),
                     ComponentSize = UnsafeUtility.SizeOf<FPSdemo.GunManager.ShootEventData>(),
@@ -76,7 +76,6 @@ namespace Assembly_CSharp.Generated
             public float muzzleTran_y;
             public float muzzleTran_z;
             public uint spawntick;
-            public uint ishandle;
             public float lifetime;
             public float hitPosition_x;
             public float hitPosition_y;
@@ -85,7 +84,7 @@ namespace Assembly_CSharp.Generated
             public float hitSurfaceNormal_y;
             public float hitSurfaceNormal_z;
         }
-        public const int ChangeMaskBits = 12;
+        public const int ChangeMaskBits = 11;
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CopyToFromSnapshotDelegate))]
         private static void CopyToSnapshot(IntPtr stateData, IntPtr snapshotData, int snapshotOffset, int snapshotStride, IntPtr componentData, int componentStride, int count)
@@ -110,7 +109,6 @@ namespace Assembly_CSharp.Generated
                 snapshot.muzzleTran_y = component.muzzleTran.y;
                 snapshot.muzzleTran_z = component.muzzleTran.z;
                 snapshot.spawntick = (uint)component.spawntick;
-                snapshot.ishandle = component.ishandle?1u:0;
                 snapshot.lifetime = component.lifetime;
                 snapshot.hitPosition_x = component.hitPosition.x;
                 snapshot.hitPosition_y = component.hitPosition.y;
@@ -158,7 +156,6 @@ namespace Assembly_CSharp.Generated
                     rotation_Value_After, snapshotInterpolationFactor);
                 component.muzzleTran = new float3(snapshotBefore.muzzleTran_x, snapshotBefore.muzzleTran_y, snapshotBefore.muzzleTran_z);
                 component.spawntick = (uint) snapshotBefore.spawntick;
-                component.ishandle = snapshotBefore.ishandle != 0;
                 component.lifetime = snapshotBefore.lifetime;
                 component.hitPosition = new float3(snapshotBefore.hitPosition_x, snapshotBefore.hitPosition_y, snapshotBefore.hitPosition_z);
                 component.hitSurfaceNormal = new float3(snapshotBefore.hitSurfaceNormal_x, snapshotBefore.hitSurfaceNormal_y, snapshotBefore.hitSurfaceNormal_z);
@@ -185,7 +182,6 @@ namespace Assembly_CSharp.Generated
             component.muzzleTran.y = backup.muzzleTran.y;
             component.muzzleTran.z = backup.muzzleTran.z;
             component.spawntick = backup.spawntick;
-            component.ishandle = backup.ishandle;
             component.lifetime = backup.lifetime;
             component.hitPosition.x = backup.hitPosition.x;
             component.hitPosition.y = backup.hitPosition.y;
@@ -212,7 +208,6 @@ namespace Assembly_CSharp.Generated
             snapshot.rotation_ValueZ = predictor.PredictInt(snapshot.rotation_ValueZ, baseline1.rotation_ValueZ, baseline2.rotation_ValueZ);
             snapshot.rotation_ValueW = predictor.PredictInt(snapshot.rotation_ValueW, baseline1.rotation_ValueW, baseline2.rotation_ValueW);
             snapshot.spawntick = (uint)predictor.PredictInt((int)snapshot.spawntick, (int)baseline1.spawntick, (int)baseline2.spawntick);
-            snapshot.ishandle = (uint)predictor.PredictInt((int)snapshot.ishandle, (int)baseline1.ishandle, (int)baseline2.ishandle);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CalculateChangeMaskDelegate))]
@@ -236,15 +231,14 @@ namespace Assembly_CSharp.Generated
             changeMask |= (snapshot.muzzleTran_y != baseline.muzzleTran_y) ? (1u<<6) : 0;
             changeMask |= (snapshot.muzzleTran_z != baseline.muzzleTran_z) ? (1u<<6) : 0;
             changeMask |= (snapshot.spawntick != baseline.spawntick) ? (1u<<7) : 0;
-            changeMask |= (snapshot.ishandle != baseline.ishandle) ? (1u<<8) : 0;
-            changeMask |= (snapshot.lifetime != baseline.lifetime) ? (1u<<9) : 0;
-            changeMask |= (snapshot.hitPosition_x != baseline.hitPosition_x) ? (1u<<10) : 0;
-            changeMask |= (snapshot.hitPosition_y != baseline.hitPosition_y) ? (1u<<10) : 0;
-            changeMask |= (snapshot.hitPosition_z != baseline.hitPosition_z) ? (1u<<10) : 0;
-            changeMask |= (snapshot.hitSurfaceNormal_x != baseline.hitSurfaceNormal_x) ? (1u<<11) : 0;
-            changeMask |= (snapshot.hitSurfaceNormal_y != baseline.hitSurfaceNormal_y) ? (1u<<11) : 0;
-            changeMask |= (snapshot.hitSurfaceNormal_z != baseline.hitSurfaceNormal_z) ? (1u<<11) : 0;
-            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 12);
+            changeMask |= (snapshot.lifetime != baseline.lifetime) ? (1u<<8) : 0;
+            changeMask |= (snapshot.hitPosition_x != baseline.hitPosition_x) ? (1u<<9) : 0;
+            changeMask |= (snapshot.hitPosition_y != baseline.hitPosition_y) ? (1u<<9) : 0;
+            changeMask |= (snapshot.hitPosition_z != baseline.hitPosition_z) ? (1u<<9) : 0;
+            changeMask |= (snapshot.hitSurfaceNormal_x != baseline.hitSurfaceNormal_x) ? (1u<<10) : 0;
+            changeMask |= (snapshot.hitSurfaceNormal_y != baseline.hitSurfaceNormal_y) ? (1u<<10) : 0;
+            changeMask |= (snapshot.hitSurfaceNormal_z != baseline.hitSurfaceNormal_z) ? (1u<<10) : 0;
+            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 11);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.SerializeDelegate))]
@@ -283,20 +277,18 @@ namespace Assembly_CSharp.Generated
             if ((changeMask & (1 << 7)) != 0)
                 writer.WritePackedUIntDelta(snapshot.spawntick, baseline.spawntick, compressionModel);
             if ((changeMask & (1 << 8)) != 0)
-                writer.WritePackedUIntDelta(snapshot.ishandle, baseline.ishandle, compressionModel);
-            if ((changeMask & (1 << 9)) != 0)
                 writer.WritePackedFloatDelta(snapshot.lifetime, baseline.lifetime, compressionModel);
-            if ((changeMask & (1 << 10)) != 0)
+            if ((changeMask & (1 << 9)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitPosition_x, baseline.hitPosition_x, compressionModel);
-            if ((changeMask & (1 << 10)) != 0)
+            if ((changeMask & (1 << 9)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitPosition_y, baseline.hitPosition_y, compressionModel);
-            if ((changeMask & (1 << 10)) != 0)
+            if ((changeMask & (1 << 9)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitPosition_z, baseline.hitPosition_z, compressionModel);
-            if ((changeMask & (1 << 11)) != 0)
+            if ((changeMask & (1 << 10)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitSurfaceNormal_x, baseline.hitSurfaceNormal_x, compressionModel);
-            if ((changeMask & (1 << 11)) != 0)
+            if ((changeMask & (1 << 10)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitSurfaceNormal_y, baseline.hitSurfaceNormal_y, compressionModel);
-            if ((changeMask & (1 << 11)) != 0)
+            if ((changeMask & (1 << 10)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitSurfaceNormal_z, baseline.hitSurfaceNormal_z, compressionModel);
         }
         [BurstCompile]
@@ -365,34 +357,30 @@ namespace Assembly_CSharp.Generated
             else
                 snapshot.spawntick = baseline.spawntick;
             if ((changeMask & (1 << 8)) != 0)
-                snapshot.ishandle = reader.ReadPackedUIntDelta(baseline.ishandle, compressionModel);
-            else
-                snapshot.ishandle = baseline.ishandle;
-            if ((changeMask & (1 << 9)) != 0)
                 snapshot.lifetime = reader.ReadPackedFloatDelta(baseline.lifetime, compressionModel);
             else
                 snapshot.lifetime = baseline.lifetime;
-            if ((changeMask & (1 << 10)) != 0)
+            if ((changeMask & (1 << 9)) != 0)
                 snapshot.hitPosition_x = reader.ReadPackedFloatDelta(baseline.hitPosition_x, compressionModel);
             else
                 snapshot.hitPosition_x = baseline.hitPosition_x;
-            if ((changeMask & (1 << 10)) != 0)
+            if ((changeMask & (1 << 9)) != 0)
                 snapshot.hitPosition_y = reader.ReadPackedFloatDelta(baseline.hitPosition_y, compressionModel);
             else
                 snapshot.hitPosition_y = baseline.hitPosition_y;
-            if ((changeMask & (1 << 10)) != 0)
+            if ((changeMask & (1 << 9)) != 0)
                 snapshot.hitPosition_z = reader.ReadPackedFloatDelta(baseline.hitPosition_z, compressionModel);
             else
                 snapshot.hitPosition_z = baseline.hitPosition_z;
-            if ((changeMask & (1 << 11)) != 0)
+            if ((changeMask & (1 << 10)) != 0)
                 snapshot.hitSurfaceNormal_x = reader.ReadPackedFloatDelta(baseline.hitSurfaceNormal_x, compressionModel);
             else
                 snapshot.hitSurfaceNormal_x = baseline.hitSurfaceNormal_x;
-            if ((changeMask & (1 << 11)) != 0)
+            if ((changeMask & (1 << 10)) != 0)
                 snapshot.hitSurfaceNormal_y = reader.ReadPackedFloatDelta(baseline.hitSurfaceNormal_y, compressionModel);
             else
                 snapshot.hitSurfaceNormal_y = baseline.hitSurfaceNormal_y;
-            if ((changeMask & (1 << 11)) != 0)
+            if ((changeMask & (1 << 10)) != 0)
                 snapshot.hitSurfaceNormal_z = reader.ReadPackedFloatDelta(baseline.hitSurfaceNormal_z, compressionModel);
             else
                 snapshot.hitSurfaceNormal_z = baseline.hitSurfaceNormal_z;
@@ -423,8 +411,6 @@ namespace Assembly_CSharp.Generated
                 (component.spawntick > backup.spawntick) ?
                 (component.spawntick - backup.spawntick) :
                 (backup.spawntick - component.spawntick));
-            ++errorIndex;
-            errors[errorIndex] = math.max(errors[errorIndex], (component.ishandle != backup.ishandle) ? 1 : 0);
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.lifetime - backup.lifetime));
             ++errorIndex;
@@ -467,10 +453,6 @@ namespace Assembly_CSharp.Generated
             if (nameCount != 0)
                 names.Append(new FixedString32(","));
             names.Append(new FixedString64("spawntick"));
-            ++nameCount;
-            if (nameCount != 0)
-                names.Append(new FixedString32(","));
-            names.Append(new FixedString64("ishandle"));
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32(","));

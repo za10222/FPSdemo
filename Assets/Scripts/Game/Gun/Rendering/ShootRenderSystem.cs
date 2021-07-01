@@ -93,7 +93,7 @@ namespace FPSdemo
                 .WithAll<ShootEventData, ShootRenderData>()
                 .ForEach((Entity entity, int entityInQueryIndex, ref ShootRenderData shootRenderData, in ShootEventData shootEventData) =>
                 {
-                    if (shootRenderData.ProjectilePrefab != Entity.Null&& shootRenderData.isRender==false&& shootEventData.ishandle)
+                    if (shootRenderData.ProjectilePrefab != Entity.Null&& shootRenderData.isRender==false)
                     {
                         if (shootEventData.lifetime > 0f && shootEventData.lifetime < 0.015f)
                         {

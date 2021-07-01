@@ -30,7 +30,7 @@ namespace Reese.Nav
             var navMeshQueryPointerArray = World.GetExistingSystem<NavMeshQuerySystem>().PointerArray;
             var settings = navSystem.Settings;
 
-            Entities
+           Entities
                 .WithNone<NavProblem>()
                 .WithAll<NavPlanning, LocalToParent>()
                 .WithReadOnly(localToWorldFromEntity)

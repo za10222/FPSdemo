@@ -97,15 +97,11 @@ namespace FPSdemo
             [GhostField]
             public Rotation rotation;
 
-
             [GhostField]
             public float3 muzzleTran;
 
             [GhostField]
             public uint spawntick;
-
-            [GhostField]
-            public bool ishandle;
 
             [GhostField]
             public float lifetime;
@@ -135,6 +131,23 @@ namespace FPSdemo
 
         }
 
+        public struct ShootBeginData:IComponentData
+        {
+            public GunBaseData gunBaseData;
+
+            public int owner;
+
+            public Translation translation;
+
+            public Rotation rotation;
+
+            public float3 muzzleTran;
+
+            public uint spawntick;
+
+            public bool tobedelete;
+
+        }
         //[UpdateInWorld(UpdateInWorld.TargetWorld.Client)]
         //[UpdateInGroup(typeof(GhostPredictionSystemGroup))]
         //public class test : SystemBase
@@ -224,19 +237,19 @@ namespace FPSdemo
 
             protected override void OnUpdate()
             {
-                if (m_ShootEventPrefab == Entity.Null)
-                {
-                    var prefabEntity = GetSingletonEntity<GhostPrefabCollectionComponent>();
-                    var prefabs = EntityManager.GetBuffer<GhostPrefabBuffer>(prefabEntity);
-                    var foundPrefab = Entity.Null;
-                    for (int i = 0; i < prefabs.Length; ++i)
-                    {
-                        if (EntityManager.HasComponent<ShootEventData>(prefabs[i].Value))
-                            foundPrefab = prefabs[i].Value;
-                    }
-                    if (foundPrefab != Entity.Null)
-                        m_ShootEventPrefab = GhostCollectionSystem.CreatePredictedSpawnPrefab(EntityManager, foundPrefab);
-                }
+                //if (m_ShootEventPrefab == Entity.Null)
+                //{
+                //    var prefabEntity = GetSingletonEntity<GhostPrefabCollectionComponent>();
+                //    var prefabs = EntityManager.GetBuffer<GhostPrefabBuffer>(prefabEntity);
+                //    var foundPrefab = Entity.Null;
+                //    for (int i = 0; i < prefabs.Length; ++i)
+                //    {
+                //        if (EntityManager.HasComponent<ShootEventData>(prefabs[i].Value))
+                //            foundPrefab = prefabs[i].Value;
+                //    }
+                //    if (foundPrefab != Entity.Null)
+                //        m_ShootEventPrefab = GhostCollectionSystem.CreatePredictedSpawnPrefab(EntityManager, foundPrefab);
+                //}
 
                 var df = Time.DeltaTime;
 
@@ -246,7 +259,7 @@ namespace FPSdemo
 
                 var currentTick = m_PredictionGroup.PredictingTick;
 
-                var m_ShootEventPrefab2 = m_ShootEventPrefab;
+                //var m_ShootEventPrefab2 = m_ShootEventPrefab;
                 var commandBuffer = m_Barrier.CreateCommandBuffer().AsParallelWriter();
 
 
@@ -295,11 +308,12 @@ namespace FPSdemo
                            {
                                //Debug.Log(string.Format("ct={0},lt={1}", currentTick, playerGunInternalData.lastShootTick));
                                //添加枪支射击事件
-                               if (m_ShootEventPrefab2 != Entity.Null)
+                              //if (m_ShootEventPrefab2 != Entity.Null)
                                {
-                               
-                                   var e = commandBuffer.Instantiate(nativeThreadIndex, m_ShootEventPrefab2);
 
+                                   //var e = commandBuffer.Instantiate(nativeThreadIndex, m_ShootEventPrefab2);
+                                   var e = commandBuffer.CreateEntity(nativeThreadIndex );
+                                   commandBuffer.AddComponent<ShootBeginData>(nativeThreadIndex,e);
                                    RigidTransform headltw;
                                    //获得head所在位置
                                    {
@@ -368,7 +382,7 @@ namespace FPSdemo
                                        muzzleltw = math.mul(fpcltw, temp);
                                    }
                                    commandBuffer.SetComponent(nativeThreadIndex, e,
-                                     new ShootEventData
+                                     new ShootBeginData
                                      {
                                          gunBaseData = gunBase,
                                          owner = GetComponent<GhostOwnerComponent>(pa.Value).NetworkId,
@@ -379,8 +393,8 @@ namespace FPSdemo
                                          muzzleTran= muzzleltw.pos
                                      }) ;
 
-                                   commandBuffer.SetComponent(nativeThreadIndex, e,
-                                     new GhostOwnerComponent { NetworkId = GetComponent<GhostOwnerComponent>(pa.Value).NetworkId });
+                                   //commandBuffer.SetComponent(nativeThreadIndex, e,
+                                   //  new GhostOwnerComponent { NetworkId = GetComponent<GhostOwnerComponent>(pa.Value).NetworkId });
 
                                }
                                playerGunData.gunstate = Gunstate.shoot;
@@ -410,7 +424,7 @@ namespace FPSdemo
 
 
             public Entity m_GunManagerEntity;
-            private Entity m_ShootEventPrefab;
+            //private Entity m_ShootEventPrefab;
             private BeginSimulationEntityCommandBufferSystem m_Barrier;
         }
     }

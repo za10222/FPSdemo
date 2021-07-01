@@ -1276,6 +1276,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5230869123244340472, guid: c58be71f744577e449f58e5d6af34ff9, type: 3}
+      propertyPath: m_ForceUnique
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5230869123244340472, guid: c58be71f744577e449f58e5d6af34ff9, type: 3}
       propertyPath: m_Material.m_CollisionResponse.m_Value
       value: 3
       objectReference: {fileID: 0}
@@ -1426,6 +1430,25 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 1925311034, guid: c58be71f744577e449f58e5d6af34ff9, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: c58be71f744577e449f58e5d6af34ff9, type: 3}
+--- !u!1 &311666348 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7813101114260932778, guid: c58be71f744577e449f58e5d6af34ff9, type: 3}
+  m_PrefabInstance: {fileID: 311666347}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &311666349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311666348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 299ca62cdb0debd4e8f610f160d2b0dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 100
+  currentHp: 100
 --- !u!1001 &313142018
 PrefabInstance:
   m_ObjectHideFlags: 0

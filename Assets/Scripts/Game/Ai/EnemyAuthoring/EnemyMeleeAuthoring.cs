@@ -9,13 +9,19 @@ public struct EnemyMelee : IComponentData
     {
        public  Entity entitynode;
        public Entity attactnode;
+       public double hitDuration;
+       public double recoverDuration;
+
     }
     public struct EnemyMeleeInternalData : IComponentData
     {
        public bool hasFind;
        public Entity hitEntity;
        public double lastattacktime;
-      
+       public double lasthittime;
+       public bool inhit;
+
+
     }
 
     [DisallowMultipleComponent]
@@ -35,7 +41,7 @@ public class EnemyMeleeAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     public GameObject entitynode;
     //[SerializeField]
     public GameObject attactnode;
-
+    //public float hitDuration;
     public void Start()
     {
             
@@ -44,7 +50,10 @@ public class EnemyMeleeAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
 
         dstManager.AddComponentData(entity, new EnemyMelee { entitynode = conversionSystem.GetPrimaryEntity(entitynode), 
-            attactnode= conversionSystem. GetPrimaryEntity(attactnode) });
+            attactnode= conversionSystem. GetPrimaryEntity(attactnode) ,
+            hitDuration =0.4,
+            recoverDuration=0.1
+        });
         dstManager.AddComponentData(entity, new EnemyMeleeInternalData {hitEntity=Entity.Null});
 
 
