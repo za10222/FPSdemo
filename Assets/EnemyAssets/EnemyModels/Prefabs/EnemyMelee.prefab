@@ -151,8 +151,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5f16aab8a254345baaf1fde38f4999, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  switchgap: 0
-  TransitionDuration: 0
+  switchgap: 0.1
+  TransitionDuration: 0.2
 --- !u!114 &1093047287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,6 +211,16 @@ MonoBehaviour:
     InitialSpeed: 1
     ComputeRootmotionDeltas: 0
     statusname: 1
+  - Clip: {fileID: 4723146814002874508, guid: 98a47f1cd28823f4b8ab7f52d3d506fb, type: 3}
+    Loop: 1
+    InitialSpeed: 1
+    ComputeRootmotionDeltas: 0
+    statusname: 3
+  - Clip: {fileID: 6059336001588132254, guid: 98a47f1cd28823f4b8ab7f52d3d506fb, type: 3}
+    Loop: 1
+    InitialSpeed: 1
+    ComputeRootmotionDeltas: 0
+    statusname: 4
 --- !u!1 &2149878293250556660
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,6 +277,7 @@ GameObject:
   - component: {fileID: 1683309334025986887}
   - component: {fileID: 4247501364379128311}
   - component: {fileID: 600611220}
+  - component: {fileID: 600611223}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -349,6 +360,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24e71dfe142c3804292455a0ed49bfff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &600611223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2244371112702752524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54b6467bcd530cd4d809fae70ea0ca9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Value:
+    x: 1
+    y: 1
+    z: 1
+    w: 1
 --- !u!1 &2546730658893659120
 GameObject:
   m_ObjectHideFlags: 0
@@ -631,6 +659,7 @@ GameObject:
   - component: {fileID: 1925311031}
   - component: {fileID: 1925311032}
   - component: {fileID: 4913108214090120752}
+  - component: {fileID: 311666349}
   m_Layer: 0
   m_Name: EnemyMelee
   m_TagString: Untagged
@@ -813,7 +842,7 @@ MonoBehaviour:
   jumpGravity: 100
   jumpSpeedMultiplierX: 1.5
   jumpSpeedMultiplierY: 2
-  translationSpeed: 10
+  translationSpeed: 5
   rotationSpeed: 0.3
   type: Humanoid
   offset: {x: 0, y: 0, z: -1}
@@ -831,6 +860,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distance: 100
+  Bodynode: {fileID: 2244371112702752524}
 --- !u!114 &4913108214090120752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -843,6 +873,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97a11ea9247927d4c9b621c75b5db0d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &311666349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7813101114260932778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 299ca62cdb0debd4e8f610f160d2b0dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 100
+  currentHp: 100
 --- !u!1 &8288959136455778431
 GameObject:
   m_ObjectHideFlags: 0
@@ -1094,9 +1138,9 @@ MonoBehaviour:
         Category17: 0
         Category18: 0
         Category19: 0
-        Category20: 1
+        Category20: 0
         Category21: 0
-        Category22: 0
+        Category22: 1
         Category23: 0
         Category24: 0
         Category25: 0
@@ -1129,7 +1173,7 @@ MonoBehaviour:
         Category17: 0
         Category18: 0
         Category19: 0
-        Category20: 0
+        Category20: 1
         Category21: 0
         Category22: 0
         Category23: 0

@@ -28,7 +28,8 @@ public struct SampleAnimationController : IComponentData
       none=0,
       idle,
       walk,
-      attack
+      attack,
+      dieing
    }
 }
     public class SampleAnimationControlerSystem : SystemBase

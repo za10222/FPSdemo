@@ -67,7 +67,7 @@ public struct Find:IComponentData
             {
 
                 
-                if (enemy.state == Enemy.EnemyState.attack)
+                if (enemy.state == Enemy.EnemyState.attack|| enemy.state == Enemy.EnemyState.dieing)
                     return;
                 for (int i = 0; i < translations.Length; ++i)
                 {

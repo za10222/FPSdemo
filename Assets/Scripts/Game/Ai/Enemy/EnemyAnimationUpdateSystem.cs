@@ -33,6 +33,10 @@ namespace FPSdemo
                         sampleAnimationController.currentState = SampleAnimationController.state.attack;
                         SetComponent<SampleAnimationController>(children[0].Value, sampleAnimationController);
                         break;
+                    case Enemy.EnemyState.dieing:
+                        sampleAnimationController.currentState = SampleAnimationController.state.dieing;
+                        SetComponent<SampleAnimationController>(children[0].Value, sampleAnimationController);
+                        break;
                 }
  
             }).Schedule();

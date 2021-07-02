@@ -152,7 +152,7 @@ namespace FPSdemo
                 {
 
                     //Debug.Log(string.Format("命中+{0}+{1}+{2}+{3}",worldname,hit.Entity.Index,bt,cw));
-                    healthEventBufferFromEntity[hit.Entity].Add(new HealthEventBufferElement { healthChange = -1 });
+                    healthEventBufferFromEntity[hit.Entity].Add(new HealthEventBufferElement { healthChange = -10 });
                 }
             }
             else

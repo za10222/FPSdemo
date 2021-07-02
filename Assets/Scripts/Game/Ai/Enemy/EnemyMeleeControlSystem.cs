@@ -32,7 +32,6 @@ namespace FPSdemo
             var commandBuffer = barrier.CreateCommandBuffer().AsParallelWriter();
             foreach (var i in events)
             {
-
                 Entity enemy = Entity.Null;
                 Entity play = Entity.Null;
                 if ((HasComponent<Find>(i.EntityA) && HasComponent<Enemy>(i.EntityB)))
@@ -60,26 +59,51 @@ namespace FPSdemo
 
 
             var time = Time.ElapsedTime;
-            Vector4 wet = Color.white;
-            float4 white4 = wet;
-            Vector4 red = Color.red;
-            float4 red4 = red;
+
 
             Entities
                 .WithReadOnly(bufferFromEntity)
                 .ForEach((Entity entity, int entityInQueryIndex, ref EnemyMeleeInternalData enemyMeleeInternalData, ref Enemy enemy, in EnemyMelee enemyMelee) =>
             {
+                if(HasComponent<HealthData>(entity))
+                {
+                    var health = GetComponent<HealthData>(entity);
+                    if(health.currentHp==0)
+                    {
+                        if(HasComponent<NavWalking>(entity))
+                        {
+                            commandBuffer.AddComponent<NavStop>(entityInQueryIndex, entity);
+                        }
+                     
+                        enemy.state = Enemy.EnemyState.dieing;
+                        enemy.inhit = false;
+                        if (enemyMeleeInternalData.dietime>0.1)
+                        {
+                            if(time - enemyMeleeInternalData.dietime > 2)
+                            {
+                                commandBuffer.DestroyEntity(entityInQueryIndex, entity);
+                                Debug.Log("删除");
+                            }
+                        }
+                        else
+                        {
+                            enemyMeleeInternalData.dietime = time;
+                        }
+
+                        return;
+                    }
+                }
+
                 //如果变色期间，无视所有被打
-                if (enemyMeleeInternalData.inhit)
+                if (enemy.inhit)
                 {
                     if (time > enemyMeleeInternalData.lasthittime + enemyMelee.hitDuration)
                     {  //还原
-                        commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor
-                        {
-                            Value = white4
-                        });
-                        Debug.Log("回复");
-                        enemyMeleeInternalData.inhit = false;
+                        //commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor
+                        //{
+                        //    Value = white4
+                        //});
+                        enemy.inhit = false;
                     }
                  
                 }
@@ -87,14 +111,13 @@ namespace FPSdemo
                 {
                     if ((time > enemyMeleeInternalData.lasthittime + enemyMelee.hitDuration+ enemyMelee.recoverDuration)&&
                     bufferFromEntity.HasComponent(entity) && bufferFromEntity[entity].Length > 0)
-                    {  
-                        commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor
-                        {
-                            Value = red4
-                        });
-                        enemyMeleeInternalData.inhit = true;
+                    {
+                        //commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor
+                        //{
+                        //    Value = red4
+                        //});
+                        enemy.inhit = true;
                         enemyMeleeInternalData.lasthittime = time;
-                        Debug.Log("变红");
                     }
                 }
 

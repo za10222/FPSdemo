@@ -11,12 +11,14 @@ public struct Enemy : IComponentData
 {
    public float distance;
    public EnemyState state;
-   
-   public enum EnemyState
+   public Entity Bodynode;
+   public bool inhit;
+        public enum EnemyState
     {
             idle=0,
             walk,
-            attack
+            attack,
+            dieing
     }
 }
 
@@ -35,11 +37,12 @@ public class EnemyAuthoring : MonoBehaviour, IConvertGameObjectToEntity
         //    public float scale;
 
         public float distance = 100;
-             
-    public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        public GameObject Bodynode;
+
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
 
-          dstManager.AddComponentData(entity, new Enemy { distance= distance });
+          dstManager.AddComponentData(entity, new Enemy { distance= distance, Bodynode=conversionSystem.GetPrimaryEntity(Bodynode) });
     }
 }
 }
