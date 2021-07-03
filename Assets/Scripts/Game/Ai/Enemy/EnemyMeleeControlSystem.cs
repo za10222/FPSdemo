@@ -34,7 +34,7 @@ namespace FPSdemo
             {
                 Entity enemy = Entity.Null;
                 Entity play = Entity.Null;
-                if ((HasComponent<Find>(i.EntityA) && HasComponent<Enemy>(i.EntityB)))
+                if ((HasComponent<Find>(i.EntityA) && HasComponent<EnemyMelee>(i.EntityB)))
                 {
                     enemy = i.EntityB;
                     play = i.EntityA;
@@ -44,7 +44,7 @@ namespace FPSdemo
                     SetComponent(enemy, enemyMeleeInternalData );
                     continue;
                 }
-                if ((HasComponent<Find>(i.EntityB) && HasComponent<Enemy>(i.EntityA)))
+                if ((HasComponent<Find>(i.EntityB) && HasComponent<EnemyMelee>(i.EntityA)))
                 {
                     enemy = i.EntityA;
                     play = i.EntityB;

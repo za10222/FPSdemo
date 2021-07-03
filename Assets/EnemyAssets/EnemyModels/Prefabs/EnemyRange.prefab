@@ -43,6 +43,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24e71dfe142c3804292455a0ed49bfff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &303859341215080982
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 130084780301157462}
+  m_Layer: 13
+  m_Name: bullet
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &130084780301157462
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303859341215080982}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4265109424459802334}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &404233660674523095
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,7 +490,7 @@ GameObject:
   - component: {fileID: 8549458654542147903}
   - component: {fileID: 1845629460310556758}
   - component: {fileID: 1835823217783319684}
-  - component: {fileID: 5550022687492523472}
+  - component: {fileID: 665284819853065472}
   m_Layer: 13
   m_Name: EnemyRange
   m_TagString: Untagged
@@ -480,6 +510,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 8706753834699117282}
+  - {fileID: 130084780301157462}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -661,7 +692,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   distance: 100
   Bodynode: {fileID: 9019150258235958564}
---- !u!114 &5550022687492523472
+--- !u!114 &665284819853065472
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -670,9 +701,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5159711164383640432}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97a11ea9247927d4c9b621c75b5db0d2, type: 3}
+  m_Script: {fileID: 11500000, guid: 183f0c35956be8148b4ffaff778f6a8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bulletspawn: {fileID: 303859341215080982}
+  attackRange: 10
 --- !u!1 &5782320452375000551
 GameObject:
   m_ObjectHideFlags: 0

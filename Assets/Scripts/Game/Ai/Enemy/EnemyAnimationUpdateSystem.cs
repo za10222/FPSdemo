@@ -14,28 +14,34 @@ namespace FPSdemo
 
             Entities.WithName("EnemyAnimationUpdateSystem").WithAll<Enemy>()
             .ForEach((Entity entity,in DynamicBuffer<Child> children,in Enemy enemy) => {
-
-                if (!HasComponent<SampleAnimationController>(children[0].Value))
+                var meshobject = Entity.Null;
+                foreach(var i in children)
                 {
-                    return;
+                    if (HasComponent<SampleAnimationController>(i.Value))
+                    {
+                        meshobject = i.Value;
+                        break;
+                    }
                 }
-                var sampleAnimationController = GetComponent<SampleAnimationController>(children[0].Value);
+                if (meshobject == Entity.Null)
+                    return;
+                var sampleAnimationController = GetComponent<SampleAnimationController>(meshobject);
                 switch (enemy.state){
                     case Enemy.EnemyState.walk:
                         sampleAnimationController.currentState = SampleAnimationController.state.walk;
-                        SetComponent<SampleAnimationController>(children[0].Value, sampleAnimationController);
+                        SetComponent<SampleAnimationController>(meshobject, sampleAnimationController);
                         break;
                     case Enemy.EnemyState.idle:
                         sampleAnimationController.currentState = SampleAnimationController.state.idle;
-                        SetComponent<SampleAnimationController>(children[0].Value, sampleAnimationController);
+                        SetComponent<SampleAnimationController>(meshobject, sampleAnimationController);
                         break;
                     case Enemy.EnemyState.attack:
                         sampleAnimationController.currentState = SampleAnimationController.state.attack;
-                        SetComponent<SampleAnimationController>(children[0].Value, sampleAnimationController);
+                        SetComponent<SampleAnimationController>(meshobject, sampleAnimationController);
                         break;
                     case Enemy.EnemyState.dieing:
                         sampleAnimationController.currentState = SampleAnimationController.state.dieing;
-                        SetComponent<SampleAnimationController>(children[0].Value, sampleAnimationController);
+                        SetComponent<SampleAnimationController>(meshobject, sampleAnimationController);
                         break;
                 }
  

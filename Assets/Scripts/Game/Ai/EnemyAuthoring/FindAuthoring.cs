@@ -28,7 +28,7 @@ public struct Find:IComponentData
 
 
     //[DisableAutoCreation]
-    public class NewSystem : SystemBase
+    public class FindSystem : SystemBase
 {
     EntityQuery m_FindGroup;
     private BuildPhysicsWorld physicsWorldSystem;
