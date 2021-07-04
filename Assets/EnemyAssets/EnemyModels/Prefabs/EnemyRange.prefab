@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8836085043689764974}
   - component: {fileID: 5442446310470243927}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Head_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,7 +52,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 130084780301157462}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -67,7 +67,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 303859341215080982}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 2}
+  m_LocalPosition: {x: 0, y: 2.5, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4265109424459802334}
@@ -83,7 +83,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5953943466129433802}
   - component: {fileID: 6803588752466079079}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -128,7 +128,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7179216159173597877}
   - component: {fileID: 4720486095403678494}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Foot_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -173,7 +173,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8466314022072792921}
   - component: {fileID: 8729811546677329117}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Foot_L_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -216,7 +216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3287033458421292649}
   - component: {fileID: 3434248723416354552}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -260,7 +260,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6134154464070349690}
   - component: {fileID: 2160520825596502026}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Neck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -304,7 +304,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2694278059993001303}
   - component: {fileID: 3272847601611346904}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -349,7 +349,7 @@ GameObject:
   m_Component:
   - component: {fileID: 185900395525448783}
   - component: {fileID: 371352438020748840}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Foot_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -396,7 +396,7 @@ GameObject:
   - component: {fileID: 3960172181561011565}
   - component: {fileID: 4653333568203747829}
   - component: {fileID: 181806508609776087}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: BodyDown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -491,7 +491,9 @@ GameObject:
   - component: {fileID: 1845629460310556758}
   - component: {fileID: 1835823217783319684}
   - component: {fileID: 665284819853065472}
-  m_Layer: 13
+  - component: {fileID: 4001973504244134062}
+  - component: {fileID: 8301226585751706485}
+  m_Layer: 0
   m_Name: EnemyRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -607,7 +609,7 @@ MonoBehaviour:
         Category27: 0
         Category28: 0
         Category29: 0
-        Category30: 0
+        Category30: 1
         Category31: 0
     m_CollidesWithCategories:
       m_Override: 0
@@ -706,6 +708,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletspawn: {fileID: 303859341215080982}
   attackRange: 10
+--- !u!114 &4001973504244134062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5159711164383640432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c79d771cedb4794bf100ce60df5f764, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ForcePrefabConversion: 0
+  DefaultGhostMode: 0
+  SupportedGhostModes: 3
+  OptimizationMode: 0
+  Importance: 1
+  prefabId: 69be4fdeeed9e0b4a8acd2c8445cff92
+  Name: EnemyRange
+  RefGameObjects: []
+  ComponentNames: []
+  PrefabTypeOverrides: []
+  SendTypeOverrides: []
+  VariantOverrides: []
+--- !u!114 &8301226585751706485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5159711164383640432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 299ca62cdb0debd4e8f610f160d2b0dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 100
+  currentHp: 100
 --- !u!1 &5782320452375000551
 GameObject:
   m_ObjectHideFlags: 0
@@ -716,7 +756,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2378158356232045668}
   - component: {fileID: 6600641296939181284}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -762,7 +802,7 @@ GameObject:
   - component: {fileID: 7373912059340906394}
   - component: {fileID: 1305451869165376222}
   - component: {fileID: 5828575970958162996}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: RightFoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -854,7 +894,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8029624523991467270}
   - component: {fileID: 4813192131185465298}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Bone_Foot_R_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -899,7 +939,7 @@ GameObject:
   - component: {fileID: 8340838983143817587}
   - component: {fileID: 4185354506749564672}
   - component: {fileID: 3950162111193791053}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: LeftFoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -994,7 +1034,7 @@ GameObject:
   - component: {fileID: 8592785602872319951}
   - component: {fileID: 9153988791219001689}
   - component: {fileID: 8465548888502163246}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Mesh Object
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1128,7 +1168,7 @@ GameObject:
   - component: {fileID: 4505964724339773701}
   - component: {fileID: 2638948360302942756}
   - component: {fileID: 6376944652811518003}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: BodyUpper
   m_TagString: Untagged
   m_Icon: {fileID: 0}

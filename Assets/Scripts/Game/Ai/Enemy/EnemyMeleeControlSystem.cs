@@ -11,11 +11,13 @@ using UnityEngine;
 using Reese.Nav;
 using Unity.Rendering;
 using System.Collections.Generic;
+using Unity.NetCode;
 
 namespace FPSdemo
 {
-     
-    [UpdateBefore(typeof(EnemyAnimationUpdateSystem))]
+    //[DisableAutoCreation]
+    //[UpdateBefore(typeof(EnemyAnimationUpdateSystem))]
+    [UpdateInWorld(UpdateInWorld.TargetWorld.Server)]
     public class EnemyMeleeControlSystem : SystemBase
     {
         StepPhysicsWorld stepPhysicsWorld;

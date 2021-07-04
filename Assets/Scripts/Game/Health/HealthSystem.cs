@@ -12,7 +12,10 @@ namespace FPSdemo
     {
        public float healthChange;
     }
+
+    [UpdateInWorld(UpdateInWorld.TargetWorld.Server)]
     [UpdateAfter(typeof(EnemyMeleeControlSystem))]
+    [UpdateAfter(typeof(EnemyRangeControlSystem))]
     public class HealthSystem : SystemBase
     {
 

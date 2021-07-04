@@ -24,7 +24,8 @@ namespace FPSdemo
         private EntityQuery m_FPCQuery;
         private Entity m_ShootEventPrefab;
         private BeginSimulationEntityCommandBufferSystem m_Barrier;
-
+        private HandlePlayerGunSystem m_handlePlayerGunSystem;
+        bool isServer;
         protected override void OnCreate()
         {
             RequireSingletonForUpdate<GunDataBufferElement>();
@@ -32,18 +33,21 @@ namespace FPSdemo
             m_FPCQuery = GetEntityQuery(typeof(GhostOwnerComponent),typeof(CharacterControllerComponentData),typeof(PhysicsCollider));
             physicsWorldSystem = World.GetExistingSystem<BuildPhysicsWorld>();
             m_Barrier = World.GetOrCreateSystem<BeginSimulationEntityCommandBufferSystem>();
+            m_handlePlayerGunSystem = World.GetExistingSystem<HandlePlayerGunSystem>();
+            isServer = string.Equals(World.Name, "severworld123");
+            EntityQuery query
+            = GetEntityQuery(typeof(GunManager.ShootBeginData));
+            RequireForUpdate(query);
         }
 
         protected override void OnUpdate()
         {
-            var w = m_bufferdateQuery.ToEntityArray(Unity.Collections.Allocator.TempJob);
             var FPCs= m_FPCQuery.ToEntityArray(Unity.Collections.Allocator.TempJob);
-            var t = EntityManager.GetBuffer<GunDataBufferElement>(w[0]);
+            var t = EntityManager.GetBuffer<GunDataBufferElement>(m_handlePlayerGunSystem.m_GunManagerEntity);
  
             var collisionWorld = physicsWorldSystem.PhysicsWorld.CollisionWorld;
           
          
-            int worldname = string.Equals(World.Name, "clientworld123")?10:5;
 
             var commandBuffer = m_Barrier.CreateCommandBuffer().AsParallelWriter();
             
@@ -63,6 +67,7 @@ namespace FPSdemo
             var m_ShootEventPrefab2 = m_ShootEventPrefab;
             if (m_ShootEventPrefab2 == Entity.Null)
                 return;
+            var isServer2 = isServer;
             Entities
             .WithName("ShootEventHandleJob")
             .WithNone<Prefab>()
@@ -74,7 +79,7 @@ namespace FPSdemo
                 var physicsColliderFromEntity = GetComponentDataFromEntity<PhysicsCollider>(true);
                 var HealthEventBuffer = GetBufferFromEntity<HealthEventBufferElement>(false);
                 shootHitRaycastWithoutShooterBody(ref shootBeginData, in collisionWorld, in FPCs, in physicsColliderFromEntity,
-                        in ghostOwnerComponentFromEntity,in HealthEventBuffer,in m_ShootEventPrefab2, in commandBuffer, nativeThreadIndex, worldname,entity.Index);
+                        in ghostOwnerComponentFromEntity,in HealthEventBuffer,in m_ShootEventPrefab2, in commandBuffer, nativeThreadIndex, isServer2, entity.Index);
                 commandBuffer.DestroyEntity(nativeThreadIndex, entity);
                 //shootEventData.gunBaseData.
 
@@ -87,7 +92,7 @@ namespace FPSdemo
         static public void shootHitRaycastWithoutShooterBody(ref GunManager.ShootBeginData shootBeginData,
             in CollisionWorld collisionWorld,in NativeArray<Entity> FPCs,in ComponentDataFromEntity<PhysicsCollider> physicsColliderFromEntity,
             in ComponentDataFromEntity<GhostOwnerComponent> ghostOwnerComponentFromEntity,
-            in BufferFromEntity<HealthEventBufferElement> healthEventBufferFromEntity,in Entity m_ShootEventPrefab,in EntityCommandBuffer.ParallelWriter commandBuffer,int  nativeThreadIndex, int worldname, int index)
+            in BufferFromEntity<HealthEventBufferElement> healthEventBufferFromEntity,in Entity m_ShootEventPrefab,in EntityCommandBuffer.ParallelWriter commandBuffer,int  nativeThreadIndex, bool isServer, int index)
         {
         
             //寻找发射的FPC
@@ -148,7 +153,7 @@ namespace FPSdemo
                 shootEventData.lifetime = time;
                 shootEventData.hitPosition = hitPointPos;
                 shootEventData.hitSurfaceNormal = hit.SurfaceNormal;    //hit.SurfaceNormal
-                if(healthEventBufferFromEntity.HasComponent(hit.Entity))
+                if(healthEventBufferFromEntity.HasComponent(hit.Entity)&&isServer)
                 {
 
                     //Debug.Log(string.Format("命中+{0}+{1}+{2}+{3}",worldname,hit.Entity.Index,bt,cw));

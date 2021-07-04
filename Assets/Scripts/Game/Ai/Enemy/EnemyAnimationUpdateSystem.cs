@@ -4,9 +4,11 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.NetCode;
 
 namespace FPSdemo
 {
+    [UpdateInGroup(typeof(ClientPresentationSystemGroup))]
     public class EnemyAnimationUpdateSystem : SystemBase
     {
         protected override void OnUpdate()

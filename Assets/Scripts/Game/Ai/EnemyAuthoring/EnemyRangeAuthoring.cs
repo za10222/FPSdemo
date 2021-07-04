@@ -1,11 +1,13 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 
 namespace FPSdemo
 {
     //[GenerateAuthoringComponent]
-public struct EnemyRange : IComponentData
+    [GhostComponent(PrefabType = GhostPrefabType.Server)]
+    public struct EnemyRange : IComponentData
     {
     
        public double hitDuration;
@@ -15,6 +17,7 @@ public struct EnemyRange : IComponentData
        public float attackRange;
 
     }
+    [GhostComponent(PrefabType = GhostPrefabType.Server)]
     public struct EnemyRangeInternalData : IComponentData
     {
        public double lastattacktime;

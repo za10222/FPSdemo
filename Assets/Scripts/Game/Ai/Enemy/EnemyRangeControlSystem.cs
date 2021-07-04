@@ -16,7 +16,8 @@ using Unity.NetCode;
 namespace FPSdemo
 {
     //[DisableAutoCreation]
-    [UpdateBefore(typeof(EnemyAnimationUpdateSystem))]
+    [UpdateInWorld(UpdateInWorld.TargetWorld.Server)]
+    //[UpdateBefore(typeof(EnemyAnimationUpdateSystem))]
     public class EnemyRangeControlSystem : SystemBase
     {
         private BuildPhysicsWorld physicsWorldSystem;
@@ -165,7 +166,7 @@ namespace FPSdemo
                     var startpos = ltw.Position;
                     var endpos = ltw.Position + forward * enemyRange.attackRange;
                     var hitresult = new ColliderCastHit();
-                    var ishit = CommonUtilities.SphereCollidercast(ltwFromEntity[enemyRange.bulletspawn].Position, endpos, 1f, in collisionWorld, out hitresult);
+                    var ishit = CommonUtilities.SphereCollidercast(ltwFromEntity[enemyRange.bulletspawn].Position, endpos, 0.5f, in collisionWorld, out hitresult);
 
                     if (ishit)
                     {

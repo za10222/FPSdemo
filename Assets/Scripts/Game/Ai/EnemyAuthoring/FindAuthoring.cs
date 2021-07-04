@@ -8,6 +8,7 @@ using Reese.Nav;
 using UnityEngine;
 using Unity.Physics.Systems;
 using Unity.Physics;
+using Unity.NetCode;
 //[UpdateInGroup()]
 namespace FPSdemo
 {
@@ -21,13 +22,13 @@ public class FindAuthoring : MonoBehaviour, IConvertGameObjectToEntity
         dstManager.AddComponentData(entity, new Find() );
     }
 }
-
-public struct Find:IComponentData
+    [GhostComponent(PrefabType = GhostPrefabType.Server)]
+    public struct Find:IComponentData
 {
 }
 
 
-    //[DisableAutoCreation]
+    [UpdateInWorld(UpdateInWorld.TargetWorld.Server)]
     public class FindSystem : SystemBase
 {
     EntityQuery m_FindGroup;
@@ -84,7 +85,7 @@ public struct Find:IComponentData
                     var lookRotation = quaternion.LookRotationSafe(temp - ltw.Position, math.up());
 
                     var angle = Quaternion.Angle(lookRotation, rotation.Value);
-                    if (angle > 2)
+                    if (angle > 1)
                     {
 
                         rotation.Value = math.slerp(rotation.Value, lookRotation, df / 0.3f);

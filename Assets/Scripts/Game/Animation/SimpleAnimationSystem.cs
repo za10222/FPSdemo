@@ -7,9 +7,10 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-
+using Unity.NetCode;
 namespace FPSdemo
 {
+    [UpdateInWorld(UpdateInWorld.TargetWorld.Client)]
     [UpdateBefore(typeof(DefaultAnimationSystemGroup))]
     public class SimpleAnimationSystem : SystemBase
     {

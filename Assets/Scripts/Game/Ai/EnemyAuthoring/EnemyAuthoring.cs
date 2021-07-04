@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 
 
@@ -9,9 +10,12 @@ namespace FPSdemo
 
 public struct Enemy : IComponentData
 {
+   [GhostField]
    public float distance;
+   [GhostField]
    public EnemyState state;
    public Entity Bodynode;
+   [GhostField]
    public bool inhit;
         public enum EnemyState
     {

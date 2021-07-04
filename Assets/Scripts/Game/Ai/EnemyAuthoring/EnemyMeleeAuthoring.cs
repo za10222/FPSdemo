@@ -1,17 +1,19 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 
 namespace FPSdemo
 {
     //[GenerateAuthoringComponent]
-public struct EnemyMelee : IComponentData
+    [GhostComponent(PrefabType = GhostPrefabType.Server)]
+    public struct EnemyMelee : IComponentData
     {
-    
        public double hitDuration;
        public double recoverDuration;
 
     }
+    [GhostComponent(PrefabType = GhostPrefabType.Server)]
     public struct EnemyMeleeInternalData : IComponentData
     {
        public bool hasFind;
@@ -24,7 +26,7 @@ public struct EnemyMelee : IComponentData
     }
 
     [DisallowMultipleComponent]
-public class EnemyMeleeAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+    public class EnemyMeleeAuthoring : MonoBehaviour, IConvertGameObjectToEntity
 {
         // Add fields to your component here. Remember that:
         //

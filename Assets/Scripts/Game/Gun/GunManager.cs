@@ -203,7 +203,6 @@ namespace FPSdemo
         {
 
             private GhostPredictionSystemGroup m_PredictionGroup;
-
             protected override void OnCreate()
             {
                 

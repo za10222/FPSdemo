@@ -13,7 +13,7 @@ namespace FPSdemo
     [UpdateInGroup(typeof(ClientPresentationSystemGroup))]
     public class MeleeHitSystem : SystemBase
     {
-        EntityCommandBufferSystem barrier => World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+        EntityCommandBufferSystem barrier => World.GetOrCreateSystem<BeginPresentationEntityCommandBufferSystem>();
         protected override void OnUpdate()
         {
 
@@ -41,6 +41,7 @@ namespace FPSdemo
                 }
            
             }).Schedule();
+            barrier.AddJobHandleForProducer(Dependency);
         }
     }
 }
