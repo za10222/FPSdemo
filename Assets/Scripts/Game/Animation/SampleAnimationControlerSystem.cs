@@ -30,7 +30,10 @@ namespace FPSdemo
             idle,
             walk,
             attack,
-            dieing
+            dieing,
+            shoot,
+            bigShoot,
+            taunt
         }
 
         [UpdateInGroup(typeof(ClientPresentationSystemGroup))]

@@ -52,22 +52,28 @@ public class FindAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     }
          protected override void OnUpdate()
     {
-        EntityCommandBuffer eb=new EntityCommandBuffer(Allocator.Temp);
+            var df = Time.DeltaTime;
 
-        var translations = m_FindGroup.ToComponentDataArray<Translation>(Allocator.Temp);
+            EntityCommandBuffer eb=new EntityCommandBuffer(Allocator.TempJob);
 
-        var collisionWorld = physicsWorldSystem.PhysicsWorld.CollisionWorld;
-        var settings = navSystem.Settings;
-        var df = Time.DeltaTime;
+            var translations = m_FindGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
 
-        Entities
+            var collisionWorld = physicsWorldSystem.PhysicsWorld.CollisionWorld;
+            var settings = navSystem.Settings;
+
+            Entities
             .WithName("FindSystemJob")
             .WithAll<Enemy>()
-            .WithoutBurst()
             .ForEach((Entity entity, ref Enemy enemy,ref Rotation rotation, in LocalToWorld ltw,in NavAgent nav) =>
             {
+                enemy.FindUpdateTime += df;
+                if (enemy.FindUpdateTime<0.2d)
+                {
+                    return;
+                }
 
-                
+                enemy.FindUpdateTime = 0d;
+
                 if (enemy.state == Enemy.EnemyState.attack|| enemy.state == Enemy.EnemyState.dieing)
                     return;
                 for (int i = 0; i < translations.Length; ++i)
@@ -91,14 +97,7 @@ public class FindAuthoring : MonoBehaviour, IConvertGameObjectToEntity
                         rotation.Value = math.slerp(rotation.Value, lookRotation, df / 0.3f);
                         return;
                     }
-                    //var disforward = translations[i].Value - ltw.Position;
-                    //var disnormal = math.normalize(disforward );
-                    //var offsetpos = disforward - disnormal*1.5f + ltw.Position;
-
-
-                    //var start = offsetpos;
-                    //var end = offsetpos;
-
+             
 
                     if (math.distancesq(translations[i].Value, ltw.Position) <= 1)
                     {
@@ -143,7 +142,48 @@ public class FindAuthoring : MonoBehaviour, IConvertGameObjectToEntity
                     }
                   
                 }
-            }).Run();
+            }).Schedule();
+
+            Entities
+           .WithName("BossFindSystemJob")
+           .WithAll<EnemyBoss>()
+           .ForEach((Entity entity, ref EnemyBoss enemyboss, ref Rotation rotation, in LocalToWorld ltw) =>
+           {
+               enemyboss.FindUpdateTime += df;
+               if (enemyboss.FindUpdateTime < 0.2d)
+               {
+                   return;
+               }
+
+               enemyboss.FindUpdateTime = 0d;
+
+               if (!(enemyboss.state == EnemyBoss.EnemyBossState.idle))
+                   return;
+               for (int i = 0; i < translations.Length; ++i)
+               {
+                   if (math.distance(ltw.Position, translations[i].Value) > enemyboss.findDistance)
+                   {
+                       continue;
+                   }
+
+
+                 //先转过来 再做别的
+
+                 var temp = translations[i].Value;
+                   temp.y = ltw.Position.y;
+                   var lookRotation = quaternion.LookRotationSafe(temp - ltw.Position, math.up());
+
+                   var angle = Quaternion.Angle(lookRotation, rotation.Value);
+                   if (angle > 1)
+                   {
+
+                       rotation.Value = math.slerp(rotation.Value, lookRotation, df / 0.3f);
+                       return;
+                   }
+               }
+           }).Schedule();
+
+            Dependency.Complete();
         eb.Playback(EntityManager);
     }
 }

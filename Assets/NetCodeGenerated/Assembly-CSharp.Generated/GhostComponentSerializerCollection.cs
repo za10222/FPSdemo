@@ -14,6 +14,7 @@ namespace Assembly_CSharp.Generated
             ghostCollectionSystem.AddSerializer(CharacterControllerComponentDataGhostComponentSerializer.State);
             ghostCollectionSystem.AddSerializer(CharacterControllerInternalDataGhostComponentSerializer.State);
             ghostCollectionSystem.AddSerializer(FPSdemoEnemyGhostComponentSerializer.State);
+            ghostCollectionSystem.AddSerializer(FPSdemoEnemyBossGhostComponentSerializer.State);
             ghostCollectionSystem.AddSerializer(FPSdemoGunManager_PlayerGunDataGhostComponentSerializer.State);
             ghostCollectionSystem.AddSerializer(FPSdemoGunManager_PlayerGunInternalDataGhostComponentSerializer.State);
             ghostCollectionSystem.AddSerializer(FPSdemoGunManager_ShootEventDataGhostComponentSerializer.State);

@@ -905,7 +905,7 @@ MonoBehaviour:
   SupportedGhostModes: 3
   OptimizationMode: 0
   Importance: 1
-  prefabId: 
+  prefabId: c58be71f744577e449f58e5d6af34ff9
   Name: EnemyMelee
   RefGameObjects: []
   ComponentNames: []

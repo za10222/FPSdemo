@@ -17,6 +17,8 @@ public struct Enemy : IComponentData
    public Entity Bodynode;
    [GhostField]
    public bool inhit;
+
+   public double FindUpdateTime;
         public enum EnemyState
     {
             idle=0,

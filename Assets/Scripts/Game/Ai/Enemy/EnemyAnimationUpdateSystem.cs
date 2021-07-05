@@ -48,6 +48,46 @@ namespace FPSdemo
                 }
  
             }).Schedule();
+
+            Entities.WithName("EnemyBossAnimationUpdateSystem").WithAll<EnemyBoss>()
+            .ForEach((Entity entity, in DynamicBuffer<Child> children, in EnemyBoss enemy) => {
+                var meshobject = Entity.Null;
+                foreach (var i in children)
+                {
+                    if (HasComponent<SampleAnimationController>(i.Value))
+                    {
+                        meshobject = i.Value;
+                        break;
+                    }
+                }
+                if (meshobject == Entity.Null)
+                    return;
+                var sampleAnimationController = GetComponent<SampleAnimationController>(meshobject);
+                switch (enemy.state)
+                {
+                    case EnemyBoss.EnemyBossState.idle:
+                        sampleAnimationController.currentState = SampleAnimationController.state.idle;
+                        SetComponent<SampleAnimationController>(meshobject, sampleAnimationController);
+                        break;
+                    case EnemyBoss.EnemyBossState.shoot:
+                        sampleAnimationController.currentState = SampleAnimationController.state.shoot;
+                        SetComponent<SampleAnimationController>(meshobject, sampleAnimationController);
+                        break;
+                    case EnemyBoss.EnemyBossState.bigshoot:
+                        sampleAnimationController.currentState = SampleAnimationController.state.bigShoot;
+                        SetComponent<SampleAnimationController>(meshobject, sampleAnimationController);
+                        break;
+                    case EnemyBoss.EnemyBossState.taunt:
+                        sampleAnimationController.currentState = SampleAnimationController.state.taunt;
+                        SetComponent<SampleAnimationController>(meshobject, sampleAnimationController);
+                        break;
+                    case EnemyBoss.EnemyBossState.dieing:
+                        sampleAnimationController.currentState = SampleAnimationController.state.dieing;
+                        SetComponent<SampleAnimationController>(meshobject, sampleAnimationController);
+                        break;
+                }
+
+            }).Schedule();
         }
     }
 }
