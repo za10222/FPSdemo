@@ -16,7 +16,10 @@ public struct EnemyBoss : IComponentData
    public EnemyBossState state;
    public Entity Bodyup;
    public Entity Bodylow;
-   [GhostField]
+   public Entity LeftRock;
+   public Entity RightRock;
+
+        [GhostField]
    public bool inhit;
 
 
@@ -41,7 +44,10 @@ public struct EnemyBossInternalData : IComponentData
     public double lastattacktime;
     public double lasthittime;
     public double dietime;
-}
+    public bool shootcreated;
+    public Entity find;
+
+    }
 
     [DisallowMultipleComponent]
 public class EnemyBossAuthoring : MonoBehaviour, IConvertGameObjectToEntity
@@ -62,12 +68,17 @@ public class EnemyBossAuthoring : MonoBehaviour, IConvertGameObjectToEntity
         public float recoverDuration = 0.1f;
         public GameObject Bodylow;
         public GameObject Bodyup;
+        public GameObject LeftRock;
+        public GameObject RightRock;
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
 
-          dstManager.AddComponentData(entity, new EnemyBoss { findDistance = findDistance, Bodyup = conversionSystem.GetPrimaryEntity(Bodyup), Bodylow = conversionSystem.GetPrimaryEntity(Bodylow) 
+          dstManager.AddComponentData(entity, new EnemyBoss { findDistance = findDistance,
+              Bodyup = conversionSystem.GetPrimaryEntity(Bodyup), Bodylow = conversionSystem.GetPrimaryEntity(Bodylow) 
           ,
-              hitDuration= hitDuration,
+              LeftRock = conversionSystem.GetPrimaryEntity(LeftRock),
+              RightRock = conversionSystem.GetPrimaryEntity(RightRock),
+              hitDuration = hitDuration,
               recoverDuration= recoverDuration
           });
 

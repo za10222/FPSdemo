@@ -86,7 +86,9 @@ namespace FPSdemo
             }).Schedule();
             Dependency.Complete();
             m_Barrier.AddJobHandleForProducer(Dependency);
-         
+            FPCs.Dispose();
+
+
         }
      
         static public void shootHitRaycastWithoutShooterBody(ref GunManager.ShootBeginData shootBeginData,

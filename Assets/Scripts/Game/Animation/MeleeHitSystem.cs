@@ -72,6 +72,7 @@ namespace FPSdemo
             Dependency.Complete();
 
             commandBuffer.Playback(EntityManager);
+            commandBuffer.Dispose();
         }
     }
 }

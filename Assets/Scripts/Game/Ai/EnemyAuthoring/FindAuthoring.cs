@@ -67,7 +67,7 @@ public class FindAuthoring : MonoBehaviour, IConvertGameObjectToEntity
             .ForEach((Entity entity, ref Enemy enemy,ref Rotation rotation, in LocalToWorld ltw,in NavAgent nav) =>
             {
                 enemy.FindUpdateTime += df;
-                if (enemy.FindUpdateTime<0.2d)
+                if (enemy.FindUpdateTime<0.05d)
                 {
                     return;
                 }
@@ -94,7 +94,7 @@ public class FindAuthoring : MonoBehaviour, IConvertGameObjectToEntity
                     if (angle > 1)
                     {
 
-                        rotation.Value = math.slerp(rotation.Value, lookRotation, df / 0.3f);
+                        rotation.Value = math.slerp(rotation.Value, lookRotation, df / 0.1f);
                         return;
                     }
              
@@ -150,7 +150,7 @@ public class FindAuthoring : MonoBehaviour, IConvertGameObjectToEntity
            .ForEach((Entity entity, ref EnemyBoss enemyboss, ref Rotation rotation, in LocalToWorld ltw) =>
            {
                enemyboss.FindUpdateTime += df;
-               if (enemyboss.FindUpdateTime < 0.2d)
+               if (enemyboss.FindUpdateTime < 0.05d)
                {
                    return;
                }
@@ -177,7 +177,7 @@ public class FindAuthoring : MonoBehaviour, IConvertGameObjectToEntity
                    if (angle > 1)
                    {
 
-                       rotation.Value = math.slerp(rotation.Value, lookRotation, df / 0.3f);
+                       rotation.Value = math.slerp(rotation.Value, lookRotation, df / 0.1f);
                        return;
                    }
                }
@@ -185,6 +185,8 @@ public class FindAuthoring : MonoBehaviour, IConvertGameObjectToEntity
 
             Dependency.Complete();
         eb.Playback(EntityManager);
+            translations.Dispose();
+            eb.Dispose();
     }
 }
 }
