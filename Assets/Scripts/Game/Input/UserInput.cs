@@ -18,6 +18,8 @@ namespace FPSdemo
         [DisableAutoCreation]
         [AlwaysUpdateSystem]
         [UpdateInGroup(typeof(GhostInputSystemGroup))]
+        [UpdateBefore (typeof(PlayerInputCommandSystem))]
+
         public class  UserInputUpdateSystem : SystemBase, InputActions.IPlayerActions
         {
             InputActions m_InputActions;

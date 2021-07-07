@@ -20,22 +20,99 @@ namespace FPSdemo
     public class MissleBossSystem : SystemBase
     {
         private double lastUpdateTime;
+        private NavSystem navSystem;
+        private BuildPhysicsWorld physicsWorldSystem;
+        private StepPhysicsWorld stepPhysicsWorld;
         EntityCommandBufferSystem barrier => World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+        override protected void OnCreate()
+        {
+            navSystem = World.GetOrCreateSystem<NavSystem>();
+            physicsWorldSystem = World.GetExistingSystem<BuildPhysicsWorld>();
+            stepPhysicsWorld = World.GetExistingSystem<StepPhysicsWorld>();
+            RequireSingletonForUpdate<GunDataBufferElement>();
+        }
+
         protected override void OnUpdate()
         {
-            var time = Time.ElapsedTime;
-            if(time-lastUpdateTime<0.5d)
+            
+            var df = Time.DeltaTime;
+            var events = ((Simulation)stepPhysicsWorld.Simulation).TriggerEvents;
+
+            foreach (var i in events)
             {
-                return;
+                Entity missle = Entity.Null;
+                Entity play = Entity.Null;
+                if ((HasComponent<MissleBoss>(i.EntityA) && HasComponent<Find>(i.EntityB)))
+                {
+                    missle = i.EntityA;
+                    play = i.EntityB;
+                    var missleBoss = GetComponent<MissleBoss>(missle);
+                    missleBoss.hitFind = true;
+                    missleBoss.hitEntity = play;
+                    SetComponent(missle, missleBoss);
+                    continue;
+                }
+                if ((HasComponent<MissleBoss>(i.EntityB) && HasComponent<Find>(i.EntityA)))
+                {
+                    missle = i.EntityB;
+                    play = i.EntityA;
+                    var missleBoss = GetComponent<MissleBoss>(missle);
+                    missleBoss.hitFind = true;
+                    missleBoss.hitEntity = play;
+                    SetComponent(missle, missleBoss);
+                    continue;
+                }
             }
-            lastUpdateTime = time;
-            var ltwFromEntity = GetComponentDataFromEntity<LocalToWorld>();
+
+            var tranFromEntity = GetComponentDataFromEntity<Translation>();
+
             var commandBuffer = barrier.CreateCommandBuffer().AsParallelWriter();
+            var setting = navSystem.Settings;
+            var collisionWorld = physicsWorldSystem.PhysicsWorld.CollisionWorld;
             Entities
-                .WithReadOnly(ltwFromEntity)
-               .ForEach((Entity entity, int entityInQueryIndex,in MissleBoss missleBoss) =>
+                .WithReadOnly(collisionWorld)
+                .WithReadOnly(tranFromEntity)
+               .ForEach((Entity entity, int entityInQueryIndex,ref MissleBoss missleBoss) =>
                {
-                   commandBuffer.AddComponent(entityInQueryIndex, entity, new NavDestination {WorldPoint=ltwFromEntity[missleBoss.find].Position});
+
+                   if(missleBoss.hitFind)
+                   {
+                       commandBuffer.DestroyEntity(entityInQueryIndex,entity);
+                   }
+                   else
+                   {
+                       missleBoss.navupdatedftime+=df;
+                       if (missleBoss.navupdatedftime<0.5)
+                       {
+                           return;
+                       }
+                       missleBoss.navupdatedftime = 0;
+                       var start = tranFromEntity[missleBoss.find].Value;
+                       var end = tranFromEntity[missleBoss.find].Value;
+                   
+
+
+                       start.y = 100;
+                       end.y = -100;
+                       Unity.Physics.RaycastHit hit = new Unity.Physics.RaycastHit();
+
+                       RaycastInput input = new RaycastInput()
+                       {
+                           Filter = new CollisionFilter()
+                           {
+                               BelongsTo = NavUtil.ToBitMask(setting.ColliderLayer),
+                               CollidesWith = NavUtil.ToBitMask(setting.SurfaceLayer),
+                           }
+                       };
+
+                       var ishit = CommonUtilities.Raycast(start, end, in collisionWorld, ref input, out hit);
+                       if(ishit)
+                       {
+                           commandBuffer.AddComponent(entityInQueryIndex, entity, new NavDestination { WorldPoint = hit.Position });
+                          
+                       }
+
+                   }
                }).ScheduleParallel();
             barrier.AddJobHandleForProducer(Dependency);
         }

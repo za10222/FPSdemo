@@ -9434,6 +9434,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 873732066, guid: 2b6e97a91d05d6b4a8fb706675d766c9, type: 3}
+      propertyPath: m_Material.m_CollisionResponse.m_Value
+      value: 254
+      objectReference: {fileID: 0}
+    - target: {fileID: 873732066, guid: 2b6e97a91d05d6b4a8fb706675d766c9, type: 3}
       propertyPath: m_Material.m_BelongsToCategories.m_Value.Category00
       value: 0
       objectReference: {fileID: 0}
@@ -9699,7 +9703,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6390455848351029844, guid: 2b6e97a91d05d6b4a8fb706675d766c9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8
+      value: 2.93
       objectReference: {fileID: 0}
     - target: {fileID: 6390455848351029844, guid: 2b6e97a91d05d6b4a8fb706675d766c9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -15442,6 +15446,10 @@ PrefabInstance:
       value: EnemyRange
       objectReference: {fileID: 0}
     - target: {fileID: 8894744036754960439, guid: ba29e8cd15890804da3ae14823b7b6a2, type: 3}
+      propertyPath: m_Material.m_CollisionResponse.m_Value
+      value: 254
+      objectReference: {fileID: 0}
+    - target: {fileID: 8894744036754960439, guid: ba29e8cd15890804da3ae14823b7b6a2, type: 3}
       propertyPath: m_Material.m_CollidesWithCategories.m_Value.Category29
       value: 0
       objectReference: {fileID: 0}
@@ -18510,6 +18518,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1925311030, guid: c58be71f744577e449f58e5d6af34ff9, type: 3}
+      propertyPath: m_Material.m_CollisionResponse.m_Value
+      value: 254
+      objectReference: {fileID: 0}
     - target: {fileID: 1925311030, guid: c58be71f744577e449f58e5d6af34ff9, type: 3}
       propertyPath: m_Material.m_CollidesWithCategories.m_Value.Category29
       value: 0

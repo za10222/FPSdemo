@@ -118,6 +118,11 @@ namespace FPSdemo
                 var ltw_left = ltwFromEntity[enemyBoss.LeftRock];
                 var ltw_right = ltwFromEntity[enemyBoss.RightRock];
                 var ltw = ltwFromEntity[entity];
+
+                var ltw_left_temp =new RigidTransform(ltw_left.Value);
+                ltw_left_temp.pos.y = ltw.Position.y;
+                var ltw_right_temp = new RigidTransform(ltw_right.Value);
+                ltw_right_temp.pos.y = ltw.Position.y;
                 if (enemyBoss.state == EnemyBoss.EnemyBossState.shoot)
                 {
                     //ÅÐ¶Ï
@@ -125,15 +130,16 @@ namespace FPSdemo
 
                     if (t > 1d && t < 1.5d)
                     {
+                     
                         if (!enemyBossInternalData.shootcreated)
                         {
                             var e_left = commandBuffer.Instantiate(entityInQueryIndex, m_misslePrefab2);
-                            commandBuffer.SetComponent<Translation>(entityInQueryIndex, e_left, new Translation { Value = ltw_left.Position });
+                            commandBuffer.SetComponent<Translation>(entityInQueryIndex, e_left, new Translation { Value = ltw_left_temp.pos });
                             commandBuffer.SetComponent<Rotation>(entityInQueryIndex, e_left, new Rotation { Value = ltw.Rotation });
                             commandBuffer.SetComponent<MissleBoss>(entityInQueryIndex, e_left, new MissleBoss { lifetime=10,find = enemyBossInternalData.find });
 
                             var e_right = commandBuffer.Instantiate(entityInQueryIndex, m_misslePrefab2);
-                            commandBuffer.SetComponent<Translation>(entityInQueryIndex, e_right, new Translation { Value = ltw_right.Position });
+                            commandBuffer.SetComponent<Translation>(entityInQueryIndex, e_right, new Translation { Value = ltw_right_temp.pos });
                             commandBuffer.SetComponent<Rotation>(entityInQueryIndex, e_right, new Rotation { Value = ltw.Rotation });
                             commandBuffer.SetComponent<MissleBoss>(entityInQueryIndex, e_right, new MissleBoss { lifetime = 10, find = enemyBossInternalData.find });
 
@@ -177,7 +183,7 @@ namespace FPSdemo
                     {
                         //ÄÜÅÜÂð
 
-                            enemyBoss.state = EnemyBoss.EnemyBossState.idle;
+                        enemyBoss.state = EnemyBoss.EnemyBossState.idle;
                     }
 
                 }

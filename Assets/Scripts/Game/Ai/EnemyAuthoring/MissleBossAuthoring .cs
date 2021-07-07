@@ -9,10 +9,12 @@ namespace FPSdemo
     {
         public float lifetime;
         public Entity find;
-
+        public bool hitFind;
+        public Entity hitEntity;
+        public float navupdatedftime;
     }
 
-    //[DisallowMultipleComponent]
+  
     //public class MissleAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     //{
     //    // Add fields to your component here. Remember that:

@@ -17,12 +17,13 @@ public class GameMain: MonoBehaviour
         {
                 var w = GameBootstrap.clientworld.GetExistingSystem<InitializationSystemGroup>();
         
-                w.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<UserInput.UserInputUpdateSystem>());
+             
 
                 var c = GameBootstrap.clientworld.GetExistingSystem<ClientSimulationSystemGroup>();
                 c.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<GoInGameClientSystem>());
 
                 var g = GameBootstrap.clientworld.GetExistingSystem<GhostInputSystemGroup>();
+                g.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<UserInput.UserInputUpdateSystem>());
                 g.AddSystemToUpdateList(GameBootstrap.clientworld.CreateSystem<PlayerInputCommandSystem>());
 
                 var F = GameBootstrap.clientworld.GetExistingSystem<FixedStepSimulationSystemGroup>();
