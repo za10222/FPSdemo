@@ -8,50 +8,51 @@ namespace FPSdemo
 {
 
 
-public struct EnemyBoss : IComponentData
-{
-   [GhostField]
-   public float findDistance;
-   [GhostField]
-   public EnemyBossState state;
-   public Entity Bodyup;
-   public Entity Bodylow;
-   public Entity LeftRock;
-   public Entity RightRock;
+    public struct EnemyBoss : IComponentData
+    {
+        [GhostField]
+        public float findDistance;
+        [GhostField]
+        public EnemyBossState state;
+        public Entity Bodyup;
+        public Entity Bodylow;
+        public Entity LeftRock;
+        public Entity RightRock;
 
         [GhostField]
-   public bool inhit;
+        public bool inhit;
 
 
-   public float hitDuration;
+        public float hitDuration;
 
-   public float recoverDuration;
+        public float recoverDuration;
 
-   public double FindUpdateTime;
+        public double FindUpdateTime;
         public enum EnemyBossState
-    {
-            idle=0,
+        {
+            idle = 0,
             shoot,
             bigshoot,
             dieing,
             taunt
         }
-}
-public struct EnemyBossInternalData : IComponentData
-{
-    public bool hasFind;
-    public Entity hitEntity;
-    public double lastattacktime;
-    public double lasthittime;
-    public double dietime;
-    public bool shootcreated;
-    public Entity find;
+    }
+    [GhostComponent(PrefabType = GhostPrefabType.Server)]
+    public struct EnemyBossInternalData : IComponentData
+    {
+        public bool hasFind;
+        public Entity hitEntity;
+        public double lastattacktime;
+        public double lasthittime;
+        public double dietime;
+        public bool shootcreated;
+        public Entity find;
 
     }
 
     [DisallowMultipleComponent]
-public class EnemyBossAuthoring : MonoBehaviour, IConvertGameObjectToEntity
-{
+    public class EnemyBossAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+    {
         // Add fields to your component here. Remember that:
         //
         // * The purpose of this class is to store data for authoring purposes - it is not for use while the game is
@@ -71,18 +72,21 @@ public class EnemyBossAuthoring : MonoBehaviour, IConvertGameObjectToEntity
         public GameObject LeftRock;
         public GameObject RightRock;
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
-    {
+        {
 
-          dstManager.AddComponentData(entity, new EnemyBoss { findDistance = findDistance,
-              Bodyup = conversionSystem.GetPrimaryEntity(Bodyup), Bodylow = conversionSystem.GetPrimaryEntity(Bodylow) 
-          ,
-              LeftRock = conversionSystem.GetPrimaryEntity(LeftRock),
-              RightRock = conversionSystem.GetPrimaryEntity(RightRock),
-              hitDuration = hitDuration,
-              recoverDuration= recoverDuration
-          });
+            dstManager.AddComponentData(entity, new EnemyBoss
+            {
+                findDistance = findDistance,
+                Bodyup = conversionSystem.GetPrimaryEntity(Bodyup),
+                Bodylow = conversionSystem.GetPrimaryEntity(Bodylow)
+            ,
+                LeftRock = conversionSystem.GetPrimaryEntity(LeftRock),
+                RightRock = conversionSystem.GetPrimaryEntity(RightRock),
+                hitDuration = hitDuration,
+                recoverDuration = recoverDuration
+            });
 
             dstManager.AddComponentData(entity, new EnemyBossInternalData { });
         }
-}
+    }
 }

@@ -69,6 +69,26 @@ namespace FPSdemo
                 }
 
             }).Schedule();
+
+            Entities.ForEach((in MissleBoss missleBoss) =>
+            {
+                if (missleBoss.inhit)
+                {
+                    commandBuffer.SetComponent(missleBoss.bodyEntity, new URPMaterialPropertyBaseColor
+                    {
+                        Value = red4
+                    });
+
+                }
+                else
+                {
+                    commandBuffer.SetComponent(missleBoss.bodyEntity, new URPMaterialPropertyBaseColor
+                    {
+                        Value = white4
+                    });
+                }
+
+            }).Schedule();
             Dependency.Complete();
 
             commandBuffer.Playback(EntityManager);

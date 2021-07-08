@@ -134,14 +134,19 @@ namespace FPSdemo
                         if (!enemyBossInternalData.shootcreated)
                         {
                             var e_left = commandBuffer.Instantiate(entityInQueryIndex, m_misslePrefab2);
+
+                            var missBossData = GetComponent<MissleBoss>(m_misslePrefab2);
+                                missBossData.lifetime = 10;
+                                missBossData.find = enemyBossInternalData.find;
                             commandBuffer.SetComponent<Translation>(entityInQueryIndex, e_left, new Translation { Value = ltw_left_temp.pos });
                             commandBuffer.SetComponent<Rotation>(entityInQueryIndex, e_left, new Rotation { Value = ltw.Rotation });
-                            commandBuffer.SetComponent<MissleBoss>(entityInQueryIndex, e_left, new MissleBoss { lifetime=10,find = enemyBossInternalData.find });
+ 
+                            commandBuffer.SetComponent<MissleBoss>(entityInQueryIndex, e_left, missBossData);
 
                             var e_right = commandBuffer.Instantiate(entityInQueryIndex, m_misslePrefab2);
                             commandBuffer.SetComponent<Translation>(entityInQueryIndex, e_right, new Translation { Value = ltw_right_temp.pos });
                             commandBuffer.SetComponent<Rotation>(entityInQueryIndex, e_right, new Rotation { Value = ltw.Rotation });
-                            commandBuffer.SetComponent<MissleBoss>(entityInQueryIndex, e_right, new MissleBoss { lifetime = 10, find = enemyBossInternalData.find });
+                            commandBuffer.SetComponent<MissleBoss>(entityInQueryIndex, e_right, missBossData);
 
                             enemyBossInternalData.shootcreated = true;
                         }

@@ -65,22 +65,59 @@ namespace FPSdemo
             }
 
             var tranFromEntity = GetComponentDataFromEntity<Translation>();
-
+           
             var commandBuffer = barrier.CreateCommandBuffer().AsParallelWriter();
             var setting = navSystem.Settings;
             var collisionWorld = physicsWorldSystem.PhysicsWorld.CollisionWorld;
+            var bufferFromEntity = GetBufferFromEntity<HealthEventBufferElement>();
+            var time = Time.ElapsedTime;
             Entities
+                .WithReadOnly(bufferFromEntity)
                 .WithReadOnly(collisionWorld)
                 .WithReadOnly(tranFromEntity)
                .ForEach((Entity entity, int entityInQueryIndex,ref MissleBoss missleBoss) =>
                {
+                   var health = GetComponent<HealthData>(entity);
+                   if (health.currentHp == 0)
+                   {
+                          commandBuffer.DestroyEntity(entityInQueryIndex, entity);
 
-                   if(missleBoss.hitFind)
+                       return;
+                   }
+
+
+                   if (missleBoss.hitFind)
                    {
                        commandBuffer.DestroyEntity(entityInQueryIndex,entity);
                    }
                    else
                    {
+                       if (missleBoss.inhit)
+                       {
+                           if (time > missleBoss.lasthittime + missleBoss.hitDuration)
+                           {  //»¹Ô­
+                              //commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor
+                              //{
+                              //    Value = white4
+                              //});
+                               missleBoss.inhit = false;
+                           }
+
+                       }
+                       else
+                       {
+                           if ((time > missleBoss.lasthittime + missleBoss.hitDuration + missleBoss.recoverDuration) &&
+                           bufferFromEntity.HasComponent(entity) && bufferFromEntity[entity].Length > 0)
+                           {
+                               //commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor
+                               //{
+                               //    Value = red4
+                               //});
+                               missleBoss.inhit = true;
+                               missleBoss.lasthittime = time;
+                           }
+                       }
+
                        missleBoss.navupdatedftime+=df;
                        if (missleBoss.navupdatedftime<0.5)
                        {

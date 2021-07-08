@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 2889416865797480558}
   - component: {fileID: 1012011524043173516}
   - component: {fileID: 2627994464989309394}
-  - component: {fileID: 816321974831473455}
   - component: {fileID: 8934842687122896973}
   - component: {fileID: 209600398452240241}
+  - component: {fileID: -5097666874807117350}
+  - component: {fileID: 5688775900225587996}
   m_Layer: 0
   m_Name: Missile Boss
   m_TagString: Untagged
@@ -203,23 +204,6 @@ MonoBehaviour:
         Tag07: 0
     m_SerializedVersion: 1
   m_SerializedVersion: 1
---- !u!114 &816321974831473455
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2545261632864516820}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 789d15a0d1c46444aadba4780117962d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lifetime: 10
-  find: {fileID: 0}
-  hitFind: 0
-  hitEntity: {fileID: 0}
-  navupdatedftime: 0
 --- !u!114 &8934842687122896973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,6 +275,36 @@ MonoBehaviour:
   type: Humanoid
   offset: {x: 0, y: 0, z: 0}
   isTerrainCapable: 0
+--- !u!114 &-5097666874807117350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2545261632864516820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 299ca62cdb0debd4e8f610f160d2b0dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 10
+  currentHp: 10
+--- !u!114 &5688775900225587996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2545261632864516820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 789d15a0d1c46444aadba4780117962d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inhit: 0
+  bodyEntity: {fileID: 4672229282036208005}
+  hitDuration: 0.2
+  recoverDuration: 0.4
 --- !u!1 &4672229282036208005
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,6 +316,7 @@ GameObject:
   - component: {fileID: 266957323497317981}
   - component: {fileID: 3903945310208329445}
   - component: {fileID: 2192240901412169592}
+  - component: {fileID: 1145481269040820195}
   m_Layer: 0
   m_Name: Mesh Object
   m_TagString: Untagged
@@ -372,3 +387,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1145481269040820195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4672229282036208005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54b6467bcd530cd4d809fae70ea0ca9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Value:
+    x: 1
+    y: 1
+    z: 1
+    w: 1

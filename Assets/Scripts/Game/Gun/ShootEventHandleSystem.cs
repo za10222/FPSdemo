@@ -158,7 +158,7 @@ namespace FPSdemo
                 if(healthEventBufferFromEntity.HasComponent(hit.Entity)&&isServer)
                 {
 
-                    //Debug.Log(string.Format("命中+{0}+{1}+{2}+{3}",worldname,hit.Entity.Index,bt,cw));
+                    Debug.Log(string.Format("命中+{0}+{1}+{2}+{3}",isServer,hit.Entity.Index,bt,cw));
                     healthEventBufferFromEntity[hit.Entity].Add(new HealthEventBufferElement { healthChange = -10 });
                 }
             }

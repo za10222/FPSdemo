@@ -29,7 +29,7 @@ namespace FPSdemo
                 {
                     healthData.currentHp += healthEventBuffers[i].healthChange;
                     healthData.currentHp = math.clamp(healthData.currentHp, 0, healthData.maxHp);
-                  
+                    
                 }
                 healthEventBuffers.Clear();
                 // Implement the work to perform for each entity here.
