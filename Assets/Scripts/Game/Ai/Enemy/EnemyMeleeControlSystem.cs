@@ -30,33 +30,8 @@ namespace FPSdemo
 
         protected override void OnUpdate()
         {
-            var events = ((Simulation)stepPhysicsWorld.Simulation).TriggerEvents;
             var commandBuffer = barrier.CreateCommandBuffer().AsParallelWriter();
-            foreach (var i in events)
-            {
-                Entity enemy = Entity.Null;
-                Entity play = Entity.Null;
-                if ((HasComponent<Find>(i.EntityA) && HasComponent<EnemyMelee>(i.EntityB)))
-                {
-                    enemy = i.EntityB;
-                    play = i.EntityA;
-                    var enemyMeleeInternalData = GetComponent<EnemyMeleeInternalData>(enemy);
-                    enemyMeleeInternalData.hasFind = true;
-                    enemyMeleeInternalData.hitEntity = play;
-                    SetComponent(enemy, enemyMeleeInternalData );
-                    continue;
-                }
-                if ((HasComponent<Find>(i.EntityB) && HasComponent<EnemyMelee>(i.EntityA)))
-                {
-                    enemy = i.EntityA;
-                    play = i.EntityB;
-                    var enemyMeleeInternalData = GetComponent<EnemyMeleeInternalData>(enemy);
-                    enemyMeleeInternalData.hasFind = true;
-                    enemyMeleeInternalData.hitEntity = play;
-                    SetComponent(enemy, enemyMeleeInternalData);
-                    continue;
-                }
-            }
+    
             var bufferFromEntity= GetBufferFromEntity<HealthEventBufferElement>();
 
 

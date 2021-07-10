@@ -661,6 +661,7 @@ GameObject:
   - component: {fileID: 4913108214090120752}
   - component: {fileID: 311666349}
   - component: {fileID: 3853090689595533973}
+  - component: {fileID: 8918530560777667621}
   m_Layer: 0
   m_Name: EnemyMelee
   m_TagString: Untagged
@@ -733,7 +734,7 @@ MonoBehaviour:
     m_Template: {fileID: 0}
     m_CollisionResponse:
       m_Override: 0
-      m_Value: 0
+      m_Value: 254
     m_Friction:
       m_Override: 0
       m_Value:
@@ -811,8 +812,8 @@ MonoBehaviour:
         Category26: 0
         Category27: 0
         Category28: 0
-        Category29: 1
-        Category30: 0
+        Category29: 0
+        Category30: 1
         Category31: 0
     m_CustomMaterialTags:
       m_Override: 0
@@ -912,6 +913,56 @@ MonoBehaviour:
   PrefabTypeOverrides: []
   SendTypeOverrides: []
   VariantOverrides: []
+--- !u!114 &8918530560777667621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7813101114260932778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccea9ea98e38942e0b0938c27ed1903e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MotionType: 1
+  m_Smoothing: 0
+  m_Mass: 1
+  m_LinearDamping: 0.01
+  m_AngularDamping: 0.05
+  m_InitialLinearVelocity:
+    x: 0
+    y: 0
+    z: 0
+  m_InitialAngularVelocity:
+    x: 0
+    y: 0
+    z: 0
+  m_GravityFactor: 1
+  m_OverrideDefaultMassDistribution: 0
+  m_CenterOfMass:
+    x: 0
+    y: 0
+    z: 0
+  m_Orientation:
+    Value:
+      x: 0
+      y: 0
+      z: 0
+    RotationOrder: 4
+  m_InertiaTensor:
+    x: 0.4
+    y: 0.4
+    z: 0.4
+  m_CustomTags:
+    Tag00: 0
+    Tag01: 0
+    Tag02: 0
+    Tag03: 0
+    Tag04: 0
+    Tag05: 0
+    Tag06: 0
+    Tag07: 0
 --- !u!1 &8288959136455778431
 GameObject:
   m_ObjectHideFlags: 0

@@ -21,7 +21,7 @@ namespace FPSdemo
                 End = RayTo,
                 Filter = new CollisionFilter()
                 {
-                    BelongsTo = ~0u,
+                    BelongsTo = ~0u, 
                     CollidesWith = ~(1u<<22), // all 1s, so all layers, collide with everything
                     GroupIndex = -5
                 }

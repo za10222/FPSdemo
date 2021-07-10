@@ -23,7 +23,7 @@ namespace Assembly_CSharp.Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 12793143981069296801,
+                    GhostFieldsHash = 13977548145555198704,
                     ExcludeFromComponentCollectionHash = 0,
                     ComponentType = ComponentType.ReadWrite<CharacterControllerInternalData>(),
                     ComponentSize = UnsafeUtility.SizeOf<CharacterControllerInternalData>(),
@@ -75,8 +75,11 @@ namespace Assembly_CSharp.Generated
             public int Entity;
             public uint EntitySpawnTick;
             public uint IsJumping;
+            public float addVelocity_x;
+            public float addVelocity_y;
+            public float addVelocity_z;
         }
-        public const int ChangeMaskBits = 7;
+        public const int ChangeMaskBits = 8;
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CopyToFromSnapshotDelegate))]
         private static void CopyToSnapshot(IntPtr stateData, IntPtr snapshotData, int snapshotOffset, int snapshotStride, IntPtr componentData, int componentStride, int count)
@@ -106,6 +109,9 @@ namespace Assembly_CSharp.Generated
                     snapshot.EntitySpawnTick = ghostComponent.spawnTick;
                 }
                 snapshot.IsJumping = component.IsJumping?1u:0;
+                snapshot.addVelocity_x = component.addVelocity.x;
+                snapshot.addVelocity_y = component.addVelocity.y;
+                snapshot.addVelocity_z = component.addVelocity.z;
             }
         }
         [BurstCompile]
@@ -143,6 +149,7 @@ namespace Assembly_CSharp.Generated
                         component.Entity = ghostEnt;
                 }
                 component.IsJumping = snapshotBefore.IsJumping != 0;
+                component.addVelocity = new float3(snapshotBefore.addVelocity_x, snapshotBefore.addVelocity_y, snapshotBefore.addVelocity_z);
 
             }
         }
@@ -167,6 +174,9 @@ namespace Assembly_CSharp.Generated
             component.Velocity.Angular.z = backup.Velocity.Angular.z;
             component.Entity = backup.Entity;
             component.IsJumping = backup.IsJumping;
+            component.addVelocity.x = backup.addVelocity.x;
+            component.addVelocity.y = backup.addVelocity.y;
+            component.addVelocity.z = backup.addVelocity.z;
         }
 
         [BurstCompile]
@@ -201,7 +211,10 @@ namespace Assembly_CSharp.Generated
             changeMask |= (snapshot.Velocity_Angular_z != baseline.Velocity_Angular_z) ? (1u<<4) : 0;
             changeMask |= (snapshot.Entity != baseline.Entity || snapshot.EntitySpawnTick != baseline.EntitySpawnTick) ? (1u<<5) : 0;
             changeMask |= (snapshot.IsJumping != baseline.IsJumping) ? (1u<<6) : 0;
-            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 7);
+            changeMask |= (snapshot.addVelocity_x != baseline.addVelocity_x) ? (1u<<7) : 0;
+            changeMask |= (snapshot.addVelocity_y != baseline.addVelocity_y) ? (1u<<7) : 0;
+            changeMask |= (snapshot.addVelocity_z != baseline.addVelocity_z) ? (1u<<7) : 0;
+            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 8);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.SerializeDelegate))]
@@ -239,6 +252,12 @@ namespace Assembly_CSharp.Generated
             }
             if ((changeMask & (1 << 6)) != 0)
                 writer.WritePackedUIntDelta(snapshot.IsJumping, baseline.IsJumping, compressionModel);
+            if ((changeMask & (1 << 7)) != 0)
+                writer.WritePackedFloatDelta(snapshot.addVelocity_x, baseline.addVelocity_x, compressionModel);
+            if ((changeMask & (1 << 7)) != 0)
+                writer.WritePackedFloatDelta(snapshot.addVelocity_y, baseline.addVelocity_y, compressionModel);
+            if ((changeMask & (1 << 7)) != 0)
+                writer.WritePackedFloatDelta(snapshot.addVelocity_z, baseline.addVelocity_z, compressionModel);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.DeserializeDelegate))]
@@ -305,6 +324,18 @@ namespace Assembly_CSharp.Generated
                 snapshot.IsJumping = reader.ReadPackedUIntDelta(baseline.IsJumping, compressionModel);
             else
                 snapshot.IsJumping = baseline.IsJumping;
+            if ((changeMask & (1 << 7)) != 0)
+                snapshot.addVelocity_x = reader.ReadPackedFloatDelta(baseline.addVelocity_x, compressionModel);
+            else
+                snapshot.addVelocity_x = baseline.addVelocity_x;
+            if ((changeMask & (1 << 7)) != 0)
+                snapshot.addVelocity_y = reader.ReadPackedFloatDelta(baseline.addVelocity_y, compressionModel);
+            else
+                snapshot.addVelocity_y = baseline.addVelocity_y;
+            if ((changeMask & (1 << 7)) != 0)
+                snapshot.addVelocity_z = reader.ReadPackedFloatDelta(baseline.addVelocity_z, compressionModel);
+            else
+                snapshot.addVelocity_z = baseline.addVelocity_z;
         }
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
         [BurstCompile]
@@ -325,6 +356,8 @@ namespace Assembly_CSharp.Generated
             errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.Velocity.Angular, backup.Velocity.Angular));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], (component.IsJumping != backup.IsJumping) ? 1 : 0);
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.addVelocity, backup.addVelocity));
             ++errorIndex;
         }
         private static int GetPredictionErrorNames(ref FixedString512 names)
@@ -353,6 +386,10 @@ namespace Assembly_CSharp.Generated
             if (nameCount != 0)
                 names.Append(new FixedString32(","));
             names.Append(new FixedString64("IsJumping"));
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32(","));
+            names.Append(new FixedString64("addVelocity"));
             ++nameCount;
             return nameCount;
         }

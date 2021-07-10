@@ -63,7 +63,7 @@ namespace FPSdemo
                     continue;
                 }
             }
-
+            
             var tranFromEntity = GetComponentDataFromEntity<Translation>();
            
             var commandBuffer = barrier.CreateCommandBuffer().AsParallelWriter();

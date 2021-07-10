@@ -471,7 +471,7 @@ MonoBehaviour:
     m_Template: {fileID: 0}
     m_CollisionResponse:
       m_Override: 0
-      m_Value: 0
+      m_Value: 254
     m_Friction:
       m_Override: 0
       m_Value:
@@ -549,8 +549,8 @@ MonoBehaviour:
         Category26: 0
         Category27: 0
         Category28: 0
-        Category29: 1
-        Category30: 0
+        Category29: 0
+        Category30: 1
         Category31: 0
     m_CustomMaterialTags:
       m_Override: 0

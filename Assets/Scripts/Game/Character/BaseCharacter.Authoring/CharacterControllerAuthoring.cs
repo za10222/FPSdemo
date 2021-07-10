@@ -81,6 +81,12 @@ public struct CharacterControllerInternalData : IComponentData
     [GhostField]
     public bool IsJumping;
 
+    [GhostField]
+    public float3 addVelocity;
+
+
+    public double starttime;
+
     public CharacterControllerInput Input;
 }
 
@@ -244,7 +250,6 @@ public class CharacterControllerSystem : SystemBase
         public unsafe void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
         {
 
-            
             var chunkCCData = chunk.GetNativeArray(CharacterControllerComponentType);
             var chunkCCInternalData = chunk.GetNativeArray(CharacterControllerInternalType);
             var chunkPhysicsColliderData = chunk.GetNativeArray(PhysicsColliderType);
@@ -334,8 +339,6 @@ public class CharacterControllerSystem : SystemBase
                 {
                     currentFrameTriggerEvents = new NativeList<StatefulTriggerEvent>(Allocator.Temp);
                 }
-
-
                 // Check support
                 CheckSupport(ref PhysicsWorld, ref collider, stepInput, transform,
                     out ccInternalData.SupportedState, out float3 surfaceNormal, out float3 surfaceVelocity,
@@ -345,7 +348,6 @@ public class CharacterControllerSystem : SystemBase
                 // User input
                 float3 desiredVelocity = ccInternalData.Velocity.Linear;
                 HandleUserInput(ccComponentData, stepInput.Up, surfaceVelocity, ref ccInternalData, ref desiredVelocity);
-
                 // Calculate actual velocity with respect to surface
                 if (ccInternalData.SupportedState == CharacterSupportState.Supported)
                 {
@@ -409,9 +411,9 @@ public class CharacterControllerSystem : SystemBase
                 float horizontal = ccInternalData.Input.Commond.Movement.x;
                 float vertical = ccInternalData.Input.Commond.Movement.y;
                 bool jumpRequested = ccInternalData.Input.Commond.buttons.IsSet(FPSdemo.UserCommand.Button.Jump);
-                ccInternalData.Input.Commond.buttons.Set (FPSdemo.UserCommand.Button.Jump,false); // "consume" the event
+                ccInternalData.Input.Commond.buttons.Set(FPSdemo.UserCommand.Button.Jump, false); // "consume" the event
                 bool haveInput = (math.abs(horizontal) > float.Epsilon) || (math.abs(vertical) > float.Epsilon);
-                if (haveInput&& ccInternalData.Input.hasinput)
+                if (haveInput && ccInternalData.Input.hasinput)
                 {
                     float3 localSpaceMovement = forward * vertical + right * horizontal;
                     float3 worldSpaceMovement = math.rotate(quaternion.AxisAngle(up, ccInternalData.CurrentRotationAngle), localSpaceMovement);
@@ -424,7 +426,7 @@ public class CharacterControllerSystem : SystemBase
             {
                 float horizontal = ccInternalData.Input.Commond.Looking.x;
                 bool haveInput = (math.abs(horizontal) > float.Epsilon);
-                if (haveInput&& ccInternalData.Input.hasinput)
+                if (haveInput && ccInternalData.Input.hasinput)
                 {
                     //ccInternalData.Velocity.Angular = -userRotationSpeed * up;
                     ccInternalData.Velocity.Angular = 0f;
@@ -454,9 +456,19 @@ public class CharacterControllerSystem : SystemBase
                     ccInternalData.UnsupportedVelocity += ccComponentData.Gravity * DeltaTime;
                 }
                 // If unsupported then keep jump and surface momentum
-                linearVelocity = requestedMovementDirection * ccComponentData.MovementSpeed +
+                linearVelocity = requestedMovementDirection * ccComponentData.MovementSpeed + ccInternalData.addVelocity +
                     (ccInternalData.SupportedState != CharacterSupportState.Supported ? ccInternalData.UnsupportedVelocity : float3.zero);
             }
+            if (ccInternalData.starttime>0)
+            {
+                ccInternalData.starttime -= DeltaTime;
+                if (ccInternalData.starttime <= 0)
+                {
+                    ccInternalData.addVelocity = 0;
+                }
+            }
+            
+            //ccInternalData.addVelocity = 0;
             //ccInternalData.Input.hasinput = false;
         }
 
@@ -482,7 +494,6 @@ public class CharacterControllerSystem : SystemBase
 
             float3 relative = currentVelocity - surfaceVelocity;
             relative = math.rotate(math.inverse(surfaceFrame.Value), relative);
-
             float3 diff;
             {
                 float3 sideVec = math.cross(forward, up);
@@ -494,7 +505,6 @@ public class CharacterControllerSystem : SystemBase
                 desiredVelocitySF *= len;
                 diff = desiredVelocitySF - relative;
             }
-
             relative += diff;
 
             linearVelocity = math.rotate(surfaceFrame.Value, relative) + surfaceVelocity +

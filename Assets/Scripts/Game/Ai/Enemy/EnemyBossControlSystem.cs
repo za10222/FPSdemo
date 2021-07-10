@@ -41,6 +41,7 @@ namespace FPSdemo
 
 
             var ltwFromEntity = GetComponentDataFromEntity<LocalToWorld>();
+            var tranFromEntity = GetComponentDataFromEntity<Translation>();
 
             var collisionWorld = physicsWorldSystem.PhysicsWorld.CollisionWorld;
 
@@ -63,6 +64,7 @@ namespace FPSdemo
                 .WithReadOnly(bufferFromEntity)
                 .WithReadOnly(ltwFromEntity)
                 .WithReadOnly(collisionWorld)
+                .WithReadOnly(tranFromEntity)
                 .ForEach((Entity entity, int entityInQueryIndex, ref EnemyBossInternalData enemyBossInternalData, ref EnemyBoss enemyBoss) =>
             {
                 if(HasComponent<HealthData>(entity))
@@ -74,12 +76,14 @@ namespace FPSdemo
                         {
                             commandBuffer.AddComponent<NavStop>(entityInQueryIndex, entity);
                         }
+                        var physicsVelocity = new PhysicsVelocity();
+                        commandBuffer.AddComponent(entityInQueryIndex, entity, physicsVelocity);
 
                         enemyBoss.state = EnemyBoss.EnemyBossState.dieing;
                         enemyBoss.inhit = false;
                         if (enemyBossInternalData.dietime>0.1)
                         {
-                            if(time - enemyBossInternalData.dietime > 2.5)
+                            if(time - enemyBossInternalData.dietime > 2)
                             {
                                 commandBuffer.DestroyEntity(entityInQueryIndex, entity);
                             }
@@ -128,7 +132,7 @@ namespace FPSdemo
                     //判断
                     var t = time - enemyBossInternalData.lastattacktime;
 
-                    if (t > 1d && t < 1.5d)
+                    if (t > 3d && t < 5d)
                     {
                      
                         if (!enemyBossInternalData.shootcreated)
@@ -157,7 +161,7 @@ namespace FPSdemo
                         //enemy.state = Enemy.EnemyState.idle;
                         //commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor { Value = white4 });
                     }   //等待 啥都不做
-                    else if (t > 1.5d)
+                    else if (t > 5d)
                     {
                         enemyBoss.state = EnemyBoss.EnemyBossState.idle;
                         //状态变为idle
@@ -166,10 +170,70 @@ namespace FPSdemo
                         //commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor { Value = white4 });
 
                     }
+                    return;
                 }
-                else
+
+                if (enemyBoss.state == EnemyBoss.EnemyBossState.taunt)
                 {
-                 
+                    //判断
+                    var t = time - enemyBossInternalData.lastattacktime;
+
+                    if (t > 0d && t < 3d)
+                    {
+
+                        if (!enemyBossInternalData.shootcreated)
+                        {
+                            var tarpos = tranFromEntity[enemyBossInternalData.find];
+                            var physicsMass = GetComponent<PhysicsMass>(entity);
+                            var translation = GetComponent<Translation>(entity);
+                            var rotation = GetComponent<Rotation>(entity);
+
+                            var normal = math.normalize(math.forward(ltw.Rotation));
+
+                           // tarpos.Value -= normal * 2;
+                            var dis = math.distance(tarpos.Value, ltw.Position);
+                            var v_abs = dis / 3;
+                            var physicsVelocity = new PhysicsVelocity { Linear = normal * v_abs };
+
+                            Debug.Log(string.Format("{0}", physicsVelocity.Linear));
+                            commandBuffer.AddComponent(entityInQueryIndex, entity, physicsVelocity);
+
+                            enemyBossInternalData.shootcreated = true;
+
+                        }
+                        //进行攻击判断 状态变为idle
+                        //Debug.Log(string.Format("find player {0}", hitresult.Entity));
+                        //enemy.state = Enemy.EnemyState.idle;
+                        //commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor { Value = white4 });
+                    }   //等待 啥都不做
+                    else if (t > 3d)
+                    {
+
+                        enemyBoss.state = EnemyBoss.EnemyBossState.idle;
+                        var physicsVelocity = new PhysicsVelocity();
+                        commandBuffer.AddComponent(entityInQueryIndex, entity, physicsVelocity);
+                        //var mass = GetComponent<PhysicsMass>(entity);
+                        //var ve
+                        //PhysicsVelocity.CalculateVelocityToTarget();
+                        //状态变为idle
+                        //Debug.Log(string.Format("find player {0}", hitresult.Entity));
+                        //enemy.state = Enemy.EnemyState.idle;
+                        //commandBuffer.SetComponent(entityInQueryIndex, enemyMelee.entitynode, new URPMaterialPropertyBaseColor { Value = white4 });
+
+                    }
+                    return;
+                }
+       
+
+
+
+                //正常状态
+                {
+                    var random=new Unity.Mathematics.Random((uint)time*100+1);
+                    var nextAttackType = random.NextBool();
+                    //;
+
+
                     var forward = math.normalize(math.forward(ltw.Rotation));
                     var startpos = ltw.Position;
                     var endpos = ltw.Position + forward * enemyBoss.findDistance;
@@ -179,14 +243,24 @@ namespace FPSdemo
                     if (ishit)
                     {
                         commandBuffer.AddComponent<NavStop>(entityInQueryIndex, entity);
-                        enemyBoss.state = EnemyBoss.EnemyBossState.shoot;
                         enemyBossInternalData.lastattacktime = time;
                         enemyBossInternalData.shootcreated = false;
-                        enemyBossInternalData.find =hitresult.Entity;
+                        enemyBossInternalData.find = hitresult.Entity;
+                        Debug.Log(string.Format("{0}", enemyBossInternalData.find.Index));
+                        if (nextAttackType)
+                        {
+                        enemyBoss.state = EnemyBoss.EnemyBossState.shoot;
+                     
+                        }else
+                        {
+
+                         enemyBoss.state = EnemyBoss.EnemyBossState.taunt;
+
+                        }
                     }
                     else
                     {
-                        //能跑吗
+                        //
 
                         enemyBoss.state = EnemyBoss.EnemyBossState.idle;
                     }

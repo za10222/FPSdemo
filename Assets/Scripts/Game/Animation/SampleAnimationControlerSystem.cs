@@ -60,7 +60,7 @@ namespace FPSdemo
                             animationController.lastState = animationController.currentState;
                             var clipIndex = getClipIndex(in animationController.currentState, simpleAnimationClipDatas);
                             simpleAnimation.TransitionTo(clipIndex, animationController.TransitionDuration, ref simpleAnimationClipDatas, false);
-                            simpleAnimation.SetSpeed(1f, clipIndex, ref simpleAnimationClipDatas);
+                            simpleAnimation.SetSpeed(simpleAnimationClipDatas[clipIndex].Speed, clipIndex, ref simpleAnimationClipDatas);
 
                         }
                     }).Schedule();
