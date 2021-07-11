@@ -47,7 +47,7 @@ public class SimpleAnimationAuthoring : MonoBehaviour, IConvertGameObjectToEntit
 
             SimpleAnimationClipData a = new SimpleAnimationClipData
             {
-                Clip = Clips[i].Clip.ToDenseClip(),
+                Clip = conversionSystem.BlobAssetStore.GetClip(Clips[i].Clip),
                 Speed = Clips[i].InitialSpeed,
                 Weight = (i == 0) ? 1f : 0f,
                 Loop = Clips[i].Loop,

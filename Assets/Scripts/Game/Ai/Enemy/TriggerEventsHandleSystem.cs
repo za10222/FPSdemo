@@ -25,6 +25,7 @@ namespace FPSdemo
     public class TriggerEventHandleSystem : SystemBase
     {
         StepPhysicsWorld stepPhysicsWorld;
+        EntityCommandBufferSystem barrier => World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
         protected override void OnCreate()
         {
             stepPhysicsWorld = World.GetExistingSystem<StepPhysicsWorld>();
@@ -33,6 +34,7 @@ namespace FPSdemo
 
         protected override void OnUpdate()
         {
+            var commandBuffer = barrier.CreateCommandBuffer();
             var time = Time.ElapsedTime;
             var events = ((Simulation)stepPhysicsWorld.Simulation).TriggerEvents;
             foreach (var i in events)
@@ -72,10 +74,11 @@ namespace FPSdemo
 
                     intel.addVelocity = -math.normalize(rot2 - rot) * 10;
                     intel.starttime = 0.3d;
-                    Debug.Log("×²µ½");
+                    var healthbuff = GetBuffer<HealthEventBufferElement>(play);
+                    healthbuff.Add(new HealthEventBufferElement { healthChange = -20 });
                     SetComponent(play, intel);
-                    continue;
-                }
+                    continue; 
+                }  
                 if ((HasComponent<Find>(i.EntityB) && HasComponent<EnemyBoss>(i.EntityA)))
                 {
                     enemyboss = i.EntityA;
@@ -85,9 +88,34 @@ namespace FPSdemo
                     var rot2 = GetComponent<LocalToWorld>(enemyboss).Position;
                     intel.addVelocity = -math.normalize(rot2 - rot) * 10;
                     intel.starttime = 0.3d;
-                    Debug.Log("×²µ½");
+                    var healthbuff = GetBuffer<HealthEventBufferElement>(play);
+                    healthbuff.Add(new HealthEventBufferElement { healthChange = -20 });
                     SetComponent(play, intel);
 
+                    continue;
+                }
+
+                if ((HasComponent<Find>(i.EntityA) && HasComponent<Missile>(i.EntityB)))
+                {
+                    var missle = i.EntityB;
+                    play = i.EntityA;
+
+
+                    var healthbuff = GetBuffer<HealthEventBufferElement>(play);
+                    healthbuff.Add(new HealthEventBufferElement { healthChange = -5 });
+                    commandBuffer.DestroyEntity(missle);
+                    continue;
+                }
+                if ((HasComponent<Find>(i.EntityB) && HasComponent<Missile>(i.EntityA)))
+                {
+                    var missle = i.EntityA;
+                    play = i.EntityB;
+                    var healthbuff = GetBuffer<HealthEventBufferElement>(play);
+                    healthbuff.Add(new HealthEventBufferElement { healthChange=-5});
+
+                    commandBuffer.DestroyEntity(missle);
+
+                     
                     continue;
                 }
             }

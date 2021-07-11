@@ -52,6 +52,8 @@ public struct CharacterControllerComponentData : IComponentData
     public byte RaiseTriggerEvents;
 }
 
+
+
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 public struct CharacterControllerInput : IComponentData
 {
@@ -164,6 +166,7 @@ public class CharacterControllerAuthoring : MonoBehaviour, IConvertGameObjectToE
 
             dstManager.AddComponentData(entity, componentData);
             dstManager.AddComponentData(entity, internalData);
+            dstManager.AddComponentData(entity, new Point { point =0});
             if (RaiseCollisionEvents)
             {
                 dstManager.AddBuffer<StatefulCollisionEvent>(entity);

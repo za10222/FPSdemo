@@ -22,6 +22,7 @@ namespace FPSdemo
 
         public int guntypeindex=0;
 
+        public float  damage = 10;
         public float ballisticVelocity=1;
 
         public GameObject gunmodel;
@@ -44,7 +45,8 @@ namespace FPSdemo
             {
                 shootgap = shootgap,
                 gunTypeIndex = guntypeindex,
-                ballisticVelocity = ballisticVelocity
+                ballisticVelocity = ballisticVelocity,
+                damage=damage
             });
             GunManager.GunRenderData gunRenderData = default(GunManager.GunRenderData);
             gunRenderData.GunModelEntity = conversionSystem.GetPrimaryEntity(gunmodel);

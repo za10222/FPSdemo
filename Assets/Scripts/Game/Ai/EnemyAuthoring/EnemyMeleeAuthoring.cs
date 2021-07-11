@@ -21,7 +21,7 @@ namespace FPSdemo
        public double lastattacktime;
        public double lasthittime;
        public double dietime;
-
+       public bool isattack;
 
     }
 

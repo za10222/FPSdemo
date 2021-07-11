@@ -29,6 +29,8 @@ public class ClientServerConnectionSystem : SystemBase
 
     protected override void OnUpdate()
     {
+        if (!UiManager.needtoconnect)
+            return;
         Debug.Log(ClientServerBootstrap.RequestedPlayType);
         EntityManager.DestroyEntity(GetSingletonEntity<InitializeClientServer>());
         foreach (var world in World.All)

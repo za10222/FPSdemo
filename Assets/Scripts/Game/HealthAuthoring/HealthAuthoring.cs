@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 namespace FPSdemo
 {
@@ -7,8 +8,13 @@ namespace FPSdemo
 
     public struct HealthData: IComponentData
     {
+        [GhostField]
         public float maxHp;
+        [GhostField]
         public float currentHp;
+
+        [GhostField]
+        public int lasthit;
     }
 
     [DisallowMultipleComponent]
@@ -21,7 +27,7 @@ namespace FPSdemo
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            dstManager.AddComponentData(entity, new HealthData { maxHp = maxHp , currentHp = currentHp });
+            dstManager.AddComponentData(entity, new HealthData { maxHp = maxHp , currentHp = currentHp , lasthit =-1});
             dstManager.AddBuffer<HealthEventBufferElement>(entity);
         }
     }

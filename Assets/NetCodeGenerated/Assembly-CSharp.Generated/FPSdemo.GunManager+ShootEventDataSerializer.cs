@@ -23,7 +23,7 @@ namespace Assembly_CSharp.Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 16462008424517063831,
+                    GhostFieldsHash = 8886532171745313040,
                     ExcludeFromComponentCollectionHash = 0,
                     ComponentType = ComponentType.ReadWrite<FPSdemo.GunManager.ShootEventData>(),
                     ComponentSize = UnsafeUtility.SizeOf<FPSdemo.GunManager.ShootEventData>(),
@@ -64,6 +64,7 @@ namespace Assembly_CSharp.Generated
             public float gunBaseData_shootgap;
             public int gunBaseData_gunTypeIndex;
             public float gunBaseData_ballisticVelocity;
+            public float gunBaseData_damage;
             public int owner;
             public int translation_Value_x;
             public int translation_Value_y;
@@ -84,7 +85,7 @@ namespace Assembly_CSharp.Generated
             public float hitSurfaceNormal_y;
             public float hitSurfaceNormal_z;
         }
-        public const int ChangeMaskBits = 11;
+        public const int ChangeMaskBits = 12;
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.CopyToFromSnapshotDelegate))]
         private static void CopyToSnapshot(IntPtr stateData, IntPtr snapshotData, int snapshotOffset, int snapshotStride, IntPtr componentData, int componentStride, int count)
@@ -97,6 +98,7 @@ namespace Assembly_CSharp.Generated
                 snapshot.gunBaseData_shootgap = component.gunBaseData.shootgap;
                 snapshot.gunBaseData_gunTypeIndex = (int) component.gunBaseData.gunTypeIndex;
                 snapshot.gunBaseData_ballisticVelocity = component.gunBaseData.ballisticVelocity;
+                snapshot.gunBaseData_damage = component.gunBaseData.damage;
                 snapshot.owner = (int) component.owner;
                 snapshot.translation_Value_x = (int) math.round(component.translation.Value.x * 100);
                 snapshot.translation_Value_y = (int) math.round(component.translation.Value.y * 100);
@@ -144,6 +146,7 @@ namespace Assembly_CSharp.Generated
                 component.gunBaseData.shootgap = snapshotBefore.gunBaseData_shootgap;
                 component.gunBaseData.gunTypeIndex = (int) snapshotBefore.gunBaseData_gunTypeIndex;
                 component.gunBaseData.ballisticVelocity = snapshotBefore.gunBaseData_ballisticVelocity;
+                component.gunBaseData.damage = snapshotBefore.gunBaseData_damage;
                 component.owner = (int) snapshotBefore.owner;
                 snapshotInterpolationFactor = snapshotInterpolationFactorRaw;
                 var translation_Value_Before = new float3(snapshotBefore.translation_Value_x * 0.01f, snapshotBefore.translation_Value_y * 0.01f, snapshotBefore.translation_Value_z * 0.01f);
@@ -173,6 +176,7 @@ namespace Assembly_CSharp.Generated
             component.gunBaseData.shootgap = backup.gunBaseData.shootgap;
             component.gunBaseData.gunTypeIndex = backup.gunBaseData.gunTypeIndex;
             component.gunBaseData.ballisticVelocity = backup.gunBaseData.ballisticVelocity;
+            component.gunBaseData.damage = backup.gunBaseData.damage;
             component.owner = backup.owner;
             component.translation.Value.x = backup.translation.Value.x;
             component.translation.Value.y = backup.translation.Value.y;
@@ -219,26 +223,27 @@ namespace Assembly_CSharp.Generated
             changeMask = (snapshot.gunBaseData_shootgap != baseline.gunBaseData_shootgap) ? 1u : 0;
             changeMask |= (snapshot.gunBaseData_gunTypeIndex != baseline.gunBaseData_gunTypeIndex) ? (1u<<1) : 0;
             changeMask |= (snapshot.gunBaseData_ballisticVelocity != baseline.gunBaseData_ballisticVelocity) ? (1u<<2) : 0;
-            changeMask |= (snapshot.owner != baseline.owner) ? (1u<<3) : 0;
-            changeMask |= (snapshot.translation_Value_x != baseline.translation_Value_x) ? (1u<<4) : 0;
-            changeMask |= (snapshot.translation_Value_y != baseline.translation_Value_y) ? (1u<<4) : 0;
-            changeMask |= (snapshot.translation_Value_z != baseline.translation_Value_z) ? (1u<<4) : 0;
+            changeMask |= (snapshot.gunBaseData_damage != baseline.gunBaseData_damage) ? (1u<<3) : 0;
+            changeMask |= (snapshot.owner != baseline.owner) ? (1u<<4) : 0;
+            changeMask |= (snapshot.translation_Value_x != baseline.translation_Value_x) ? (1u<<5) : 0;
+            changeMask |= (snapshot.translation_Value_y != baseline.translation_Value_y) ? (1u<<5) : 0;
+            changeMask |= (snapshot.translation_Value_z != baseline.translation_Value_z) ? (1u<<5) : 0;
             changeMask |= (snapshot.rotation_ValueX != baseline.rotation_ValueX ||
                         snapshot.rotation_ValueY != baseline.rotation_ValueY ||
                         snapshot.rotation_ValueZ != baseline.rotation_ValueZ ||
-                        snapshot.rotation_ValueW != baseline.rotation_ValueW) ? (1u<<5) : 0;
-            changeMask |= (snapshot.muzzleTran_x != baseline.muzzleTran_x) ? (1u<<6) : 0;
-            changeMask |= (snapshot.muzzleTran_y != baseline.muzzleTran_y) ? (1u<<6) : 0;
-            changeMask |= (snapshot.muzzleTran_z != baseline.muzzleTran_z) ? (1u<<6) : 0;
-            changeMask |= (snapshot.spawntick != baseline.spawntick) ? (1u<<7) : 0;
-            changeMask |= (snapshot.lifetime != baseline.lifetime) ? (1u<<8) : 0;
-            changeMask |= (snapshot.hitPosition_x != baseline.hitPosition_x) ? (1u<<9) : 0;
-            changeMask |= (snapshot.hitPosition_y != baseline.hitPosition_y) ? (1u<<9) : 0;
-            changeMask |= (snapshot.hitPosition_z != baseline.hitPosition_z) ? (1u<<9) : 0;
-            changeMask |= (snapshot.hitSurfaceNormal_x != baseline.hitSurfaceNormal_x) ? (1u<<10) : 0;
-            changeMask |= (snapshot.hitSurfaceNormal_y != baseline.hitSurfaceNormal_y) ? (1u<<10) : 0;
-            changeMask |= (snapshot.hitSurfaceNormal_z != baseline.hitSurfaceNormal_z) ? (1u<<10) : 0;
-            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 11);
+                        snapshot.rotation_ValueW != baseline.rotation_ValueW) ? (1u<<6) : 0;
+            changeMask |= (snapshot.muzzleTran_x != baseline.muzzleTran_x) ? (1u<<7) : 0;
+            changeMask |= (snapshot.muzzleTran_y != baseline.muzzleTran_y) ? (1u<<7) : 0;
+            changeMask |= (snapshot.muzzleTran_z != baseline.muzzleTran_z) ? (1u<<7) : 0;
+            changeMask |= (snapshot.spawntick != baseline.spawntick) ? (1u<<8) : 0;
+            changeMask |= (snapshot.lifetime != baseline.lifetime) ? (1u<<9) : 0;
+            changeMask |= (snapshot.hitPosition_x != baseline.hitPosition_x) ? (1u<<10) : 0;
+            changeMask |= (snapshot.hitPosition_y != baseline.hitPosition_y) ? (1u<<10) : 0;
+            changeMask |= (snapshot.hitPosition_z != baseline.hitPosition_z) ? (1u<<10) : 0;
+            changeMask |= (snapshot.hitSurfaceNormal_x != baseline.hitSurfaceNormal_x) ? (1u<<11) : 0;
+            changeMask |= (snapshot.hitSurfaceNormal_y != baseline.hitSurfaceNormal_y) ? (1u<<11) : 0;
+            changeMask |= (snapshot.hitSurfaceNormal_z != baseline.hitSurfaceNormal_z) ? (1u<<11) : 0;
+            GhostComponentSerializer.CopyToChangeMask(bits, changeMask, startOffset, 12);
         }
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GhostComponentSerializer.SerializeDelegate))]
@@ -254,41 +259,43 @@ namespace Assembly_CSharp.Generated
             if ((changeMask & (1 << 2)) != 0)
                 writer.WritePackedFloatDelta(snapshot.gunBaseData_ballisticVelocity, baseline.gunBaseData_ballisticVelocity, compressionModel);
             if ((changeMask & (1 << 3)) != 0)
+                writer.WritePackedFloatDelta(snapshot.gunBaseData_damage, baseline.gunBaseData_damage, compressionModel);
+            if ((changeMask & (1 << 4)) != 0)
                 writer.WritePackedIntDelta(snapshot.owner, baseline.owner, compressionModel);
-            if ((changeMask & (1 << 4)) != 0)
-                writer.WritePackedIntDelta(snapshot.translation_Value_x, baseline.translation_Value_x, compressionModel);
-            if ((changeMask & (1 << 4)) != 0)
-                writer.WritePackedIntDelta(snapshot.translation_Value_y, baseline.translation_Value_y, compressionModel);
-            if ((changeMask & (1 << 4)) != 0)
-                writer.WritePackedIntDelta(snapshot.translation_Value_z, baseline.translation_Value_z, compressionModel);
             if ((changeMask & (1 << 5)) != 0)
+                writer.WritePackedIntDelta(snapshot.translation_Value_x, baseline.translation_Value_x, compressionModel);
+            if ((changeMask & (1 << 5)) != 0)
+                writer.WritePackedIntDelta(snapshot.translation_Value_y, baseline.translation_Value_y, compressionModel);
+            if ((changeMask & (1 << 5)) != 0)
+                writer.WritePackedIntDelta(snapshot.translation_Value_z, baseline.translation_Value_z, compressionModel);
+            if ((changeMask & (1 << 6)) != 0)
             {
                 writer.WritePackedIntDelta(snapshot.rotation_ValueX, baseline.rotation_ValueX, compressionModel);
                 writer.WritePackedIntDelta(snapshot.rotation_ValueY, baseline.rotation_ValueY, compressionModel);
                 writer.WritePackedIntDelta(snapshot.rotation_ValueZ, baseline.rotation_ValueZ, compressionModel);
                 writer.WritePackedIntDelta(snapshot.rotation_ValueW, baseline.rotation_ValueW, compressionModel);
             }
-            if ((changeMask & (1 << 6)) != 0)
-                writer.WritePackedFloatDelta(snapshot.muzzleTran_x, baseline.muzzleTran_x, compressionModel);
-            if ((changeMask & (1 << 6)) != 0)
-                writer.WritePackedFloatDelta(snapshot.muzzleTran_y, baseline.muzzleTran_y, compressionModel);
-            if ((changeMask & (1 << 6)) != 0)
-                writer.WritePackedFloatDelta(snapshot.muzzleTran_z, baseline.muzzleTran_z, compressionModel);
             if ((changeMask & (1 << 7)) != 0)
-                writer.WritePackedUIntDelta(snapshot.spawntick, baseline.spawntick, compressionModel);
+                writer.WritePackedFloatDelta(snapshot.muzzleTran_x, baseline.muzzleTran_x, compressionModel);
+            if ((changeMask & (1 << 7)) != 0)
+                writer.WritePackedFloatDelta(snapshot.muzzleTran_y, baseline.muzzleTran_y, compressionModel);
+            if ((changeMask & (1 << 7)) != 0)
+                writer.WritePackedFloatDelta(snapshot.muzzleTran_z, baseline.muzzleTran_z, compressionModel);
             if ((changeMask & (1 << 8)) != 0)
+                writer.WritePackedUIntDelta(snapshot.spawntick, baseline.spawntick, compressionModel);
+            if ((changeMask & (1 << 9)) != 0)
                 writer.WritePackedFloatDelta(snapshot.lifetime, baseline.lifetime, compressionModel);
-            if ((changeMask & (1 << 9)) != 0)
+            if ((changeMask & (1 << 10)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitPosition_x, baseline.hitPosition_x, compressionModel);
-            if ((changeMask & (1 << 9)) != 0)
+            if ((changeMask & (1 << 10)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitPosition_y, baseline.hitPosition_y, compressionModel);
-            if ((changeMask & (1 << 9)) != 0)
+            if ((changeMask & (1 << 10)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitPosition_z, baseline.hitPosition_z, compressionModel);
-            if ((changeMask & (1 << 10)) != 0)
+            if ((changeMask & (1 << 11)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitSurfaceNormal_x, baseline.hitSurfaceNormal_x, compressionModel);
-            if ((changeMask & (1 << 10)) != 0)
+            if ((changeMask & (1 << 11)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitSurfaceNormal_y, baseline.hitSurfaceNormal_y, compressionModel);
-            if ((changeMask & (1 << 10)) != 0)
+            if ((changeMask & (1 << 11)) != 0)
                 writer.WritePackedFloatDelta(snapshot.hitSurfaceNormal_z, baseline.hitSurfaceNormal_z, compressionModel);
         }
         [BurstCompile]
@@ -311,22 +318,26 @@ namespace Assembly_CSharp.Generated
             else
                 snapshot.gunBaseData_ballisticVelocity = baseline.gunBaseData_ballisticVelocity;
             if ((changeMask & (1 << 3)) != 0)
+                snapshot.gunBaseData_damage = reader.ReadPackedFloatDelta(baseline.gunBaseData_damage, compressionModel);
+            else
+                snapshot.gunBaseData_damage = baseline.gunBaseData_damage;
+            if ((changeMask & (1 << 4)) != 0)
                 snapshot.owner = reader.ReadPackedIntDelta(baseline.owner, compressionModel);
             else
                 snapshot.owner = baseline.owner;
-            if ((changeMask & (1 << 4)) != 0)
+            if ((changeMask & (1 << 5)) != 0)
                 snapshot.translation_Value_x = reader.ReadPackedIntDelta(baseline.translation_Value_x, compressionModel);
             else
                 snapshot.translation_Value_x = baseline.translation_Value_x;
-            if ((changeMask & (1 << 4)) != 0)
+            if ((changeMask & (1 << 5)) != 0)
                 snapshot.translation_Value_y = reader.ReadPackedIntDelta(baseline.translation_Value_y, compressionModel);
             else
                 snapshot.translation_Value_y = baseline.translation_Value_y;
-            if ((changeMask & (1 << 4)) != 0)
+            if ((changeMask & (1 << 5)) != 0)
                 snapshot.translation_Value_z = reader.ReadPackedIntDelta(baseline.translation_Value_z, compressionModel);
             else
                 snapshot.translation_Value_z = baseline.translation_Value_z;
-            if ((changeMask & (1 << 5)) != 0)
+            if ((changeMask & (1 << 6)) != 0)
             {
                 snapshot.rotation_ValueX = reader.ReadPackedIntDelta(baseline.rotation_ValueX, compressionModel);
                 snapshot.rotation_ValueY = reader.ReadPackedIntDelta(baseline.rotation_ValueY, compressionModel);
@@ -340,47 +351,47 @@ namespace Assembly_CSharp.Generated
                 snapshot.rotation_ValueZ = baseline.rotation_ValueZ;
                 snapshot.rotation_ValueW = baseline.rotation_ValueW;
             }
-            if ((changeMask & (1 << 6)) != 0)
+            if ((changeMask & (1 << 7)) != 0)
                 snapshot.muzzleTran_x = reader.ReadPackedFloatDelta(baseline.muzzleTran_x, compressionModel);
             else
                 snapshot.muzzleTran_x = baseline.muzzleTran_x;
-            if ((changeMask & (1 << 6)) != 0)
+            if ((changeMask & (1 << 7)) != 0)
                 snapshot.muzzleTran_y = reader.ReadPackedFloatDelta(baseline.muzzleTran_y, compressionModel);
             else
                 snapshot.muzzleTran_y = baseline.muzzleTran_y;
-            if ((changeMask & (1 << 6)) != 0)
+            if ((changeMask & (1 << 7)) != 0)
                 snapshot.muzzleTran_z = reader.ReadPackedFloatDelta(baseline.muzzleTran_z, compressionModel);
             else
                 snapshot.muzzleTran_z = baseline.muzzleTran_z;
-            if ((changeMask & (1 << 7)) != 0)
+            if ((changeMask & (1 << 8)) != 0)
                 snapshot.spawntick = reader.ReadPackedUIntDelta(baseline.spawntick, compressionModel);
             else
                 snapshot.spawntick = baseline.spawntick;
-            if ((changeMask & (1 << 8)) != 0)
+            if ((changeMask & (1 << 9)) != 0)
                 snapshot.lifetime = reader.ReadPackedFloatDelta(baseline.lifetime, compressionModel);
             else
                 snapshot.lifetime = baseline.lifetime;
-            if ((changeMask & (1 << 9)) != 0)
+            if ((changeMask & (1 << 10)) != 0)
                 snapshot.hitPosition_x = reader.ReadPackedFloatDelta(baseline.hitPosition_x, compressionModel);
             else
                 snapshot.hitPosition_x = baseline.hitPosition_x;
-            if ((changeMask & (1 << 9)) != 0)
+            if ((changeMask & (1 << 10)) != 0)
                 snapshot.hitPosition_y = reader.ReadPackedFloatDelta(baseline.hitPosition_y, compressionModel);
             else
                 snapshot.hitPosition_y = baseline.hitPosition_y;
-            if ((changeMask & (1 << 9)) != 0)
+            if ((changeMask & (1 << 10)) != 0)
                 snapshot.hitPosition_z = reader.ReadPackedFloatDelta(baseline.hitPosition_z, compressionModel);
             else
                 snapshot.hitPosition_z = baseline.hitPosition_z;
-            if ((changeMask & (1 << 10)) != 0)
+            if ((changeMask & (1 << 11)) != 0)
                 snapshot.hitSurfaceNormal_x = reader.ReadPackedFloatDelta(baseline.hitSurfaceNormal_x, compressionModel);
             else
                 snapshot.hitSurfaceNormal_x = baseline.hitSurfaceNormal_x;
-            if ((changeMask & (1 << 10)) != 0)
+            if ((changeMask & (1 << 11)) != 0)
                 snapshot.hitSurfaceNormal_y = reader.ReadPackedFloatDelta(baseline.hitSurfaceNormal_y, compressionModel);
             else
                 snapshot.hitSurfaceNormal_y = baseline.hitSurfaceNormal_y;
-            if ((changeMask & (1 << 10)) != 0)
+            if ((changeMask & (1 << 11)) != 0)
                 snapshot.hitSurfaceNormal_z = reader.ReadPackedFloatDelta(baseline.hitSurfaceNormal_z, compressionModel);
             else
                 snapshot.hitSurfaceNormal_z = baseline.hitSurfaceNormal_z;
@@ -398,6 +409,8 @@ namespace Assembly_CSharp.Generated
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.gunBaseData.gunTypeIndex - backup.gunBaseData.gunTypeIndex));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.gunBaseData.ballisticVelocity - backup.gunBaseData.ballisticVelocity));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.gunBaseData.damage - backup.gunBaseData.damage));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.owner - backup.owner));
             ++errorIndex;
@@ -433,6 +446,10 @@ namespace Assembly_CSharp.Generated
             if (nameCount != 0)
                 names.Append(new FixedString32(","));
             names.Append(new FixedString64("gunBaseData.ballisticVelocity"));
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32(","));
+            names.Append(new FixedString64("gunBaseData.damage"));
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32(","));

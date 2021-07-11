@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5617757656989116401}
   - component: {fileID: 3641933097123136560}
   - component: {fileID: 6062440143897656116}
+  - component: {fileID: 4165607912931794370}
   m_Layer: 0
   m_Name: Missile
   m_TagString: Untagged
@@ -84,7 +85,7 @@ MonoBehaviour:
     m_Template: {fileID: 0}
     m_CollisionResponse:
       m_Override: 0
-      m_Value: 254
+      m_Value: 3
     m_Friction:
       m_Override: 0
       m_Value:
@@ -119,9 +120,9 @@ MonoBehaviour:
         Category18: 0
         Category19: 0
         Category20: 0
-        Category21: 0
-        Category22: 1
-        Category23: 0
+        Category21: 1
+        Category22: 0
+        Category23: 1
         Category24: 0
         Category25: 0
         Category26: 0
@@ -135,7 +136,7 @@ MonoBehaviour:
       m_Value:
         Category00: 0
         Category01: 0
-        Category02: 0
+        Category02: 1
         Category03: 0
         Category04: 0
         Category05: 0
@@ -153,7 +154,7 @@ MonoBehaviour:
         Category17: 0
         Category18: 0
         Category19: 0
-        Category20: 0
+        Category20: 1
         Category21: 0
         Category22: 0
         Category23: 0
@@ -161,7 +162,7 @@ MonoBehaviour:
         Category25: 0
         Category26: 0
         Category27: 0
-        Category28: 0
+        Category28: 1
         Category29: 0
         Category30: 0
         Category31: 0
@@ -265,6 +266,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 10
+--- !u!114 &4165607912931794370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3929124290749424508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 299ca62cdb0debd4e8f610f160d2b0dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 1
+  currentHp: 1
 --- !u!1 &6125616251748861997
 GameObject:
   m_ObjectHideFlags: 0

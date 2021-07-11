@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2701352641957597197
+--- !u!1 &774085580734028584
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5425466665633419785}
-  - component: {fileID: 8737322483555211887}
+  - component: {fileID: 7244069110778747180}
+  - component: {fileID: 6233562254449758538}
   m_Layer: 0
-  m_Name: Gun_2
+  m_Name: Gun_2 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5425466665633419785
+--- !u!4 &7244069110778747180
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2701352641957597197}
+  m_GameObject: {fileID: 774085580734028584}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -31,13 +31,13 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8737322483555211887
+--- !u!114 &6233562254449758538
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2701352641957597197}
+  m_GameObject: {fileID: 774085580734028584}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5e9e50c92f6b0041963dd831c574e6f, type: 3}
@@ -45,8 +45,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shootgap: 1
   guntypeindex: 1
-  ballisticVelocity: 10
+  damage: 10
+  ballisticVelocity: 50
   gunmodel: {fileID: 7380474060139285277, guid: d17297b6e11132a4db053f7b54be81d1, type: 3}
   muzzleprefab: {fileID: 6060935667144873308, guid: 633222868c31065429be4f5819739dee, type: 3}
-  projectile: {fileID: 4802121431705735547, guid: 40b774e09c9f9af4ea767bcb57eb5532, type: 3}
+  projectile: {fileID: 1032649040494827808, guid: e5dc98d5e6ed7824c9a3244fd20b5c48, type: 3}
   VFX: {fileID: 7655095426451682942, guid: b44155a491834754482508226b37b2d2, type: 3}

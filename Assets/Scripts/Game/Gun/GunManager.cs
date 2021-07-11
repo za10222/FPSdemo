@@ -35,6 +35,7 @@ namespace FPSdemo
             public float shootgap;
             public int gunTypeIndex;
             public float ballisticVelocity;
+            public float damage;
         }
 
         [GhostComponent(PrefabType = GhostPrefabType.Client)]
@@ -115,12 +116,9 @@ namespace FPSdemo
         }
 
         //这个被客户端实例化，但没有初始化 
-        [GhostComponent(PrefabType = GhostPrefabType.Client)]
+       [GhostComponent(PrefabType = GhostPrefabType.Client)] 
         public struct ShootRenderData : IComponentData
         {
-            public bool isRender;
-     
-
             //用来存储和判断特效是否生成
             public Entity ProjectilePrefab;
             public float ProjectileLifetime;

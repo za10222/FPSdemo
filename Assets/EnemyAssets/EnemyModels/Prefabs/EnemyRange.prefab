@@ -598,7 +598,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3354dfb76c75f78408391427cd819520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distance: 100
+  distance: 300
   Bodynode: {fileID: 8142447195951785004}
 --- !u!114 &355270686213618696
 MonoBehaviour:
@@ -650,8 +650,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 299ca62cdb0debd4e8f610f160d2b0dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHp: 100
-  currentHp: 100
+  maxHp: 20
+  currentHp: 20
 --- !u!1 &5669002113399309591
 GameObject:
   m_ObjectHideFlags: 0

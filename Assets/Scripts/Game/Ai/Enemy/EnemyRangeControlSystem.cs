@@ -22,21 +22,23 @@ namespace FPSdemo
     {
         private BuildPhysicsWorld physicsWorldSystem;
         private Entity m_misslePrefab;
+        private EntityQuery m_FPCQuery;
         EntityCommandBufferSystem barrier => World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
         protected override void OnCreate()
         {
             RequireSingletonForUpdate<GunDataBufferElement>();
             physicsWorldSystem = World.GetExistingSystem<BuildPhysicsWorld>();
+            m_FPCQuery = GetEntityQuery(typeof(GhostOwnerComponent), typeof(CharacterControllerComponentData), typeof(PhysicsCollider));
         }
 
         protected override void OnUpdate()
         {
             var commandBuffer = barrier.CreateCommandBuffer().AsParallelWriter();
-      
 
+            var PointFromEntity = GetComponentDataFromEntity<Point>();
             var time = Time.ElapsedTime;
             var collisionWorld = physicsWorldSystem.PhysicsWorld.CollisionWorld;
-
+            var FPCs = m_FPCQuery.ToEntityArray(Unity.Collections.Allocator.TempJob);
 
             if (m_misslePrefab == Entity.Null)
             {
@@ -61,6 +63,8 @@ namespace FPSdemo
                 .WithReadOnly(ltwFromEntity)
                 .WithReadOnly(collisionWorld)
                 .WithReadOnly(bufferFromEntity)
+                .WithReadOnly(FPCs)
+                .WithReadOnly(PointFromEntity)
                 .ForEach((Entity entity, int entityInQueryIndex, ref EnemyRangeInternalData enemyRangeInternalData, ref Enemy enemy, in EnemyRange enemyRange) =>
             {
    
@@ -81,7 +85,24 @@ namespace FPSdemo
                             if (time - enemyRangeInternalData.dietime > 2)
                             {
                                 commandBuffer.DestroyEntity(entityInQueryIndex, entity);
-                                Debug.Log("删除");
+                                bool isfind = false;
+                                Entity shooter = Entity.Null;
+                                foreach (var i in FPCs)
+                                {
+                                    if (GetComponent<GhostOwnerComponent>(i).NetworkId == health.lasthit)
+                                    {
+                                        shooter = i;
+                                        isfind = true;
+                                        break;
+                                    }
+                                }
+                                if (isfind)
+                                {
+                                    var point = PointFromEntity[shooter];
+                                    point.point += 10;
+                                    commandBuffer.SetComponent<Point>(entityInQueryIndex, shooter, point);
+                                    Debug.Log(string.Format("加分{0},分数{1}", shooter.Index, point.point));
+                                }
                             }
                         }
                         else
@@ -192,17 +213,20 @@ namespace FPSdemo
                 }
 
             }).Schedule();
+            Dependency.Complete();
             barrier.AddJobHandleForProducer(Dependency);
+          
             var df = Time.DeltaTime;
-            Entities.ForEach((Entity entity, int entityInQueryIndex, ref Missile missile) =>
+            Entities.ForEach((Entity entity, int entityInQueryIndex, ref Missile missile,in HealthData healthData) =>
             {
                 missile.lifetime -= df;
-                if (missile.lifetime <= 0)
+                if (missile.lifetime <= 0|| healthData.currentHp<=0)
                 {
                     commandBuffer.DestroyEntity(entityInQueryIndex, entity);
                 }
             }).ScheduleParallel();
             barrier.AddJobHandleForProducer(Dependency);
+            FPCs.Dispose();
 
         }
     }

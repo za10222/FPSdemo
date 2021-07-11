@@ -155,11 +155,10 @@ namespace FPSdemo
                 shootEventData.lifetime = time;
                 shootEventData.hitPosition = hitPointPos;
                 shootEventData.hitSurfaceNormal = hit.SurfaceNormal;    //hit.SurfaceNormal
-                if(healthEventBufferFromEntity.HasComponent(hit.Entity)&&isServer)
+                Debug.Log(string.Format("命中+{0}+{1}+{2}+{3}", isServer, hit.Entity.Index, bt, cw));
+                if (healthEventBufferFromEntity.HasComponent(hit.Entity)&&isServer)
                 {
-
-                    Debug.Log(string.Format("命中+{0}+{1}+{2}+{3}",isServer,hit.Entity.Index,bt,cw));
-                    healthEventBufferFromEntity[hit.Entity].Add(new HealthEventBufferElement { healthChange = -10 });
+                    healthEventBufferFromEntity[hit.Entity].Add(new HealthEventBufferElement { healthChange =- shootEventData.gunBaseData.damage ,owner= shootBeginData.owner});
                 }
             }
             else
@@ -196,7 +195,7 @@ namespace FPSdemo
             .WithAll<GunManager.ShootEventData>()
             .ForEach((Entity ent, int entityInQueryIndex, ref GunManager.ShootEventData shootEventData) =>
             {
-                if (SequenceHelpers.IsNewer(currentTick, shootEventData.spawntick+30))
+                if (SequenceHelpers.IsNewer(currentTick, shootEventData.spawntick+60))
                 {
                     commandBuffer.DestroyEntity(entityInQueryIndex,ent);
                 }

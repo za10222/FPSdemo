@@ -8,6 +8,9 @@ using static FPSdemo.GunManager;
 
 namespace FPSdemo
 {
+    public struct ShootisRenderTag : IComponentData
+    {
+    }
     public struct VXFEntityTag : IComponentData
     {
     }
@@ -59,7 +62,8 @@ namespace FPSdemo
                     if(shootRenderData.ProjectilePrefab==Entity.Null)
                     {
                         var gunrenderdata = t[shootEventData.gunBaseData.gunTypeIndex].gunData.gunRenderData;
-                        shootRenderData = new ShootRenderData { ProjectilePrefab = gunrenderdata.ProjectileEntity, ProjectileLifetime = 3 };
+                        shootRenderData.ProjectilePrefab = gunrenderdata.ProjectileEntity;
+                        shootRenderData.ProjectileLifetime = 3 ;
                     }
                     if (shootRenderData.VFXPrefab == Entity.Null)
                     {
@@ -91,9 +95,10 @@ namespace FPSdemo
              Entities
                 .WithName("ShootRenderJob")
                 .WithAll<ShootEventData, ShootRenderData>()
+                .WithNone<ShootisRenderTag>()
                 .ForEach((Entity entity, int entityInQueryIndex, ref ShootRenderData shootRenderData, in ShootEventData shootEventData) =>
                 {
-                    if (shootRenderData.ProjectilePrefab != Entity.Null&& shootRenderData.isRender==false)
+                    if (shootRenderData.ProjectilePrefab != Entity.Null)
                     {
                         if (shootEventData.lifetime > 0f && shootEventData.lifetime < 0.015f)
                         {
@@ -109,10 +114,10 @@ namespace FPSdemo
                             {
                                 Value = shootEventData.hitPosition
                             });
-                            shootRenderData.isRender = true;
+                            ecb.AddComponent(entityInQueryIndex, entity, new ShootisRenderTag());
                             return;
                         }
-
+                        Debug.Log(string.Format("产生轨迹，{0}",entity.Index));
                         var e = ecb.Instantiate(entityInQueryIndex, shootRenderData.ProjectilePrefab);
 
                         if (shootEventData.lifetime < 0)
@@ -184,9 +189,7 @@ namespace FPSdemo
                         //获得枪口位置
                         //重新计算方向
                         //如果没命中就不重新计算
-                     
-
-                        shootRenderData.isRender = true;
+                        ecb.AddComponent(entityInQueryIndex, entity, new ShootisRenderTag());
                     }
                 }).ScheduleParallel();
 

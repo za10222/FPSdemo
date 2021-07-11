@@ -1,0 +1,32 @@
+{
+    "Dependencies": [],
+    "Components": [
+        {
+            "$type": "Unity.Build.Common.GeneralSettings, Unity.Build",
+            "ProductName": "Product Name",
+            "CompanyName": "Company Name",
+            "Version": "1.0.0"
+        },
+        {
+            "$type": "Unity.Build.Common.SceneList, Unity.Build",
+            "$version": 1,
+            "BuildCurrentScene": false,
+            "SceneInfos": [
+                {
+                    "Scene": "GlobalObjectId_V1-1-0d1f77c8478165647a243f51189037fa-102900000-0",
+                    "AutoLoad": false
+                },
+                {
+                    "Scene": "GlobalObjectId_V1-1-b505af987291b384b8baa6b4d85967ad-102900000-0",
+                    "AutoLoad": false
+                }
+            ]
+        },
+        {
+            "$type": "Unity.Build.Classic.ClassicBuildProfile, Unity.Build.Classic",
+            "$version": 1,
+            "Platform": "win",
+            "Configuration": 2
+        }
+    ]
+}

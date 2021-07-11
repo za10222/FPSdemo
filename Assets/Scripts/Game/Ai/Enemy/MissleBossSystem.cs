@@ -34,7 +34,7 @@ namespace FPSdemo
 
         protected override void OnUpdate()
         {
-            
+             
             var df = Time.DeltaTime;
             var events = ((Simulation)stepPhysicsWorld.Simulation).TriggerEvents;
 
@@ -62,7 +62,7 @@ namespace FPSdemo
                     SetComponent(missle, missleBoss);
                     continue;
                 }
-            }
+            } 
             
             var tranFromEntity = GetComponentDataFromEntity<Translation>();
            
@@ -72,7 +72,7 @@ namespace FPSdemo
             var bufferFromEntity = GetBufferFromEntity<HealthEventBufferElement>();
             var time = Time.ElapsedTime;
             Entities
-                .WithReadOnly(bufferFromEntity)
+                .WithNativeDisableParallelForRestriction(bufferFromEntity)
                 .WithReadOnly(collisionWorld)
                 .WithReadOnly(tranFromEntity)
                .ForEach((Entity entity, int entityInQueryIndex,ref MissleBoss missleBoss) =>
@@ -88,9 +88,10 @@ namespace FPSdemo
 
                    if (missleBoss.hitFind)
                    {
+                       bufferFromEntity[missleBoss.hitEntity].Add(new HealthEventBufferElement { healthChange=-20});
                        commandBuffer.DestroyEntity(entityInQueryIndex,entity);
                    }
-                   else
+                   else 
                    {
                        if (missleBoss.inhit)
                        {

@@ -212,12 +212,12 @@ MonoBehaviour:
     ComputeRootmotionDeltas: 0
     statusname: 1
   - Clip: {fileID: 4723146814002874508, guid: 98a47f1cd28823f4b8ab7f52d3d506fb, type: 3}
-    Loop: 1
+    Loop: 0
     InitialSpeed: 1
     ComputeRootmotionDeltas: 0
     statusname: 3
   - Clip: {fileID: 6059336001588132254, guid: 98a47f1cd28823f4b8ab7f52d3d506fb, type: 3}
-    Loop: 1
+    Loop: 0
     InitialSpeed: 1
     ComputeRootmotionDeltas: 0
     statusname: 4
@@ -887,8 +887,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 299ca62cdb0debd4e8f610f160d2b0dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHp: 100
-  currentHp: 100
+  maxHp: 20
+  currentHp: 20
 --- !u!114 &3853090689595533973
 MonoBehaviour:
   m_ObjectHideFlags: 0

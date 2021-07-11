@@ -11,6 +11,7 @@ namespace FPSdemo
     public struct HealthEventBufferElement : IBufferElementData
     {
        public float healthChange;
+       public int owner;
     }
 
     [UpdateInWorld(UpdateInWorld.TargetWorld.Server)]
@@ -29,7 +30,7 @@ namespace FPSdemo
                 {
                     healthData.currentHp += healthEventBuffers[i].healthChange;
                     healthData.currentHp = math.clamp(healthData.currentHp, 0, healthData.maxHp);
-                    
+                    healthData.lasthit = healthEventBuffers[i].owner;
                 }
                 healthEventBuffers.Clear();
                 // Implement the work to perform for each entity here.

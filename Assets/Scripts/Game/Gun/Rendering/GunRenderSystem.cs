@@ -150,7 +150,7 @@ namespace FPSdemo
                 if (find == Entity.Null)
                 {
                     return;
-                }
+                } 
 
                 var ltp = GetComponent<LocalToParent>(find);
                 RigidTransform localToWorld_parent = new RigidTransform(ltw.Value);
