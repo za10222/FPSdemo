@@ -12,8 +12,8 @@ public class GameMain: MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-            
-        if (GameBootstrap.clientworld != null)
+            Application.targetFrameRate = 60;
+            if (GameBootstrap.clientworld != null)
         {
                 var w = GameBootstrap.clientworld.GetExistingSystem<InitializationSystemGroup>();
         
@@ -72,7 +72,7 @@ public class GameBootstrap : ClientServerBootstrap
         GenerateSystemLists(systems);
 
         var world = new World(defaultWorldName);
-        World.DefaultGameObjectInjectionWorld = world;
+        World.DefaultGameObjectInjectionWorld = world; 
 
         DefaultWorldInitialization.AddSystemsToRootLevelSystemGroups(world, ExplicitDefaultWorldSystems);
 #if !UNITY_SERVER
@@ -87,7 +87,7 @@ public class GameBootstrap : ClientServerBootstrap
        if (ClientServerBootstrap.RequestedPlayType != ClientServerBootstrap.PlayType.Client)
     #endif
           serverworld = ClientServerBootstrap.CreateServerWorld(world, "severworld123");
-#endif
+#endif 
  
         //ScriptBehaviourUpdateOrder.UpdatePlayerLoop(world);
         ScriptBehaviourUpdateOrder.AddWorldToCurrentPlayerLoop(world);

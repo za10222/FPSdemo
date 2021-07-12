@@ -15,7 +15,8 @@ public class InGameBotton : MonoBehaviour
     private void OnClick()
     {
         /*将状态设置false才能退出游戏*/
-        UiManager.needtoconnect = true;    
+        UiManager.needtoconnect = true;
+        CursorTest.ToHideCursor();
     } 
 
 

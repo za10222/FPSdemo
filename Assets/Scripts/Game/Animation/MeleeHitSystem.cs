@@ -47,7 +47,7 @@ namespace FPSdemo
                 if (enemyboss.inhit)
                 {
 
-                    commandBuffer.SetComponent(enemyboss.Bodyup, new URPMaterialPropertyBaseColor
+                    commandBuffer.SetComponent(enemyboss.Bodyup, new URPMaterialPropertyBaseColor 
                     {
                         Value =new float4(1f,0f,0f,0.5882f)
                     });

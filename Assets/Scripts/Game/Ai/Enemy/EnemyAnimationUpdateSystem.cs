@@ -24,7 +24,7 @@ namespace FPSdemo
                         meshobject = i.Value;
                         break;
                     }
-                }
+                } 
                 if (meshobject == Entity.Null)
                     return;
                 var sampleAnimationController = GetComponent<SampleAnimationController>(meshobject);

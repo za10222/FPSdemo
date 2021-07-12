@@ -24,12 +24,13 @@ namespace FPSdemo
         private EntityQuery m_FPCQuery;
         EntityCommandBufferSystem barrier => World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
         private Entity m_misslePrefab;
-
+          
         protected override void OnCreate()
         {
             physicsWorldSystem = World.GetExistingSystem<BuildPhysicsWorld>();
             m_FPCQuery = GetEntityQuery(typeof(GhostOwnerComponent), typeof(CharacterControllerComponentData), typeof(PhysicsCollider));
             RequireSingletonForUpdate<GunDataBufferElement>();
+            RequireSingletonForUpdate<NetworkStreamInGame>();
         }
 
         protected override void OnUpdate()

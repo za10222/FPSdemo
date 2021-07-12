@@ -21,14 +21,15 @@ namespace FPSdemo
         private Entity bossprefab;
         private Entity meleeprefab;
         private Entity rangeprefab;
-
+         
         EntityCommandBufferSystem barrier => World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
         protected override void OnCreate()
         {
             bosstime =0;
             ememytime = 0;
             RequireSingletonForUpdate<GunDataBufferElement>();
-            bossquery= GetEntityQuery(typeof(EnemyBoss));
+            RequireSingletonForUpdate<NetworkStreamInGame>();
+            bossquery = GetEntityQuery(typeof(EnemyBoss));
             meleequery = GetEntityQuery(typeof(EnemyMelee));
             rangequery = GetEntityQuery(typeof(EnemyRange ));
         }

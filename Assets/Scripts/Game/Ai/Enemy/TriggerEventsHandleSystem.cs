@@ -87,7 +87,7 @@ namespace FPSdemo
                     var rot = GetComponent<Translation>(play).Value;
                     var rot2 = GetComponent<LocalToWorld>(enemyboss).Position;
                     intel.addVelocity = -math.normalize(rot2 - rot) * 10;
-                    intel.starttime = 0.3d;
+                    intel.starttime = 0.7d;
                     var healthbuff = GetBuffer<HealthEventBufferElement>(play);
                     healthbuff.Add(new HealthEventBufferElement { healthChange = -20 });
                     SetComponent(play, intel);

@@ -14,9 +14,13 @@ public class ExitGameBotton : MonoBehaviour
     /*点击时触发*/
     private void OnClick()
     {
-        /*将状态设置false才能退出游戏*/  
-       // UnityEditor.EditorApplication.isPlaying = false;
-        Application.Quit();
+        /*将状态设置false才能退出游戏*/
+        // UnityEditor.EditorApplication.isPlaying = false;
+        #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
     }
 
 

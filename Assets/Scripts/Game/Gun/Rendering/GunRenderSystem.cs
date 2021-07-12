@@ -204,6 +204,12 @@ namespace FPSdemo
          
                     if (playerGunData.gunstate==Gunstate.shoot)
                     {
+
+                      var au = EntityManager.GetComponentObject<AudioSource>(gunSpawnState.Muzzle);
+                        if (!au.isPlaying)
+                        {
+                            au.Play();
+                        } 
                        var t=EntityManager.GetBuffer<LinkedEntityGroup>(gunSpawnState.Muzzle);
                        var psroot = EntityManager.GetComponentObject<ParticleSystem>(gunSpawnState.Muzzle);
                      
@@ -219,6 +225,8 @@ namespace FPSdemo
                     }
                     else
                     {
+                        var au = EntityManager.GetComponentObject<AudioSource>(gunSpawnState.Muzzle);
+                        au.Stop();
                         var t = EntityManager.GetBuffer<LinkedEntityGroup>(gunSpawnState.Muzzle);
                         foreach (var w in t)
                         {

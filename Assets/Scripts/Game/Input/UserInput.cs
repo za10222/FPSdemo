@@ -23,7 +23,7 @@ namespace FPSdemo
         public class  UserInputUpdateSystem : SystemBase, InputActions.IPlayerActions
         {
             InputActions m_InputActions;
-            EntityQuery m_UserInputdateQuery;
+            EntityQuery m_UserInputdateQuery; 
 
             public void OnFire(InputAction.CallbackContext context)
             {
@@ -44,6 +44,11 @@ namespace FPSdemo
             public void OnJump(InputAction.CallbackContext context)
             {
                 m_CharacterJump = context.ReadValueAsButton();
+            }
+
+            public void OnExit(InputAction.CallbackContext context)
+            { 
+                CursorTest.ToShowCursor();
             }
             public void OnChangeGun(InputAction.CallbackContext context)
             {

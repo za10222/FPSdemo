@@ -29,13 +29,15 @@ namespace Reese.Nav
         /// <summary>This is the glorified parent transform of the surface.
         /// </summary>
         public NavBasisAuthoring Basis;
-
-        NavSurfaceSystem surfaceSystem => World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<NavSurfaceSystem>();
-
+        public NavBasisAuthoring Basis3;
+        public NavBasisAuthoring Basis2; 
+        public NavBasisAuthoring Basis4;
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
+        
+            NavSurfaceSystem surfaceSystem = dstManager.World.GetOrCreateSystem<NavSurfaceSystem>();
             dstManager.AddComponentData<NavSurface>(entity, new NavSurface
-            {
+            { 
                 Basis = conversionSystem.GetPrimaryEntity(Basis),
                 TransformInstanceID = gameObject.transform.GetInstanceID()
             });

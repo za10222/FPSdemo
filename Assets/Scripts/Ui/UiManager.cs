@@ -44,7 +44,6 @@ public class UiManager : MonoBehaviour
             Ingame.SetActive(true);
             Begin.SetActive(false);
             Die.SetActive(false);
-            CursorTest.ToHideCursor();
             playerhealth.fillAmount = playerHp ;
             bosshealth.fillAmount = bossHp ;
             guntypetext.text = guntype;

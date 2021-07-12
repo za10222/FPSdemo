@@ -59,6 +59,14 @@ namespace FPSdemo
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""exit"",
+                    ""type"": ""Button"",
+                    ""id"": ""d2684515-0343-4fd2-be84-e45b67c1ce6d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -268,6 +276,28 @@ namespace FPSdemo
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""ChangeGun"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b984bd48-4298-4f85-a5bf-43745e7bb50b"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""exit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""216ed82e-60b2-4445-b93b-90bea865b3cc"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""exit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -850,6 +880,7 @@ namespace FPSdemo
             m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
             m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
             m_Player_ChangeGun = m_Player.FindAction("ChangeGun", throwIfNotFound: true);
+            m_Player_exit = m_Player.FindAction("exit", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -916,6 +947,7 @@ namespace FPSdemo
         private readonly InputAction m_Player_Fire;
         private readonly InputAction m_Player_Jump;
         private readonly InputAction m_Player_ChangeGun;
+        private readonly InputAction m_Player_exit;
         public struct PlayerActions
         {
             private @InputActions m_Wrapper;
@@ -925,6 +957,7 @@ namespace FPSdemo
             public InputAction @Fire => m_Wrapper.m_Player_Fire;
             public InputAction @Jump => m_Wrapper.m_Player_Jump;
             public InputAction @ChangeGun => m_Wrapper.m_Player_ChangeGun;
+            public InputAction @exit => m_Wrapper.m_Player_exit;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -949,6 +982,9 @@ namespace FPSdemo
                     @ChangeGun.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeGun;
                     @ChangeGun.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeGun;
                     @ChangeGun.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeGun;
+                    @exit.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnExit;
+                    @exit.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnExit;
+                    @exit.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnExit;
                 }
                 m_Wrapper.m_PlayerActionsCallbackInterface = instance;
                 if (instance != null)
@@ -968,6 +1004,9 @@ namespace FPSdemo
                     @ChangeGun.started += instance.OnChangeGun;
                     @ChangeGun.performed += instance.OnChangeGun;
                     @ChangeGun.canceled += instance.OnChangeGun;
+                    @exit.started += instance.OnExit;
+                    @exit.performed += instance.OnExit;
+                    @exit.canceled += instance.OnExit;
                 }
             }
         }
@@ -1129,6 +1168,7 @@ namespace FPSdemo
             void OnFire(InputAction.CallbackContext context);
             void OnJump(InputAction.CallbackContext context);
             void OnChangeGun(InputAction.CallbackContext context);
+            void OnExit(InputAction.CallbackContext context);
         }
         public interface IUIActions
         {

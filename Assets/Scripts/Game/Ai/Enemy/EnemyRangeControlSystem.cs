@@ -27,6 +27,7 @@ namespace FPSdemo
         protected override void OnCreate()
         {
             RequireSingletonForUpdate<GunDataBufferElement>();
+            RequireSingletonForUpdate<NetworkStreamInGame>();
             physicsWorldSystem = World.GetExistingSystem<BuildPhysicsWorld>();
             m_FPCQuery = GetEntityQuery(typeof(GhostOwnerComponent), typeof(CharacterControllerComponentData), typeof(PhysicsCollider));
         }
